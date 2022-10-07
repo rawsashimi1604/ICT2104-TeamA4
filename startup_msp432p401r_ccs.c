@@ -55,13 +55,9 @@ extern unsigned long __STACK_END;
 
 
 /* External declarations for the interrupt handlers used by the application. */
-extern void TA1_0_IRQHandler(void);
-extern void TA2_0_IRQHandler(void);
-extern void TA3_0_IRQHandler(void);
-extern void PORT3_IRQHandler(void);
 
 /* To be added by user */
-
+extern void TA0_0_IRQHandler(void);
 
 /* Interrupt vector table.  Note that the proper constructs must be placed on this to  */
 /* ensure that it ends up at physical address 0x0000.0000 or at the start of          */
@@ -95,13 +91,13 @@ void (* const interruptVectors[])(void) =
     defaultISR,                             /* FLCTL ISR                 */
     defaultISR,                             /* COMP0 ISR                 */
     defaultISR,                             /* COMP1 ISR                 */
-    defaultISR,                             /* TA0_0 ISR                 */
+    TA0_0_IRQHandler,                             /* TA0_0 ISR                 */
     defaultISR,                             /* TA0_N ISR                 */
-    TA1_0_IRQHandler,                       /* TA1_0 ISR                 */
+    defaultISR,                             /* TA1_0 ISR                 */
     defaultISR,                             /* TA1_N ISR                 */
-    TA2_0_IRQHandler,                       /* TA2_0 ISR                 */
+    defaultISR,                             /* TA2_0 ISR                 */
     defaultISR,                             /* TA2_N ISR                 */
-    TA3_0_IRQHandler,                       /* TA3_0 ISR                 */
+    defaultISR,                             /* TA3_0 ISR                 */
     defaultISR,                             /* TA3_N ISR                 */
     defaultISR,                             /* EUSCIA0 ISR               */
     defaultISR,                             /* EUSCIA1 ISR               */
@@ -124,7 +120,7 @@ void (* const interruptVectors[])(void) =
     defaultISR,                             /* DMA_INT0 ISR              */
     defaultISR,                             /* PORT1 ISR                 */
     defaultISR,                             /* PORT2 ISR                 */
-    PORT3_IRQHandler,                       /* PORT3 ISR                 */
+    defaultISR,                             /* PORT3 ISR                 */
     defaultISR,                             /* PORT4 ISR                 */
     defaultISR,                             /* PORT5 ISR                 */
     defaultISR,                             /* PORT6 ISR                 */
