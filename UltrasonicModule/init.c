@@ -23,17 +23,9 @@ void initPortsAndPins() {
     GPIO_setOutputLowOnPin(ULTRASONIC_TRIGGER_PORT, ULTRASONIC_TRIGGER_PIN);
     GPIO_setAsOutputPin(ULTRASONIC_TRIGGER_PORT, ULTRASONIC_TRIGGER_PIN);
 
-    // Configure Ultrasonic echo pin as input
-    GPIO_setAsInputPinWithPullDownResistor(ULTRASONIC_ECHO_PORT, ULTRASONIC_ECHO_PIN);
-
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1);
-
 }
 
 void initInterrupts() {
-
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN1);
-    GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN1);
 
     // Enable interrupt for Timer_A0
     Interrupt_enableInterrupt(INT_TA0_0);
