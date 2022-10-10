@@ -28,7 +28,7 @@ uint32_t sensorInterruptCount;
  */
 
 // Public functions to overall robot car
-bool _checkFront();
+bool Ultrasonic_checkFront();
 
 // Private functions
 void Delay(uint32_t loop);

@@ -26,7 +26,6 @@ void initPortsAndPins() {
     // Configure Ultrasonic echo pin as input
     GPIO_setAsInputPinWithPullDownResistor(ULTRASONIC_ECHO_PORT, ULTRASONIC_ECHO_PIN);
 
-
 }
 
 void initInterrupts() {
@@ -58,7 +57,7 @@ void initTimers() {
     Timer_A_clearTimer(TIMER_A0_BASE);
 
 }
-void _initUltrasonicSensor() {
+void Ultrasonic_initUltrasonicSensor() {
 
     // Initialize all Ports and Pins
     initPortsAndPins();

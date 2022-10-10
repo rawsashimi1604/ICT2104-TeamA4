@@ -41,7 +41,7 @@
  * FUNCTIONS
  */
 // Public functions
-void _initUltrasonicSensor();
+void Ultrasonic_initUltrasonicSensor();
 
 // Private functions
 void initPortsAndPins();

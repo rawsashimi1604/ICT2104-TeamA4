@@ -31,14 +31,14 @@ int main(void)
 {
 
     // Initialize settings for Ultrasonic Sensor HC-SR04.
-    _initUltrasonicSensor();
+    Ultrasonic_initUltrasonicSensor();
 
 
     // put to lower power mode...
     while (1)
     {
         Delay(100000);
-        _checkFront();
+        Ultrasonic_checkFront();
     }
 }
 

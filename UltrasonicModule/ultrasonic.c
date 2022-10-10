@@ -14,7 +14,7 @@
  * Functions
  */
 
-bool _checkFront() {
+bool Ultrasonic_checkFront() {
 
     bool frontHasObject = false;
 
