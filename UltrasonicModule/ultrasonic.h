@@ -38,7 +38,6 @@ float getDistance();
 uint32_t getDuration(void);
 
 // Interrupts
-void PORT1_IRQHandler(void);
 void TA0_0_IRQHandler(void);
 
 #endif /* ULTRASONICMODULE_ULTRASONIC_H_ */
