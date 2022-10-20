@@ -17,10 +17,16 @@
 /*************************************************************
  * DEFINITIONS
  */
+#define ULTRASONIC_BUFFER_FRONT_INDEX   0
+#define ULTRASONIC_BUFFER_LEFT_INDEX    1
+#define ULTRASONIC_BUFFER_RIGHT_INDEX   2
+#define ULTRASONIC_BUFFER_BACK_INDEX    3
 
 /*************************************************************
  * VARIABLES
  */
+float latestSensorDistances[4];      // Stores the latest distances captured from sensor.
+
 uint32_t sensor1InterruptCount;
 uint32_t sensor2InterruptCount;
 uint32_t sensor3InterruptCount;
@@ -36,6 +42,7 @@ struct UltrasonicSensorConfiguration {
     uint_fast16_t echoPin;
     uint32_t timer;
     uint32_t* sensorInterruptCount;
+    uint8_t bufferIndex;              // Stores which buffer index to store data in...
 };
 
 typedef struct UltrasonicSensorConfiguration UltrasonicSensorConfiguration;
@@ -52,9 +59,9 @@ bool Ultrasonic_checkRight();
 bool Ultrasonic_checkBack();
 
 float Ultrasonic_getDistanceFromFrontSensor();
-//uint32_t Ultrasonic_getDistanceFromLeftSensor();
-//uint32_t Ultrasonic_getDistanceFromRighttSensor();
-//uint32_t Ultrasonic_getDistanceFromBackSensor();
+float Ultrasonic_getDistanceFromLeftSensor();
+float Ultrasonic_getDistanceFromRightSensor();
+float Ultrasonic_getDistanceFromBackSensor();
 
 // Private functions
 void Delay(uint32_t loop);

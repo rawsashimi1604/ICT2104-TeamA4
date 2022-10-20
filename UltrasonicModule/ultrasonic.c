@@ -11,6 +11,11 @@
 #include "ultrasonic.h"
 
 /*************************************************************
+ * VARIABLES
+ */
+float latestSensorDistances[4];
+
+/*************************************************************
  * STRUCTS
  */
 UltrasonicSensorConfiguration sensor1Config = {
@@ -19,7 +24,8 @@ UltrasonicSensorConfiguration sensor1Config = {
    ULTRASONIC_ECHO_PORT1,
    ULTRASONIC_ECHO_PIN1,
    TIMER_A0_BASE,
-   &sensor1InterruptCount
+   &sensor1InterruptCount,
+   ULTRASONIC_BUFFER_FRONT_INDEX
 };
 
 UltrasonicSensorConfiguration sensor2Config = {
@@ -28,7 +34,8 @@ UltrasonicSensorConfiguration sensor2Config = {
    ULTRASONIC_ECHO_PORT2,
    ULTRASONIC_ECHO_PIN2,
    TIMER_A1_BASE,
-   &sensor2InterruptCount
+   &sensor2InterruptCount,
+   ULTRASONIC_BUFFER_LEFT_INDEX
 };
 
 UltrasonicSensorConfiguration sensor3Config = {
@@ -37,7 +44,8 @@ UltrasonicSensorConfiguration sensor3Config = {
    ULTRASONIC_ECHO_PORT3,
    ULTRASONIC_ECHO_PIN3,
    TIMER_A2_BASE,
-   &sensor3InterruptCount
+   &sensor3InterruptCount,
+   ULTRASONIC_BUFFER_RIGHT_INDEX
 };
 
 UltrasonicSensorConfiguration sensor4Config = {
@@ -46,7 +54,8 @@ UltrasonicSensorConfiguration sensor4Config = {
    ULTRASONIC_ECHO_PORT4,
    ULTRASONIC_ECHO_PIN4,
    TIMER_A3_BASE,
-   &sensor4InterruptCount
+   &sensor4InterruptCount,
+   ULTRASONIC_BUFFER_BACK_INDEX
 };
 
 /*************************************************************
@@ -74,8 +83,19 @@ bool Ultrasonic_checkBack() {
 }
 
 float Ultrasonic_getDistanceFromFrontSensor() {
-    UltrasonicSensorConfiguration* sensorConfig = &sensor1Config;
-    return getDistance(sensorConfig);
+    return latestSensorDistances[ULTRASONIC_BUFFER_FRONT_INDEX];
+}
+
+float Ultrasonic_getDistanceFromLeftSensor() {
+    return latestSensorDistances[ULTRASONIC_BUFFER_LEFT_INDEX];
+}
+
+float Ultrasonic_getDistanceFromRightSensor() {
+    return latestSensorDistances[ULTRASONIC_BUFFER_RIGHT_INDEX];
+}
+
+float Ultrasonic_getDistanceFromBackSensor() {
+    return latestSensorDistances[ULTRASONIC_BUFFER_BACK_INDEX];
 }
 
 
@@ -92,6 +112,9 @@ bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig) {
 
     // Get distance from object.
     float distance = getDistance(sensorConfig);
+
+    // Sets global distance buffer that stores latest distances captured from sensor.
+    latestSensorDistances[sensorConfig->bufferIndex] = distance;
 
     // If distance is lower then threshold, object is near.
     hasObject = distance < ULTRASONIC_THRESHOLD;
