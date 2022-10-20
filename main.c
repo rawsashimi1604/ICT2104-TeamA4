@@ -39,6 +39,11 @@ int main(void)
     {
         Delay(100000);
         Ultrasonic_checkFront();
+        Ultrasonic_checkLeft();
+        Ultrasonic_checkRight();
+        Ultrasonic_checkBack();
+        float distance = Ultrasonic_getDistanceFromFrontSensor();
+        printf("Function -> Distance: %.2f\n", distance);
     }
 }
 
