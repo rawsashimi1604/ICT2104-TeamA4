@@ -7,7 +7,7 @@
 /*************************************************************
  * INCLUDES
  */
-#include "driverlib.h"
+#include "driverlib/MSP432P4xx/driverlib.h"
 #include "UltrasonicModule/ultrasonic.h"
 
 #include <stdint.h>
