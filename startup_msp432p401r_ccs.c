@@ -61,6 +61,8 @@ extern void TA0_0_IRQHandler(void);
 extern void TA1_0_IRQHandler(void);
 extern void TA2_0_IRQHandler(void);
 extern void TA3_0_IRQHandler(void);
+extern void EUSCIA0_IRQHandler(void);
+extern void EUSCIA2_IRQHandler(void);
 
 /* Interrupt vector table.  Note that the proper constructs must be placed on this to  */
 /* ensure that it ends up at physical address 0x0000.0000 or at the start of          */
@@ -102,9 +104,9 @@ void (* const interruptVectors[])(void) =
     defaultISR,                             /* TA2_N ISR                 */
     TA3_0_IRQHandler,                             /* TA3_0 ISR                 */
     defaultISR,                             /* TA3_N ISR                 */
-    defaultISR,                             /* EUSCIA0 ISR               */
+    EUSCIA0_IRQHandler,                             /* EUSCIA0 ISR               */
     defaultISR,                             /* EUSCIA1 ISR               */
-    defaultISR,                             /* EUSCIA2 ISR               */
+    EUSCIA2_IRQHandler,                             /* EUSCIA2 ISR               */
     defaultISR,                             /* EUSCIA3 ISR               */
     defaultISR,                             /* EUSCIB0 ISR               */
     defaultISR,                             /* EUSCIB1 ISR               */

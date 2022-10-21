@@ -9,10 +9,12 @@
  */
 #include "driverlib/MSP432P4xx/driverlib.h"
 #include "UltrasonicModule/ultrasonic.h"
+#include "CommunicationsModule/comm.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 /*************************************************************
  * DEFINITIONS
@@ -32,6 +34,7 @@ int main(void)
 
     // Initialize settings for Ultrasonic Sensor HC-SR04.
     Ultrasonic_initUltrasonicSensor();
+    comms_init();
 
 
     // put to lower power mode...
