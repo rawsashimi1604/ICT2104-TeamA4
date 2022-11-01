@@ -25,41 +25,33 @@ SOFTWARE.
 // credit goes to https://github.com/skorks/c-linked-list
 
 // modified by Pang Ka Ho
-// added vertex struct
-// added createVertex()
-// modified add, delete, and display functions to support vertex struct coordinates
-// modified delete to check for memory leaks
-// no memory leaks currently known
+// modified to be a stack, simple linked list implementation of a stack
 
-#ifndef LINKEDLIST_HEADER
-#define LINKEDLIST_HEADER
+#ifndef STACK_HEADER
+#define STACK_HEADER
 
 #include "vertex.h"
 #include "node.h"
 
-typedef struct List
+typedef struct Stack
 {
-    Node *head;
-    Node *tail;
-} List;
+    Node *top;
+} Stack;
 
-List *List_makeList(void);
+// might not want to explore this as a public interface
+// Element *Stack_createElement(int x, int y);
 
-// old add provided by library
-// void add(int x, int y, List *list);
+Stack *Stack_makeStack(void);
+void *Stack_push(int x, int y, Stack *s);
 
-// customized add for our car, made especially for updateMap() func
-// adds the vertex created to the list
-// but also returns the vertex for the graph
-// for updating adjacent list purposes
-Vertex *List_addVertex(int x, int y, List *list);
-Node *List_createNode(int x, int y);
-void List_delete(int x, int y, List *list);
-void List_display(List *list);
-void List_destroy(List *list);
+// Note: does not free memory allocated for the element
+// client application typically wants to process the element
+// so client will free the memory using Node_freeNode()
+Node *Stack_pop(Stack *s);
 
-// not in use
-void List_reverse(List *list);
-void List_reverse_using_two_pointers(List *list);
+// displays the top of the stack
+void Stack_peak(Stack *s);
+void Stack_display(Stack *s);
+void Stack_destroy(Stack *s);
 
 #endif

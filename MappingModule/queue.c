@@ -25,34 +25,31 @@ SOFTWARE.
 // credit goes to https://github.com/skorks/c-linked-list
 
 // modified by Pang Ka Ho
-// added vertex struct
-// added createVertex()
-// modified add, delete, and display functions to support vertex struct coordinates
-// modified delete to check for memory leaks
-// no memory leaks currently known
+// modified to be a queue, simple linked list implementation of a queue
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "linkedlist.h"
+#include "node.h"
+#include "queue.h"
 
-List *List_makeList(void)
+Queue *Queue_makeQueue(void)
 {
-    List *list = malloc(sizeof(List));
-    if (!list)
+    Queue *q = malloc(sizeof(Queue));
+    if (!q)
     {
         return NULL;
     }
-    list->head = NULL;
-    list->tail = NULL;
-    return list;
+    q->front = NULL;
+    q->rear = NULL;
+    return q;
 }
 
-void List_display(List *list)
+void Queue_display(Queue *q)
 {
-    Node *current = list->head;
-    if (list->head == NULL)
+    Node *current = q->front;
+    if (q->front == NULL)
         return;
     for (; current != NULL; current = current->next)
     {
@@ -67,22 +64,20 @@ void List_display(List *list)
 // adds the vertex created to the list
 // but also returns the vertex for the graph
 // for updating adjacent list purposes
-Vertex *List_addVertex(int x, int y, List *list)
+void Queue_enqueue(int x, int y, Queue *q)
 {
-    Node *newNode = NULL;
-    if (list->head == NULL)
+    if (q->front == NULL)
     {
-        newNode = Node_createNode(x, y);
-        list->head = newNode;
-        list->tail = newNode;
+        Node *newNode = Node_createNode(x, y);
+        q->front = newNode;
+        q->rear = newNode;
     }
     else
     {
-        newNode = Node_createNode(x, y);
-        list->tail->next = newNode;
-        list->tail = newNode;
+        Node *newNode = Node_createNode(x, y);
+        q->rear->next = newNode;
+        q->rear = newNode;
     }
-    return newNode->data;
 }
 
 // old add provided by the library
@@ -104,56 +99,22 @@ Vertex *List_addVertex(int x, int y, List *list)
 //     }
 // }
 
-void List_delete(int x, int y, List *list)
+// Note: does not free memory allocated for the element
+// client application typically wants to process the element
+// so client will free the memory, using Node_freeNode()
+Node *Queue_dequeue(Queue *q)
 {
-    Node *current = list->head;
-    Node *previous = current;
-    while (current != NULL)
-    {
-        if (current->data->x == x && current->data->y == y)
-        {
-            previous->next = current->next;
-            if (current == list->head)
-                list->head = current->next;
-            Node_freeNode(current);
-            return;
-        }
-        previous = current;
-        current = current->next;
-    }
+    if (q->front == NULL)
+        return NULL;
+
+    Node *front = q->front;
+    q->front = front->next;
+    return front;
 }
 
-void List_reverse(List *list)
+void Queue_destroy(Queue *q)
 {
-    Node *reversed = NULL;
-    Node *current = list->head;
-    Node *temp = NULL;
-    while (current != NULL)
-    {
-        temp = current;
-        current = current->next;
-        temp->next = reversed;
-        reversed = temp;
-    }
-    list->head = reversed;
-}
-// Reversing the entire list by changing the direction of link from forward to backward using two pointers
-void List_reverse_using_two_pointers(List *list)
-{
-    Node *previous = NULL;
-    while (list->head)
-    {
-        Node *next_node = list->head->next; // points to second node in list
-        list->head->next = previous;        // at initial making head as NULL
-        previous = list->head;              // changing the nextpointer direction as to point backward node
-        list->head = next_node;             // moving forward by next node
-    }
-    list->head = previous;
-}
-
-void List_destroy(List *list)
-{
-    Node *current = list->head;
+    Node *current = q->front;
     Node *next = current;
     while (current != NULL)
     {
@@ -161,5 +122,5 @@ void List_destroy(List *list)
         Node_freeNode(current);
         current = next;
     }
-    free(list);
+    free(q);
 }

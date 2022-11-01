@@ -3,7 +3,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "queue.h"
+#include "stack.h"
 #include "linkedlist.h"
+
 #include "cvector.h"
 #include "cvector_utils.h"
 
@@ -59,6 +62,18 @@ void mapInit(void)
 //                      and updates the current vertex's adjacency list
 void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGoLeft, bool canGoRight)
 {
+
+    int x = 0;
+    int y = 0;
+    Node *temp = 0;
+    if (canGoFront)
+    {
+        Vertex *temp = List_addVertex(x, y, graph);
+    }
+
+    // need to discuss this with the tean
+    // have to specify which index is for front, which index is for back etc
+    currentPos->adjacencyList[0] = temp;
 }
 
 // owner            : Kaho
@@ -128,40 +143,81 @@ bool isMapExplored(void)
     // return n_of_visted nodes == n_of_all_nodes
 }
 
+// linked list test
 int main(void)
 {
-    printf("hello world\n");
-
     // allocates memory for an empty list
     // using a linked list to store our graph
-    List *list = makelist();
+    List *list = List_makeList();
 
     // for add()/delete(), function needs the x, y coordinate as well as the list.
 
     // deleting an item that does not exist does nothing
-    delete (0, 0, list);
-    add(0, 0, list);
-    add(0, 1, list);
-    add(0, 2, list);
-    delete (0, 1, list);
-    delete (20, 20, list);
-    display(list);
+    List_delete(0, 0, list);
+    List_addVertex(0, 0, list);
+    List_addVertex(0, 1, list);
+    List_addVertex(0, 2, list);
+    List_addVertex(0, 3, list);
+    List_delete(0, 1, list);
+    List_delete(20, 20, list);
+    List_display(list);
     // =========================
-    reverse(list);
+    List_reverse(list);
     printf("Reversed: using three pointers. \n");
-    display(list);
-    reverse_using_two_pointers(list);
+    List_display(list);
+    List_reverse_using_two_pointers(list);
     printf("Reversed: using two pointers. \n");
-    display(list);
+    List_display(list);
     // =========================
-
-    /* Stop Watchdog  */
-    // MAP_WDT_A_holdTimer();
-
-    // while (1)
-    // {
-    // }
 
     // frees memory related to list
-    destroy(list);
+    List_destroy(list);
 }
+
+// Stack test
+// int main(void)
+// {
+//     // allocates memory for an empty list
+//     // using a linked list to store our graph
+//     Stack *s = Stack_makeStack();
+
+//     // for add()/delete(), function needs the x, y coordinate as well as the list.
+
+//     // deleting an item that does not exist does nothing
+//     Stack_pop(s);
+//     Stack_push(0, 0, s);
+//     Stack_push(0, 1, s);
+//     Stack_push(0, 2, s);
+//     Node *e = Stack_pop(s);
+//     Node_freeNode(e);
+
+//     Stack_peak(s);
+//     Stack_display(s);
+
+//     // frees memory related to list
+//     Stack_destroy(s);
+// }
+
+// queue test
+// int main(void)
+// {
+//     // allocates memory for an empty listS
+//     // using a linked list to store our graph
+//     Queue *q = Queue_makeQueue();
+
+//     // for add()/delete(), function needs the x, y coordinate as well as the list.
+
+//     // deleting an item that does not exist does nothing
+//     Queue_dequeue(q);
+//     Queue_enqueue(0, 0, q);
+//     Queue_enqueue(0, 1, q);
+//     Queue_enqueue(0, 2, q);
+//     Node *temp = Queue_dequeue(q);
+//     Node_freeNode(temp);
+
+//     Queue_display(q);
+//     // =========================
+
+//     // frees memory related to list
+//     Queue_destroy(q);
+// }

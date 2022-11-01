@@ -25,34 +25,30 @@ SOFTWARE.
 // credit goes to https://github.com/skorks/c-linked-list
 
 // modified by Pang Ka Ho
-// added vertex struct
-// added createVertex()
-// modified add, delete, and display functions to support vertex struct coordinates
-// modified delete to check for memory leaks
-// no memory leaks currently known
+// modified to be a stack, simple linked list implementation of a stack
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "linkedlist.h"
+#include "node.h"
+#include "stack.h"
 
-List *List_makeList(void)
+Stack *Stack_makeStack()
 {
-    List *list = malloc(sizeof(List));
-    if (!list)
+    Stack *s = malloc(sizeof(Stack));
+    if (!s)
     {
         return NULL;
     }
-    list->head = NULL;
-    list->tail = NULL;
-    return list;
+    s->top = NULL;
+    return s;
 }
 
-void List_display(List *list)
+void Stack_display(Stack *s)
 {
-    Node *current = list->head;
-    if (list->head == NULL)
+    Node *current = s->top;
+    if (s->top == NULL)
         return;
     for (; current != NULL; current = current->next)
     {
@@ -67,20 +63,19 @@ void List_display(List *list)
 // adds the vertex created to the list
 // but also returns the vertex for the graph
 // for updating adjacent list purposes
-Vertex *List_addVertex(int x, int y, List *list)
+void *Stack_push(int x, int y, Stack *s)
 {
     Node *newNode = NULL;
-    if (list->head == NULL)
+    if (s->top == NULL)
     {
         newNode = Node_createNode(x, y);
-        list->head = newNode;
-        list->tail = newNode;
+        s->top = newNode;
     }
     else
     {
         newNode = Node_createNode(x, y);
-        list->tail->next = newNode;
-        list->tail = newNode;
+        newNode->next = s->top;
+        s->top = newNode;
     }
     return newNode->data;
 }
@@ -104,56 +99,30 @@ Vertex *List_addVertex(int x, int y, List *list)
 //     }
 // }
 
-void List_delete(int x, int y, List *list)
+// Note: does not free memory allocated for the element
+// client application typically wants to process the element
+// so client will free the memory, using Node_freeNode()
+Node *Stack_pop(Stack *s)
 {
-    Node *current = list->head;
-    Node *previous = current;
-    while (current != NULL)
-    {
-        if (current->data->x == x && current->data->y == y)
-        {
-            previous->next = current->next;
-            if (current == list->head)
-                list->head = current->next;
-            Node_freeNode(current);
-            return;
-        }
-        previous = current;
-        current = current->next;
-    }
+    if (s->top == NULL)
+        return NULL;
+
+    Node *top = s->top;
+    s->top = top->next;
+    return top;
 }
 
-void List_reverse(List *list)
+void Stack_peak(Stack *s)
 {
-    Node *reversed = NULL;
-    Node *current = list->head;
-    Node *temp = NULL;
-    while (current != NULL)
-    {
-        temp = current;
-        current = current->next;
-        temp->next = reversed;
-        reversed = temp;
-    }
-    list->head = reversed;
-}
-// Reversing the entire list by changing the direction of link from forward to backward using two pointers
-void List_reverse_using_two_pointers(List *list)
-{
-    Node *previous = NULL;
-    while (list->head)
-    {
-        Node *next_node = list->head->next; // points to second node in list
-        list->head->next = previous;        // at initial making head as NULL
-        previous = list->head;              // changing the nextpointer direction as to point backward node
-        list->head = next_node;             // moving forward by next node
-    }
-    list->head = previous;
+    printf("coord: (%d, %d) | visited: %s\n",
+           s->top->data->x,
+           s->top->data->y,
+           s->top->data->visited ? "yes" : "no");
 }
 
-void List_destroy(List *list)
+void Stack_destroy(Stack *s)
 {
-    Node *current = list->head;
+    Node *current = s->top;
     Node *next = current;
     while (current != NULL)
     {
@@ -161,5 +130,5 @@ void List_destroy(List *list)
         Node_freeNode(current);
         current = next;
     }
-    free(list);
+    free(s);
 }
