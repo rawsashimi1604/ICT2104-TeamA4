@@ -53,13 +53,9 @@ List *List_makeList(void);
 // but also returns the vertex for the graph
 // for updating adjacent list purposes
 Vertex *List_addVertex(int x, int y, List *list);
-Node *List_createNode(int x, int y);
+Vertex *List_getVertex(int x, int y, List *list);
 void List_delete(int x, int y, List *list);
 void List_display(List *list);
 void List_destroy(List *list);
-
-// not in use
-void List_reverse(List *list);
-void List_reverse_using_two_pointers(List *list);
 
 #endif

@@ -1,6 +1,6 @@
 CC = gcc # Which compiler to use
 LDFLAGS = # Which libraries to use -pthread -lm -lefence etc…
-OBJFILES = main.o node.o vertex.o linkedlist.o stack.o queue.o # Which object files are part of the final program
+OBJFILES = main.o node.o vertex.o linkedlist.o stack.o queue.o ultrasonic.o init.o graph.o# Which object files are part of the final program
 TARGET = main # What to name the final prog
 
 # Which flags to use 

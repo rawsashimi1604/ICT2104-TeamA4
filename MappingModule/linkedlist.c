@@ -56,16 +56,24 @@ void List_display(List *list)
         return;
     for (; current != NULL; current = current->next)
     {
-        printf("coord: (%d, %d) | visited: %s\n",
+        printf("coord: (%d, %d) | visited: %s | adjacent: (%d, %d), (%d, %d), (%d, %d), (%d, %d)\n",
                current->data->x,
                current->data->y,
-               current->data->visited ? "yes" : "no");
+               current->data->visited ? "yes" : "no",
+               current->data->adjacencyList[0] == NULL ? -100 : current->data->adjacencyList[0]->x,
+               current->data->adjacencyList[0] == NULL ? -100 : current->data->adjacencyList[0]->y,
+               current->data->adjacencyList[1] == NULL ? -100 : current->data->adjacencyList[1]->x,
+               current->data->adjacencyList[1] == NULL ? -100 : current->data->adjacencyList[1]->y,
+               current->data->adjacencyList[2] == NULL ? -100 : current->data->adjacencyList[2]->x,
+               current->data->adjacencyList[2] == NULL ? -100 : current->data->adjacencyList[2]->y,
+               current->data->adjacencyList[3] == NULL ? -100 : current->data->adjacencyList[3]->x,
+               current->data->adjacencyList[3] == NULL ? -100 : current->data->adjacencyList[3]->y);
     }
 }
 
 // customized add for our car, made especially for updateMap() func
 // adds the vertex created to the list
-// but also returns the vertex for the graph
+// but also returns the newly added vertex for the graph
 // for updating adjacent list purposes
 Vertex *List_addVertex(int x, int y, List *list)
 {
@@ -73,16 +81,34 @@ Vertex *List_addVertex(int x, int y, List *list)
     if (list->head == NULL)
     {
         newNode = Node_createNode(x, y);
+        if (newNode == NULL)
+            return NULL;
+
         list->head = newNode;
         list->tail = newNode;
     }
     else
     {
         newNode = Node_createNode(x, y);
+        if (newNode == NULL)
+            return NULL;
+
         list->tail->next = newNode;
         list->tail = newNode;
     }
     return newNode->data;
+}
+
+Vertex *List_getVertex(int x, int y, List *list)
+{
+    Node *trav = list->head;
+    while (trav != NULL)
+    {
+        if (trav->data->x == x && trav->data->y == y)
+            return trav->data;
+        trav = trav->next;
+    }
+    return NULL;
 }
 
 // old add provided by the library
@@ -121,34 +147,6 @@ void List_delete(int x, int y, List *list)
         previous = current;
         current = current->next;
     }
-}
-
-void List_reverse(List *list)
-{
-    Node *reversed = NULL;
-    Node *current = list->head;
-    Node *temp = NULL;
-    while (current != NULL)
-    {
-        temp = current;
-        current = current->next;
-        temp->next = reversed;
-        reversed = temp;
-    }
-    list->head = reversed;
-}
-// Reversing the entire list by changing the direction of link from forward to backward using two pointers
-void List_reverse_using_two_pointers(List *list)
-{
-    Node *previous = NULL;
-    while (list->head)
-    {
-        Node *next_node = list->head->next; // points to second node in list
-        list->head->next = previous;        // at initial making head as NULL
-        previous = list->head;              // changing the nextpointer direction as to point backward node
-        list->head = next_node;             // moving forward by next node
-    }
-    list->head = previous;
 }
 
 void List_destroy(List *list)
