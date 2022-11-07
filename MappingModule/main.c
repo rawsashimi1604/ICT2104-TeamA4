@@ -4,8 +4,8 @@
 #include <stdlib.h>
 
 // Ultrasonic module
-#include "init.h"
-#include "ultrasonic.h"
+// #include "init.h"
+// #include "ultrasonic.h"
 
 // Motor module
 
@@ -63,10 +63,6 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGo
     {
         Vertex *temp = List_addVertex(x, y, graph);
     }
-
-    // need to discuss this with the tean
-    // have to specify which index is for front, which index is for back etc
-    // currentPos->adjacencyList[0] = temp;
 }
 
 // owner            : Kaho
@@ -83,12 +79,12 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGo
 // where each vertex is represent as a struct (int x_coordinate, int y_coordinate, bool isVisited)
 void mapInit(void)
 {
-    bool canGoFront = Ultrasonic_checkFront();
-    bool canGoBack = Ultrasonic_checkBack();
-    bool canGoLeft = Ultrasonic_checkLeft();
-    bool canGoRight = Ultrasonic_checkRight();
-    carCurrentPosition = List_addVertex(0, 0, graph);
-    updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
+    // bool canGoFront = Ultrasonic_checkFront();
+    // bool canGoBack = Ultrasonic_checkBack();
+    // bool canGoLeft = Ultrasonic_checkLeft();
+    // bool canGoRight = Ultrasonic_checkRight();
+    // carCurrentPosition = List_addVertex(0, 0, graph);
+    // updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
 }
 
 // TODO
@@ -195,6 +191,8 @@ int main(void)
     Graph_addEdge(0, 0, 0, 1, g);
 
     // how to iterate through the adjacent vertices of a graph
+    // Graph_adj(x, y, graph) takes in 3 args: the x and y coordinate of the graph, and the graph itself
+    // returns an adj array of 4 pointers to vertices. If not initialized, then it is (-100, -100) for a vertex
     Vertex **adj = Graph_adj(0, 0, g);
     for (size_t i = 0; i < 4; i++)
     {

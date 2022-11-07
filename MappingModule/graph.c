@@ -78,6 +78,11 @@ void Graph_addEdge(int x, int y, int x2, int y2, Graph *graph)
     }
 }
 
+// function takes in 3 arguments, the x, y coordinate of the vertex
+// and the graph
+// returns an array of 4 Vertex pointers
+// for client to interate through the adjacency list
+// note: it is the responsibility of the client to NOT go beyond size of 4
 Vertex **Graph_adj(int x, int y, Graph *graph)
 {
     Vertex *v = List_getVertex(x, y, graph->list);
