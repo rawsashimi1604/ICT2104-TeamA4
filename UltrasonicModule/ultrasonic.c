@@ -33,8 +33,8 @@ UltrasonicSensorConfiguration sensor2Config = {
    ULTRASONIC_TRIGGER_PIN2,
    ULTRASONIC_ECHO_PORT2,
    ULTRASONIC_ECHO_PIN2,
-   TIMER_A1_BASE,
-   &sensor2InterruptCount,
+   TIMER_A0_BASE,
+   &sensor1InterruptCount,
    ULTRASONIC_BUFFER_LEFT_INDEX
 };
 
@@ -43,8 +43,8 @@ UltrasonicSensorConfiguration sensor3Config = {
    ULTRASONIC_TRIGGER_PIN3,
    ULTRASONIC_ECHO_PORT3,
    ULTRASONIC_ECHO_PIN3,
-   TIMER_A2_BASE,
-   &sensor3InterruptCount,
+   TIMER_A0_BASE,
+   &sensor1InterruptCount,
    ULTRASONIC_BUFFER_RIGHT_INDEX
 };
 
@@ -53,8 +53,8 @@ UltrasonicSensorConfiguration sensor4Config = {
    ULTRASONIC_TRIGGER_PIN4,
    ULTRASONIC_ECHO_PORT4,
    ULTRASONIC_ECHO_PIN4,
-   TIMER_A3_BASE,
-   &sensor4InterruptCount,
+   TIMER_A0_BASE,
+   &sensor1InterruptCount,
    ULTRASONIC_BUFFER_BACK_INDEX
 };
 
@@ -110,6 +110,9 @@ bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig) {
 
     bool hasObject = false;
 
+    // Reset sensor interrupt count
+    *(sensorConfig->sensorInterruptCount) = 0;
+
     // Get distance from object.
     float distance = getDistance(sensorConfig);
 
@@ -120,12 +123,6 @@ bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig) {
     hasObject = distance < ULTRASONIC_THRESHOLD;
 
     printf("Distance: %.2f\n", distance);
-
-//    if (hasObject) {
-//        GPIO_setOutputHighOnPin(LED1_PORT, LED1_PIN);
-//    } else {
-//        GPIO_setOutputLowOnPin(LED1_PORT, LED1_PIN);
-//    }
 
     return hasObject;
 }
@@ -194,34 +191,4 @@ void TA0_0_IRQHandler(void)
     Timer_A_clearCaptureCompareInterrupt(TIMER_A0_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
 }
 
-void TA1_0_IRQHandler(void)
-{
-
-    // Increase global interrupt count
-    sensor2InterruptCount++;
-
-    /* Clear interrupt flag */
-    Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
-}
-
-void TA2_0_IRQHandler(void)
-{
-
-    // Increase global interrupt count
-    sensor3InterruptCount++;
-
-    /* Clear interrupt flag */
-    Timer_A_clearCaptureCompareInterrupt(TIMER_A2_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
-}
-
-
-void TA3_0_IRQHandler(void)
-{
-
-    // Increase global interrupt count
-    sensor4InterruptCount++;
-
-    /* Clear interrupt flag */
-    Timer_A_clearCaptureCompareInterrupt(TIMER_A3_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
-}
 

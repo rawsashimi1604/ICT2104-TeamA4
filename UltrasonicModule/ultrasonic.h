@@ -73,8 +73,5 @@ float getDistance(UltrasonicSensorConfiguration* sensorConfig);
 
 // Interrupts
 void TA0_0_IRQHandler(void);
-void TA1_0_IRQHandler(void);
-void TA2_0_IRQHandler(void);
-void TA3_0_IRQHandler(void);
 
 #endif /* ULTRASONICMODULE_ULTRASONIC_H_ */
