@@ -1,15 +1,6 @@
-/*
- * ultrasonic.c
- *
- *  Created on: 28 Sep 2022
- *      Author: loowe
- */
+// METHOD STUBS FOR DEVELOPMENT PURPOSES ONLY
 
-/*************************************************************
- * INCLUDES
- */
 #include "ultrasonic.h"
-
 /*************************************************************
  * VARIABLES
  */
