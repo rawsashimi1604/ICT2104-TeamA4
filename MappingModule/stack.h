@@ -36,13 +36,14 @@ SOFTWARE.
 typedef struct Stack
 {
     Node *top;
+    int size;
 } Stack;
 
 // might not want to explore this as a public interface
 // Element *Stack_createElement(int x, int y);
 
 Stack *Stack_makeStack(void);
-void *Stack_push(int x, int y, Stack *s);
+bool *Stack_push(int x, int y, Stack *s);
 
 // Note: does not free memory allocated for the element
 // client application typically wants to process the element

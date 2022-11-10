@@ -42,6 +42,7 @@ Stack *Stack_makeStack()
         return NULL;
     }
     s->top = NULL;
+    s->size = 0;
     return s;
 }
 
@@ -63,21 +64,23 @@ void Stack_display(Stack *s)
 // adds the vertex created to the list
 // but also returns the vertex for the graph
 // for updating adjacent list purposes
-void *Stack_push(int x, int y, Stack *s)
+bool *Stack_push(int x, int y, Stack *s)
 {
-    Node *newNode = NULL;
+    Node *newNode = Node_createNode(x, y);
+    if (newNode == NULL)
+        return false;
+
     if (s->top == NULL)
     {
-        newNode = Node_createNode(x, y);
         s->top = newNode;
     }
     else
     {
-        newNode = Node_createNode(x, y);
         newNode->next = s->top;
         s->top = newNode;
     }
-    return newNode->data;
+    s->size++;
+    return true;
 }
 
 // old add provided by the library
@@ -109,11 +112,17 @@ Node *Stack_pop(Stack *s)
 
     Node *top = s->top;
     s->top = top->next;
+    s->size--;
     return top;
 }
 
 void Stack_peak(Stack *s)
 {
+    if (s->top == NULL)
+    {
+        printf("Stack is empty.\n");
+        return;
+    }
     printf("coord: (%d, %d) | visited: %s\n",
            s->top->data->x,
            s->top->data->y,

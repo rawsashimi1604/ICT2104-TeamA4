@@ -25,33 +25,23 @@ SOFTWARE.
 // credit goes to https://github.com/skorks/c-linked-list
 
 // modified by Pang Ka Ho
-// modified to be a queue, simple linked list implementation of a queue
 
-#ifndef QUEUE_HEADER
-#define QUEUE_HEADER
+#ifndef HUMP_LINKEDLIST_HEADER
+#define HUMP_LINKEDLIST_HEADER
 
-#include "node.h"
-#include "vertex.h"
+#include <stdbool.h>
 
-typedef struct Queue
+#include "hump_node.h"
+
+typedef struct HumpList
 {
-    Node *front;
-    Node *rear;
-    int size;
-} Queue;
+    HumpNode *head;
+    HumpNode *tail;
+} HumpList;
 
-// might not want to expose this method as a public interface
-// Queue_createElement(x, y);
-
-Queue *Queue_makeQueue();
-bool Queue_enqueue(int x, int y, Queue *q);
-
-// Note: does not free memory allocated for the element
-// client application typically wants to process the element
-// so client will free the memory using Node_freeNode()
-Node *Queue_dequeue(Queue *q);
-
-void Queue_display(Queue *q);
-void Queue_destroy(Queue *q);
+HumpList *HumpList_makeList(void);
+bool HumpList_addNode(int x, int y, HumpList *list);
+void HumpList_display(HumpList *list);
+void HumpList_destroy(HumpList *list);
 
 #endif

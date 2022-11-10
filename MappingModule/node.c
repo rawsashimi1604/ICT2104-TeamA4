@@ -7,9 +7,8 @@ Node *Node_createNode(int x, int y)
     Vertex *newVertex = Vertex_createVertex(x, y);
     Node *newNode = malloc(sizeof(Node));
     if (!newNode)
-    {
         return NULL;
-    }
+
     newNode->data = newVertex;
     newNode->next = NULL;
     return newNode;

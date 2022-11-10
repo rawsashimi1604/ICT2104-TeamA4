@@ -77,22 +77,16 @@ void List_display(List *list)
 // for updating adjacent list purposes
 Vertex *List_addVertex(int x, int y, List *list)
 {
-    Node *newNode = NULL;
+    Node *newNode = Node_createNode(x, y);
+    if (newNode == NULL)
+        return NULL;
     if (list->head == NULL)
     {
-        newNode = Node_createNode(x, y);
-        if (newNode == NULL)
-            return NULL;
-
         list->head = newNode;
         list->tail = newNode;
     }
     else
     {
-        newNode = Node_createNode(x, y);
-        if (newNode == NULL)
-            return NULL;
-
         list->tail->next = newNode;
         list->tail = newNode;
     }

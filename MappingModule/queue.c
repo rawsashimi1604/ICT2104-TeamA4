@@ -43,6 +43,7 @@ Queue *Queue_makeQueue(void)
     }
     q->front = NULL;
     q->rear = NULL;
+    q->size = 0;
     return q;
 }
 
@@ -64,20 +65,23 @@ void Queue_display(Queue *q)
 // adds the vertex created to the list
 // but also returns the vertex for the graph
 // for updating adjacent list purposes
-void Queue_enqueue(int x, int y, Queue *q)
+bool Queue_enqueue(int x, int y, Queue *q)
 {
+    Node *newNode = Node_createNode(x, y);
+    if (newNode == NULL)
+        return false;
     if (q->front == NULL)
     {
-        Node *newNode = Node_createNode(x, y);
         q->front = newNode;
         q->rear = newNode;
     }
     else
     {
-        Node *newNode = Node_createNode(x, y);
         q->rear->next = newNode;
         q->rear = newNode;
     }
+    q->size++;
+    return true;
 }
 
 // old add provided by the library
@@ -109,6 +113,7 @@ Node *Queue_dequeue(Queue *q)
 
     Node *front = q->front;
     q->front = front->next;
+    q->size--;
     return front;
 }
 

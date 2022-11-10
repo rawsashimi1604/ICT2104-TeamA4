@@ -19,7 +19,7 @@ Graph *Graph_makeGraph(void);
 Vertex *Graph_addVertex(int x, int y, Graph *graph);
 void Graph_addEdge(int x, int y, int x2, int y2, Graph *graph);
 Vertex **Graph_adj(int x, int y, Graph *graph);
-char *Graph_toString(Graph *graph);
+Vertex *Graph_getVertex(int x, int y, Graph *graph);
 void *Graph_display(Graph *graph);
 bool Graph_isExplored(Graph *graph);
 void Graph_destroy(Graph *graph);

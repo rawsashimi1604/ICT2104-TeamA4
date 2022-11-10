@@ -25,33 +25,31 @@ SOFTWARE.
 // credit goes to https://github.com/skorks/c-linked-list
 
 // modified by Pang Ka Ho
-// modified to be a queue, simple linked list implementation of a queue
 
-#ifndef QUEUE_HEADER
-#define QUEUE_HEADER
+#ifndef BARCODE_LINKEDLIST_HEADER
+#define BARCODE_LINKEDLIST_HEADER
 
-#include "node.h"
-#include "vertex.h"
+#include <stdbool.h>
 
-typedef struct Queue
+#include "barcode_node.h"
+
+typedef struct BarcodeList
 {
-    Node *front;
-    Node *rear;
-    int size;
-} Queue;
+    BarcodeNode *head;
+    BarcodeNode *tail;
+} BarcodeList;
 
-// might not want to expose this method as a public interface
-// Queue_createElement(x, y);
+BarcodeList *BarcodeList_makeList(void);
 
-Queue *Queue_makeQueue();
-bool Queue_enqueue(int x, int y, Queue *q);
+// old add provided by library
+// void add(int x, int y, List *list);
 
-// Note: does not free memory allocated for the element
-// client application typically wants to process the element
-// so client will free the memory using Node_freeNode()
-Node *Queue_dequeue(Queue *q);
-
-void Queue_display(Queue *q);
-void Queue_destroy(Queue *q);
+// customized add for our car, made especially for updateMap() func
+// adds the vertex created to the list
+// but also returns the vertex for the graph
+// for updating adjacent list purposes
+bool BarcodeList_addNode(int x, int y, char data, BarcodeList *list);
+void BarcodeList_display(BarcodeList *list);
+void BarcodeList_destroy(BarcodeList *list);
 
 #endif

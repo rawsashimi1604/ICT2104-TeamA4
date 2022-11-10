@@ -102,6 +102,11 @@ bool Graph_isExplored(Graph *graph)
     return graph->numberOfNodesVisited == graph->size;
 }
 
+Vertex *Graph_getVertex(int x, int y, Graph *g)
+{
+    return List_getVertex(x, y, g->list);
+}
+
 void Graph_destroy(Graph *graph)
 {
     List_destroy(graph->list);
