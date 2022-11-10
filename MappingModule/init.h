@@ -1,10 +1,3 @@
-/*
- * init.h
- *
- *  Created on: 28 Sep 2022
- *      Author: loowe
- */
-
 #ifndef ULTRASONICMODULE_INIT_H_
 #define ULTRASONICMODULE_INIT_H_
 

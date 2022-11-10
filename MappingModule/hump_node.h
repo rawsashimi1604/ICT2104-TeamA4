@@ -3,7 +3,6 @@
 
 // this is a node in a linked list
 // where we are using a linked list of nodes
-// to represent our graph
 typedef struct HumpNode
 {
     int x;

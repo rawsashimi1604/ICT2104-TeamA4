@@ -1,10 +1,3 @@
-/*
- * ultrasonic.h
- *
- *  Created on: 28 Sep 2022
- *      Author: loowe
- */
-
 #ifndef ULTRASONICMODULE_ULTRASONIC_H_
 #define ULTRASONICMODULE_ULTRASONIC_H_
 

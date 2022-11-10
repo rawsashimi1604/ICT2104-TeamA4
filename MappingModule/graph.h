@@ -17,7 +17,12 @@ Graph *Graph_makeGraph(void);
 // but also returns the vertex for the graph
 // for updating adjacent list purposes
 Vertex *Graph_addVertex(int x, int y, Graph *graph);
+
+// adds a undirected bidirectional edge between given two verticies in the graph
+// if it exists
 void Graph_addEdge(int x, int y, int x2, int y2, Graph *graph);
+
+// returns the adjacency list given the x and y coordinate of a vertex
 Vertex **Graph_adj(int x, int y, Graph *graph);
 Vertex *Graph_getVertex(int x, int y, Graph *graph);
 void *Graph_display(Graph *graph);

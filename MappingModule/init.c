@@ -1,18 +1,7 @@
-/*
- * init.c
- *
- *  Created on: 28 Sep 2022
- *      Author: loowe
- */
+// METHODS STUBS FOR DEVELOPEMENT PURPOSES
 
-/*************************************************************
- * INCLUDES
- */
 #include "init.h"
 
-/*************************************************************
- * Functions
- */
 void initPortsAndPins()
 {
     // printf("UltrasonicModule: initPortsAndPins()\n");

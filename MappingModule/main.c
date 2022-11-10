@@ -153,23 +153,26 @@ void mapInit(void)
 // description      : drives the car based on the map using dfs
 void mapMaze(Vertex *start, Graph *graph)
 {
+
+    // Map initialization for starting conditions
     bool canGoFront = Ultrasonic_checkFront();
     bool canGoBack = Ultrasonic_checkBack();
     bool canGoLeft = Ultrasonic_checkLeft();
     bool canGoRight = Ultrasonic_checkRight();
     carCurrentPosition = Graph_addVertex(0, 0, graph);
+
+    // this function will create the neccsary vertices adjact to current position
     updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
 
     Stack *s = Stack_makeStack();
     start->visited = true;
     graph->numberOfNodesVisited++;
 
-    Vertex **adj = Graph_adj(start->x, start->y, graph);
     for (size_t i = 0; i < 4; i++)
     {
-        if (adj[i] == NULL)
+        if (start->adjacencyList[i] == NULL)
             break;
-        Stack_push(adj[i], s);
+        Stack_push(start->adjacencyList[i], s);
     }
 
     while (s->size != 0)
@@ -181,36 +184,17 @@ void mapMaze(Vertex *start, Graph *graph)
         // this will ensure that I am within 1 unit of the vertex that I am about to visit
         // bfs will drive me there
         if (!isVertexAdjacentToCurrent(carCurrentPosition, v))
-        {
             bfs(carCurrentPosition, v, graph);
-            v->visited = true;
-            graph->numberOfNodesVisited++;
-            carCurrentPosition = v;
-
-            Vertex_writeStrToBuff(buffer, v);
-            printf("visited: %s\n", buffer);
-
-            canGoFront = Ultrasonic_checkFront();
-            canGoBack = Ultrasonic_checkBack();
-            canGoLeft = Ultrasonic_checkLeft();
-            canGoRight = Ultrasonic_checkRight();
-
-            updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
-
-            for (size_t i = 0; i < 4; i++)
-            {
-                if (v->adjacencyList[i] == NULL)
-                    break;
-                if (!v->adjacencyList[i]->visited)
-                    Stack_push(v->adjacencyList[i], s);
-            }
-        }
 
         // this will ensure that I am pointing to the vertex that I am about to visit
         if (!isCorrectOrientation(v, carCurrentOrientation))
             adjustOrientation(carCurrentPosition, carDirection);
 
-        // Motor_driveForward(1);
+        if (carCurrentPosition != v)
+        {
+            // Motor_driveForward(1);
+        }
+
         v->visited = true;
         graph->numberOfNodesVisited++;
         carCurrentPosition = v;

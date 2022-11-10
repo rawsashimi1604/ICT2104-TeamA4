@@ -44,10 +44,6 @@ BarcodeList *BarcodeList_makeList(void);
 // old add provided by library
 // void add(int x, int y, List *list);
 
-// customized add for our car, made especially for updateMap() func
-// adds the vertex created to the list
-// but also returns the vertex for the graph
-// for updating adjacent list purposes
 bool BarcodeList_addNode(int x, int y, char data, BarcodeList *list);
 void BarcodeList_display(BarcodeList *list);
 void BarcodeList_destroy(BarcodeList *list);
