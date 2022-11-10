@@ -54,6 +54,7 @@ void List_display(List *list)
     Node *current = list->head;
     if (list->head == NULL)
         return;
+
     for (; current != NULL; current = current->next)
     {
         printf("coord: (%d, %d) | visited: %s | adjacent: (%d, %d), (%d, %d), (%d, %d), (%d, %d)\n",

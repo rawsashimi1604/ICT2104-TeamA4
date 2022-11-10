@@ -40,41 +40,61 @@ Vertex *Graph_addVertex(int x, int y, Graph *graph)
 void Graph_addEdge(int x, int y, int x2, int y2, Graph *graph)
 {
     Vertex *v = List_getVertex(x, y, graph->list);
+    if (v == NULL)
+        return;
 
-    Vertex **adj = Graph_adj(v->x, v->y, graph);
+    // ensure duplicate edges are not added
     for (size_t i = 0; i < 4; i++)
     {
         if (v->adjacencyList[i] == NULL)
             continue;
         // check and prevent adding duplicate edges
-        if (adj[i]->x == x2 && adj[i]->y == y2)
+        if (v->adjacencyList[i]->x == x2 && v->adjacencyList[i]->y == y2)
             return;
     }
 
     Vertex *w = List_getVertex(x2, y2, graph->list);
-    if (v == NULL || w == NULL)
+    if (w == NULL)
         return;
 
-    bool isValidEdge = false;
+    bool isEdgeOneConnected = false;
+
     // add v and w to each other
     for (int i = 0; i < 4; i++)
     {
         if (v->adjacencyList[i] != NULL)
             continue;
         v->adjacencyList[i] = w;
-        isValidEdge = true;
+        isEdgeOneConnected = true;
         break;
     }
 
-    if (!isValidEdge)
+    if (!isEdgeOneConnected)
         return;
+
+    bool isEdgeTwoConnected = false;
 
     for (int i = 0; i < 4; i++)
     {
         if (w->adjacencyList[i] != NULL)
             continue;
         w->adjacencyList[i] = v;
+        isEdgeTwoConnected = true;
         break;
+    }
+
+    // undo edgeOne because edgeTwo did not connect successfully
+    // this means incorrect usage of the method
+    if (!isEdgeTwoConnected)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (v->adjacencyList[i] == w)
+            {
+                v->adjacencyList[i] = NULL;
+                break;
+            }
+        }
     }
 }
 
@@ -91,7 +111,6 @@ Vertex **Graph_adj(int x, int y, Graph *graph)
     return v->adjacencyList;
 }
 
-char *Graph_toString(Graph *graph);
 void *Graph_display(Graph *graph)
 {
     List_display(graph->list);
@@ -112,3 +131,5 @@ void Graph_destroy(Graph *graph)
     List_destroy(graph->list);
     free(graph);
 }
+
+char *Graph_toString(Graph *graph);

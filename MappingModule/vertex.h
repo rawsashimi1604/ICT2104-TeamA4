@@ -16,7 +16,7 @@ typedef struct Vertex
 } Vertex;
 
 Vertex *Vertex_createVertex(int x, int y);
-void Vertex_deleteVertex(Vertex *v);
+void Vertex_freeVertex(Vertex *v);
 
 // will write string data to the buffer provided
 void Vertex_writeStrToBuff(char buff[], Vertex *v);

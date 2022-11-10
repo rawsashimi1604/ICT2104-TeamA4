@@ -44,14 +44,19 @@ typedef struct Queue
 // Queue_createElement(x, y);
 
 Queue *Queue_makeQueue();
-bool Queue_enqueue(int x, int y, Queue *q);
 
-// Note: does not free memory allocated for the element
-// client application typically wants to process the element
-// so client will free the memory using Node_freeNode()
-Node *Queue_dequeue(Queue *q);
+// takes in an actual vertex by reference (will not create a copy)
+bool Queue_enqueue(Vertex *v, Queue *q);
+
+// will return the actual vertex by reference (will affect the real graph)
+Vertex *Queue_dequeue(Queue *q);
 
 void Queue_display(Queue *q);
 void Queue_destroy(Queue *q);
+
+// original destroy
+// will free the memory allocated for the vertex inside the stack
+// for testing purposes only
+void Queue_destroy2(Queue *q);
 
 #endif

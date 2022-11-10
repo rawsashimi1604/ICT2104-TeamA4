@@ -22,16 +22,28 @@
 /* =================================== */
 
 // Mapping module interface
-Graph *Mapping_getMap(void);
 void Mapping_writeBarcodeData(char data);
 void Mapping_writeHumpData(void);
 
 /* =================================== */
 
+// add our function declarations here in the future
+void updateCarDirection(char turn);
+void initializeCarPosition(void);
+void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGoLeft, bool canGoRight);
+void mapMaze(Vertex *start, Graph *graph);
+bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation);
+void adjustOrientation(Vertex *currentCarPos, char carOrientation);
+bool isVertexAdjacentToCurrent(Vertex *currentCarPos, Vertex *aboutToVisitVertex);
+void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Vertex *target, Graph *g);
+int **reconstructPath(int startX, int startY, int endX, int endY, int edgeTo[][2]);
+void driveCarUsingPath(int path[][2]);
+bool bfs(Vertex *sourceV, Vertex *endV, Graph *graph);
+bool isMapExplored(Graph *graph);
+
+/* =================================== */
 HumpList *humpData = NULL;
 BarcodeList *barCodeData = NULL;
-cvector_vector_type(bool) visited = NULL;
-Graph *graph;
 char buffer[100] = {0};
 
 // char carDirection = 'N', 'E', 'S', 'W'
@@ -41,15 +53,14 @@ char buffer[100] = {0};
 // assume bfs will not mark vertices as visited on the global graph data structure
 
 char carDirection = 'N';
-Vertex *carCurrentPosition;    // points to the vertex where the car is currently at
+Vertex *carCurrentPosition; // points to the vertex where the car is currently at
+
+// might not need this anymore
 Vertex *carCurrentOrientation; // points to the vertex that the car is facing, if facing a wall, then it is NULL
-unsigned char numberOfNodesVisited;
-unsigned char sizeOfGraph;
 
 //  N
 // W E
 //  S
-
 // expects a argument of either 'L', or 'R'
 void updateCarDirection(char turn)
 {
@@ -72,10 +83,11 @@ void updateCarDirection(char turn)
 }
 
 // Kaho
-Graph *Mapping_getMap(void)
-{
-    return graph;
-}
+// Might not expose this to other modules
+// Vertex *Mapping_getCarCurrentPosition(void)
+// {
+//     return carCurrentPosition;
+// }
 
 // Kaho
 void Mapping_writeBarcodeData(char data)
@@ -117,6 +129,7 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGo
     // }
 }
 
+// will delete this, just keeping it here for notes at the moment
 // owner            : Kaho
 // description      : checks the car's front, left, back, right using Ultrasonic sensors and initializes the map
 // start condition  : correctCar() is called and car is in a corner
@@ -131,25 +144,22 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGo
 // where each vertex is represent as a struct (int x_coordinate, int y_coordinate, bool isVisited)
 void mapInit(void)
 {
+}
+
+// For Kevin:
+// bfs needs to calculate if I can go there in the first place
+
+// owner            : Kaho
+// description      : drives the car based on the map using dfs
+void mapMaze(Vertex *start, Graph *graph)
+{
     bool canGoFront = Ultrasonic_checkFront();
     bool canGoBack = Ultrasonic_checkBack();
     bool canGoLeft = Ultrasonic_checkLeft();
     bool canGoRight = Ultrasonic_checkRight();
     carCurrentPosition = Graph_addVertex(0, 0, graph);
     updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
-}
 
-bool isVertexAdjacentToCurrent(Vertex *currentCarPos, Vertex *aboutToVisitVertex);
-bool isCorrectOrientation(Vertex *v, Vertex *carCurrentOrientation);
-
-// For Kevin:
-// bfs needs to calculate if I can go there in the first place
-
-// TODO
-// owner            : Kaho
-// description      : drives the car based on the map using dfs
-void dfs(Vertex *start, Graph *graph)
-{
     Stack *s = Stack_makeStack();
     start->visited = true;
     graph->numberOfNodesVisited++;
@@ -159,23 +169,42 @@ void dfs(Vertex *start, Graph *graph)
     {
         if (adj[i] == NULL)
             break;
-        Stack_push(adj[i]->x, adj[i]->y, s);
+        Stack_push(adj[i], s);
     }
 
     while (s->size != 0)
     {
-        Node *n = Stack_pop(s);
-        Vertex *v = Graph_getVertex(n->data->x, n->data->y, graph);
+        Vertex *v = Stack_pop(s);
         if (v->visited == true)
-        {
-            Node_freeNode(n);
             continue;
-        }
 
         // this will ensure that I am within 1 unit of the vertex that I am about to visit
         // bfs will drive me there
         if (!isVertexAdjacentToCurrent(carCurrentPosition, v))
-            retraceBackToVertexAdjacentToAboutToVisitVertex(carCurrentPosition, v, graph);
+        {
+            bfs(carCurrentPosition, v, graph);
+            v->visited = true;
+            graph->numberOfNodesVisited++;
+            carCurrentPosition = v;
+
+            Vertex_writeStrToBuff(buffer, v);
+            printf("visited: %s\n", buffer);
+
+            canGoFront = Ultrasonic_checkFront();
+            canGoBack = Ultrasonic_checkBack();
+            canGoLeft = Ultrasonic_checkLeft();
+            canGoRight = Ultrasonic_checkRight();
+
+            updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
+
+            for (size_t i = 0; i < 4; i++)
+            {
+                if (v->adjacencyList[i] == NULL)
+                    break;
+                if (!v->adjacencyList[i]->visited)
+                    Stack_push(v->adjacencyList[i], s);
+            }
+        }
 
         // this will ensure that I am pointing to the vertex that I am about to visit
         if (!isCorrectOrientation(v, carCurrentOrientation))
@@ -184,26 +213,25 @@ void dfs(Vertex *start, Graph *graph)
         // Motor_driveForward(1);
         v->visited = true;
         graph->numberOfNodesVisited++;
+        carCurrentPosition = v;
 
         Vertex_writeStrToBuff(buffer, v);
         printf("visited: %s\n", buffer);
 
-        bool canGoFront = Ultrasonic_checkFront();
-        bool canGoBack = Ultrasonic_checkBack();
-        bool canGoLeft = Ultrasonic_checkLeft();
-        bool canGoRight = Ultrasonic_checkRight();
+        canGoFront = Ultrasonic_checkFront();
+        canGoBack = Ultrasonic_checkBack();
+        canGoLeft = Ultrasonic_checkLeft();
+        canGoRight = Ultrasonic_checkRight();
 
-        updateMap(graph, canGoFront, canGoBack, canGoLeft, canGoRight);
+        updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
 
-        adj = Graph_adj(v->x, v->y, graph);
         for (size_t i = 0; i < 4; i++)
         {
-            if (adj[i] == NULL)
+            if (v->adjacencyList[i] == NULL)
                 break;
-            if (!adj[i]->visited)
-                Stack_push(adj[i]->x, adj[i]->y, s);
+            if (!v->adjacencyList[i]->visited)
+                Stack_push(v->adjacencyList[i], s);
         }
-        Node_freeNode(n);
     }
 
     Stack_destroy(s);
@@ -220,7 +248,7 @@ bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation)
 // owner            : Kevin
 // description      : while car is not correctOrientation
 //                      turn car at 90 degrees to correct the orientation
-void adjustOrientation(Vertex *currentCarPos, Vertex *carOrientation)
+void adjustOrientation(Vertex *currentCarPos, char carOrientation)
 {
 }
 
@@ -234,23 +262,25 @@ bool isVertexAdjacentToCurrent(Vertex *currentCarPos, Vertex *aboutToVisitVertex
     return true;
 }
 
+// Consult Kevin, probably don't need anymore
 // owner            : Kevin
 // description      : retrace back to the vertex that is adjacent to the vertex that I am about to visit
 //                      this function drives the car
 // void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Node *path)
 // {
 // }
-
 void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Vertex *target, Graph *g)
 {
 }
 
-// TODO
+// KIV, MIGHT NOT NEED TO DO ANYMORE
+// Consult Kevin, probably don't need anymore
 // owner            : Kaho
 // description      : returns a path to the end coordinate if available, else null
 // see https://stackoverflow.com/questions/5201708/how-to-return-a-2d-array-from-a-function-in-c
 int **reconstructPath(int startX, int startY, int endX, int endY, int edgeTo[][2])
 {
+    return 0;
 }
 
 // owner            : Irfaan
@@ -298,60 +328,17 @@ bool isMapExplored(Graph *graph)
     return Graph_isExplored(graph);
 }
 
-// hump test
-// int main(void)
-// {
-//     // allocates memory for an empty list
-//     // using a linked list to store our graph
-//     HumpList *test = HumpList_makeList();
-//     printf("hello world\n");
-
-//     // for add()/delete(), function needs the x, y coordinate as well as the list.
-
-//     // deleting an item that does not exist does nothing
-//     HumpList_addNode(0, 0, test);
-//     HumpList_addNode(0, 1, test);
-//     HumpList_addNode(0, 2, test);
-//     HumpList_addNode(0, 3, test);
-//     HumpList_display(test);
-
-//     // frees memory related to list
-//     HumpList_destroy(test);
-// }
-
-// barcode test
-// int main(void)
-// {
-//     // allocates memory for an empty list
-//     // using a linked list to store our graph
-//     BarcodeList *test = BarcodeList_makeList();
-//     printf("hello world\n");
-
-//     // for add()/delete(), function needs the x, y coordinate as well as the list.
-
-//     // deleting an item that does not exist does nothing
-//     BarcodeList_addNode(0, 0, 'A', test);
-//     BarcodeList_addNode(0, 1, 'B', test);
-//     BarcodeList_addNode(0, 2, 'C', test);
-//     BarcodeList_addNode(0, 3, 'D', test);
-//     BarcodeList_display(test);
-
-//     // frees memory related to list
-//     BarcodeList_destroy(test);
-// }
-
 // graph test
 int main(void)
 {
-    printf("hello world\n");
+    printf("graph test\n");
     // allocates memory for an empty graph
     // using a linked list to store our graph
     Graph *graph = Graph_makeGraph();
 
-    // for addVertex() function needs the x, y coordinate as well as the graph.
-
     // to add verices to a graph with no edges
     carCurrentPosition = Graph_addVertex(0, 0, graph);
+
     Graph_addVertex(-2, 3, graph);
     Graph_addVertex(-1, 3, graph);
     Graph_addVertex(0, 3, graph);
@@ -422,7 +409,7 @@ int main(void)
     // Vertex_writeStrToBuff(buffer, adj[0]);
     // printf("%s\n", buffer);
 
-    dfs(carCurrentPosition, graph);
+    mapMaze(carCurrentPosition, graph);
 
     printf("======\n");
 
@@ -433,6 +420,48 @@ int main(void)
     // frees memory related to graph
     Graph_destroy(graph);
 }
+
+// hump test
+// int main(void)
+// {
+//     // allocates memory for an empty list
+//     // using a linked list to store our graph
+//     HumpList *test = HumpList_makeList();
+//     printf("hump linkedlist test\n");
+
+//     // for add()/delete(), function needs the x, y coordinate as well as the list.
+
+//     // deleting an item that does not exist does nothing
+//     HumpList_addNode(0, 0, test);
+//     HumpList_addNode(0, 1, test);
+//     HumpList_addNode(0, 2, test);
+//     HumpList_addNode(0, 3, test);
+//     HumpList_display(test);
+
+//     // frees memory related to list
+//     HumpList_destroy(test);
+// }
+
+// barcode test
+// int main(void)
+// {
+//     // allocates memory for an empty list
+//     // using a linked list to store our graph
+//     BarcodeList *test = BarcodeList_makeList();
+//     printf("barcode linkedlist test\n");
+
+//     // for add()/delete(), function needs the x, y coordinate as well as the list.
+
+//     // deleting an item that does not exist does nothing
+//     BarcodeList_addNode(0, 0, 'A', test);
+//     BarcodeList_addNode(0, 1, 'B', test);
+//     BarcodeList_addNode(0, 2, 'C', test);
+//     BarcodeList_addNode(0, 3, 'D', test);
+//     BarcodeList_display(test);
+
+//     // frees memory related to list
+//     BarcodeList_destroy(test);
+// }
 
 // linked list test
 // int main(void)
@@ -464,24 +493,24 @@ int main(void)
 //     // using a linked list to store our graph
 //     Stack *s = Stack_makeStack();
 
-//     // for add()/delete(), function needs the x, y coordinate as well as the list.
-
 //     // deleting an item that does not exist does nothing
 //     Stack_pop(s);
-//     Stack_push(0, 0, s);
-//     Stack_push(0, 1, s);
-//     Stack_push(0, 2, s);
-//     Node *e = Stack_pop(s);
-//     Node_freeNode(Stack_pop(s));
-//     Node_freeNode(Stack_pop(s));
-//     Stack_pop(s);
-//     Node_freeNode(e);
+
+//     Vertex *v1 = Vertex_createVertex(0, 0);
+//     Vertex *v2 = Vertex_createVertex(0, 1);
+//     Vertex *v3 = Vertex_createVertex(0, 2);
+
+//     Stack_push(v1, s);
+//     Stack_push(v2, s);
+//     Stack_push(v3, s);
+//     Vertex *e = Stack_pop(s);
 
 //     Stack_peak(s);
 //     Stack_display(s);
 
+//     Vertex_freeVertex(e);
 //     // frees memory related to list
-//     Stack_destroy(s);
+//     Stack_destroy2(s);
 // }
 
 // queue test
@@ -491,19 +520,21 @@ int main(void)
 //     // using a linked list to store our graph
 //     Queue *q = Queue_makeQueue();
 
-//     // for add()/delete(), function needs the x, y coordinate as well as the list.
+//     Vertex *v1 = Vertex_createVertex(0, 0);
+//     Vertex *v2 = Vertex_createVertex(0, 1);
+//     Vertex *v3 = Vertex_createVertex(0, 2);
 
 //     // deleting an item that does not exist does nothing
 //     Queue_dequeue(q);
-//     Queue_enqueue(0, 0, q);
-//     Queue_enqueue(0, 1, q);
-//     Queue_enqueue(0, 2, q);
-//     Node *temp = Queue_dequeue(q);
-//     Node_freeNode(temp);
+//     Queue_enqueue(v1, q);
+//     Queue_enqueue(v2, q);
+//     Queue_enqueue(v3, q);
+//     Vertex *temp = Queue_dequeue(q);
+//     Vertex_freeVertex(temp);
 
 //     Queue_display(q);
 //     // =========================
 
 //     // frees memory related to list
-//     Queue_destroy(q);
+//     Queue_destroy2(q);
 // }

@@ -61,15 +61,13 @@ void Queue_display(Queue *q)
     }
 }
 
-// customized add for our car, made especially for updateMap() func
-// adds the vertex created to the list
-// but also returns the vertex for the graph
-// for updating adjacent list purposes
-bool Queue_enqueue(int x, int y, Queue *q)
+bool Queue_enqueue(Vertex *v, Queue *q)
 {
-    Node *newNode = Node_createNode(x, y);
+    Node *newNode = malloc(sizeof(Node));
     if (newNode == NULL)
         return false;
+    newNode->data = v;
+    newNode->next = NULL;
     if (q->front == NULL)
     {
         q->front = newNode;
@@ -84,29 +82,7 @@ bool Queue_enqueue(int x, int y, Queue *q)
     return true;
 }
 
-// old add provided by the library
-// void add(int x, int y, List *list)
-// {
-//     Node *current = NULL;
-//     if (list->head == NULL)
-//     {
-//         list->head = createnode(x, y);
-//     }
-//     else
-//     {
-//         current = list->head;
-//         while (current->next != NULL)
-//         {
-//             current = current->next;
-//         }
-//         current->next = createnode(x, y);
-//     }
-// }
-
-// Note: does not free memory allocated for the element
-// client application typically wants to process the element
-// so client will free the memory, using Node_freeNode()
-Node *Queue_dequeue(Queue *q)
+Vertex *Queue_dequeue(Queue *q)
 {
     if (q->front == NULL)
         return NULL;
@@ -114,10 +90,28 @@ Node *Queue_dequeue(Queue *q)
     Node *front = q->front;
     q->front = front->next;
     q->size--;
-    return front;
+    Vertex *v = front->data;
+    free(front);
+    return v;
 }
 
 void Queue_destroy(Queue *q)
+{
+    Node *current = q->front;
+    Node *next = current;
+    while (current != NULL)
+    {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+    free(q);
+}
+
+// Original destroy that WILL free the memory inside the stack
+// do not use, use Stack_destory instead
+// this is for testing purposes only
+void Queue_destroy2(Queue *q)
 {
     Node *current = q->front;
     Node *next = current;

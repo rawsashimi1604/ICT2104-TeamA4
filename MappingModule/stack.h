@@ -39,22 +39,22 @@ typedef struct Stack
     int size;
 } Stack;
 
-// might not want to explore this as a public interface
-// Element *Stack_createElement(int x, int y);
-
 Stack *Stack_makeStack(void);
-bool Stack_push(int x, int y, Stack *s);
 
-// bool Stack_pushV(Vertex* v, Stack *s);
+// takes in an actual vertex by reference (will not create a copy)
+bool Stack_push(Vertex *v, Stack *s);
 
-// Note: does not free memory allocated for the element
-// client application typically wants to process the element
-// so client will free the memory using Node_freeNode()
-Node *Stack_pop(Stack *s);
+// will return the actual vertex by reference (will affect the real graph)
+Vertex *Stack_pop(Stack *s);
 
 // displays the top of the stack
 void Stack_peak(Stack *s);
 void Stack_display(Stack *s);
 void Stack_destroy(Stack *s);
+
+// original destroy
+// will free the memory allocated for the vertex inside the stack
+// for testing purposes only
+void Stack_destroy2(Stack *s);
 
 #endif

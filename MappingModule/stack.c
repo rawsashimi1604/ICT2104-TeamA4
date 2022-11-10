@@ -60,16 +60,13 @@ void Stack_display(Stack *s)
     }
 }
 
-// customized add for our car, made especially for updateMap() func
-// adds the vertex created to the list
-// but also returns the vertex for the graph
-// for updating adjacent list purposes
-bool Stack_push(int x, int y, Stack *s)
+bool Stack_push(Vertex *v, Stack *s)
 {
-    Node *newNode = Node_createNode(x, y);
+    Node *newNode = malloc(sizeof(Node));
     if (newNode == NULL)
         return false;
-
+    newNode->data = v;
+    newNode->next = NULL;
     if (s->top == NULL)
     {
         s->top = newNode;
@@ -83,48 +80,7 @@ bool Stack_push(int x, int y, Stack *s)
     return true;
 }
 
-// bool Stack_pushV(Vertex *v, Stack *s)
-// {
-//     Node *newNode = Node_createNode(x, y);
-//     if (newNode == NULL)
-//         return false;
-
-//     if (s->top == NULL)
-//     {
-//         s->top = newNode;
-//     }
-//     else
-//     {
-//         newNode->next = s->top;
-//         s->top = newNode;
-//     }
-//     s->size++;
-//     return true;
-// }
-
-// old add provided by the library
-// void add(int x, int y, List *list)
-// {
-//     Node *current = NULL;
-//     if (list->head == NULL)
-//     {
-//         list->head = createnode(x, y);
-//     }
-//     else
-//     {
-//         current = list->head;
-//         while (current->next != NULL)
-//         {
-//             current = current->next;
-//         }
-//         current->next = createnode(x, y);
-//     }
-// }
-
-// Note: does not free memory allocated for the element
-// client application typically wants to process the element
-// so client will free the memory, using Node_freeNode()
-Node *Stack_pop(Stack *s)
+Vertex *Stack_pop(Stack *s)
 {
     if (s->top == NULL)
         return NULL;
@@ -132,7 +88,9 @@ Node *Stack_pop(Stack *s)
     Node *top = s->top;
     s->top = top->next;
     s->size--;
-    return top;
+    Vertex *v = top->data;
+    free(top);
+    return v;
 }
 
 void Stack_peak(Stack *s)
@@ -149,6 +107,22 @@ void Stack_peak(Stack *s)
 }
 
 void Stack_destroy(Stack *s)
+{
+    Node *current = s->top;
+    Node *next = current;
+    while (current != NULL)
+    {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+    free(s);
+}
+
+// Original destroy that WILL free the memory inside the stack
+// do not use, use Stack_destory instead
+// this is for testing purposes only
+void Stack_destroy2(Stack *s)
 {
     Node *current = s->top;
     Node *next = current;

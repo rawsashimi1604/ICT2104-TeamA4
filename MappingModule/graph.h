@@ -23,5 +23,6 @@ Vertex *Graph_getVertex(int x, int y, Graph *graph);
 void *Graph_display(Graph *graph);
 bool Graph_isExplored(Graph *graph);
 void Graph_destroy(Graph *graph);
+char *Graph_toString(Graph *graph);
 
 #endif
