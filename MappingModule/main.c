@@ -182,11 +182,10 @@ void dfs(Vertex *start, Graph *graph)
             adjustOrientation(carCurrentPosition, carDirection);
 
         // Motor_driveForward(1);
-        Vertex *actualV = Graph_getVertex(v->x, v->y, graph);
-        actualV->visited = true;
+        v->visited = true;
         graph->numberOfNodesVisited++;
 
-        Vertex_writeStrToBuff(buffer, actualV);
+        Vertex_writeStrToBuff(buffer, v);
         printf("visited: %s\n", buffer);
 
         bool canGoFront = Ultrasonic_checkFront();

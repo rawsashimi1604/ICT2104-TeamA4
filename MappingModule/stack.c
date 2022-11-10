@@ -64,7 +64,7 @@ void Stack_display(Stack *s)
 // adds the vertex created to the list
 // but also returns the vertex for the graph
 // for updating adjacent list purposes
-bool *Stack_push(int x, int y, Stack *s)
+bool Stack_push(int x, int y, Stack *s)
 {
     Node *newNode = Node_createNode(x, y);
     if (newNode == NULL)
@@ -82,6 +82,25 @@ bool *Stack_push(int x, int y, Stack *s)
     s->size++;
     return true;
 }
+
+// bool Stack_pushV(Vertex *v, Stack *s)
+// {
+//     Node *newNode = Node_createNode(x, y);
+//     if (newNode == NULL)
+//         return false;
+
+//     if (s->top == NULL)
+//     {
+//         s->top = newNode;
+//     }
+//     else
+//     {
+//         newNode->next = s->top;
+//         s->top = newNode;
+//     }
+//     s->size++;
+//     return true;
+// }
 
 // old add provided by the library
 // void add(int x, int y, List *list)

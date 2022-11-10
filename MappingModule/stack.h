@@ -43,7 +43,9 @@ typedef struct Stack
 // Element *Stack_createElement(int x, int y);
 
 Stack *Stack_makeStack(void);
-bool *Stack_push(int x, int y, Stack *s);
+bool Stack_push(int x, int y, Stack *s);
+
+// bool Stack_pushV(Vertex* v, Stack *s);
 
 // Note: does not free memory allocated for the element
 // client application typically wants to process the element

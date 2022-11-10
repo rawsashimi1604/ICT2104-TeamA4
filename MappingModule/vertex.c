@@ -19,7 +19,7 @@ Vertex *Vertex_createVertex(int x, int y)
     return v;
 }
 
-void Vertex_deleteVertex(Vertex *v)
+void Vertex_freeVertex(Vertex *v)
 {
     free(v);
 }

@@ -5,9 +5,14 @@
 Node *Node_createNode(int x, int y)
 {
     Vertex *newVertex = Vertex_createVertex(x, y);
-    Node *newNode = malloc(sizeof(Node));
-    if (!newNode)
+    if (newVertex == NULL)
         return NULL;
+    Node *newNode = malloc(sizeof(Node));
+    if (newNode == NULL)
+    {
+        Vertex_freeVertex(newVertex);
+        return NULL;
+    }
 
     newNode->data = newVertex;
     newNode->next = NULL;
@@ -16,6 +21,6 @@ Node *Node_createNode(int x, int y)
 
 void Node_freeNode(Node *e)
 {
-    Vertex_deleteVertex(e->data);
+    Vertex_freeVertex(e->data);
     free(e);
 }
