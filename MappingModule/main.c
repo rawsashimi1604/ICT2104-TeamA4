@@ -293,24 +293,40 @@ void driveCarUsingPath(int path[][2])
 // owner            : Kevin
 // description      : takes in the sources vertex, and destination vertex. If the car can move there,
 //                    drives the car there and returns true. Otherwise, returns false.
-bool bfs(Vertex *sourceV, Vertex *endV, Graph *graph)
-{
-    // //start from the sorucesv, move 1 level through the AJ looking for the endV. if found, end and drive.
-    // //if not found, returns false.
+bool bfs(Vertex *sourceV, Vertex *endV, Graph *graph){
+    //start from the soruceV, move 1 level through the AJ looking for the endV. if found, end and drive.
+    //if not found, returns false.
 
-    // //Declare required structures and var
-    // Vertex
+    //Declare required structures and var
+    //Custom list that tracks vertices that are visited by BFS, and their parent vertex.
+    struct VisitedList{
+        Vertex* vertexPointer; //holds the pointer to the vertex
+        Vertex* parentVertex;  //holds the pointer to the parent of the vertex
+
+        struct VisitedList* next;
+    };
+    typedef struct VisitedList *node;
+
+
+    // Vertex *tempV = NULL; //use to temp hold Vertex pointers 
     // Queue *queue1 = Queue_makeQueue(); //main queue used for BFS
-    // Vertex *vistedList[] = NULL; //List of visited vertex pointers. used to recontruct path
+    // // Vertex *vistedList[] = NULL; //List of visited vertex pointers. used to recontruct path
     // Stack * stack1 = Stack_makeStack(); //used to recontruct path later on.
 
     // //push the souce node onto the queue
-    // Queue_enqueue(int sourceV->x, int sourceV->y, Queue *queue1);
+    // Queue_enqueue(sourceV, Queue *queue1);
+
 
     // //Loop till queue is empty
-    // while()//check is the queue is empty (reutrn)
+    // while(queue1->size != 0){//check is the queue is empty (size = 0)
+    //     //dequeue and check if the the pointer is the endV they are looking for
+    //     tempV = Queue_dequeue(queue1);
+    //     if (tempV == endV){
+    //         //endV has been found. push v pointers to the stack based on if they are ajd to the endV and is in vistedList
 
-    // return false;
+    //     }
+    // }
+    return false;
 }
 
 // TODO
