@@ -97,15 +97,14 @@ void dfs(Vertex *start, Node *graph, bool visited[])
 // owner            : Kevin
 // description      : check if car is facing the vertex that its about to visit
 //                      return True if Yes else False
-bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation)
-{
+bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation){
+    //is there a need for this function?
 }
 
 // owner            : Kevin
 // description      : while car is not correctOrientation
 //                      turn car at 90 degrees to correct the orientation
-void adjustOrientation(Vertex *currentCarPos, Vertex *carOrientation)
-{
+void adjustOrientation(Vertex *currentCarPos, Vertex *carOrientation){
 }
 
 // owner            : Irfaan
@@ -118,8 +117,8 @@ bool canVisitVertexFromCurrent(Vertex *currentCarPos, Vertex *aboutToVisitVertex
 // owner            : Kevin
 // description      : retrace back to the vertex that is adjacent to the vertex that I am about to visit
 //                      this function drives the car
-void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Node *path)
-{
+void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Node *path){
+    //whats this for?
 }
 
 // TODO
@@ -133,14 +132,29 @@ int **reconstructPath(int startX, int startY, int endX, int endY, int edgeTo[][2
 // owner            : Irfaan
 // description      : drive car following the path
 // input            : it is a list of coordinates to the end goal
-void driveCarUsingPath(int path[][2])
-{
+void driveCarUsingPath(int path[][2]){
 }
 
 // owner            : Kevin
-// description      :
-void bfs()
-{
+// description      : takes in the sources vertex, and destination vertex. If the car can move there,
+//                    drives the car there and returns true. Otherwise, returns false. 
+bool bfs(Vertex *sourceV, Vertex *endV, Graph *graph){
+    //start from the sorucesv, move 1 level through the AJ looking for the endV. if found, end and drive. 
+    //if not found, returns false. 
+
+    //Declare required structures and var
+    Vertex
+    Queue *queue1 = Queue_makeQueue(); //main queue used for BFS
+    Vertex *vistedList[] = NULL; //List of visited vertex pointers. used to recontruct path 
+    Stack * stack1 = Stack_makeStack(); //used to recontruct path later on.
+
+    //push the souce node onto the queue
+    Queue_enqueue(int sourceV->x, int sourceV->y, Queue *queue1);
+
+    //Loop till queue is empty
+    while()//check is the queue is empty (reutrn)
+    
+    return false;
 }
 
 // TODO
