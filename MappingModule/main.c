@@ -226,6 +226,7 @@ void mapMaze(Vertex *start, Graph *graph)
 //                      return True if Yes else False
 bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation)
 {
+    //is this still needed? - kev
     return true;
 }
 
@@ -234,6 +235,7 @@ bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation)
 //                      turn car at 90 degrees to correct the orientation
 void adjustOrientation(Vertex *currentCarPos, char carOrientation)
 {
+    //is this still needed? - kev
 }
 
 // owner            : Irfaan
