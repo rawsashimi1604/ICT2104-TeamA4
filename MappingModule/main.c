@@ -31,14 +31,14 @@ void Mapping_writeHumpData(void);
 // add our function declarations here in the future
 void updateCarDirection(char turn);
 void initializeCarPosition(void);
-void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGoLeft, bool canGoRight);
+void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRight, Graph *graph);
 void mapMaze(Vertex *start, Graph *graph);
 bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation);
 void adjustOrientation(Vertex *currentCarPos, char carOrientation);
 bool isVertexAdjacentToCurrent(Vertex *currentCarPos, Vertex *aboutToVisitVertex);
 void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Vertex *target, Graph *g);
 int **reconstructPath(int startX, int startY, int endX, int endY, int edgeTo[][2]);
-void driveCarUsingPath(Vertex *targetVertex);
+void driveCarUsingPath(int listOfCoords[][2]);
 bool bfs(Vertex *sourceV, Vertex *endV, Graph *graph);
 bool isMapExplored(Graph *graph);
 
@@ -123,42 +123,64 @@ void initializeCarPosition(void)
 // description      : takes in the car's current position and 
 //                    updates the ajd list of the vertex based on ultra sensors and car orientation. 
 // 
-void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBack, bool canGoLeft, bool canGoRight)
-{
+void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRight, Graph *graph){
+    int x = currentPos -> x;
+    int y = currentPos -> y;
+
+    if (carDirection == 'N'){ //if the car is facing north
+        if (canGoFront){
+            //create a new vertex and update the adj list for both vertices (addEdge)
+            Graph_addEdge(currentPos, Graph_addVertex(x, y+1, graph), graph); 
+        }
+        if (canGoLeft){
+            Graph_addEdge(currentPos, Graph_addVertex(x-1, y, graph), graph); 
+        }
+        if (canGoRight){
+            Graph_addEdge(currentPos, Graph_addVertex(x+1, y, graph), graph); 
+        }
+    }
+    else if (carDirection == 'S'){ //if the car is facing south
+        if (canGoFront){
+            //create a new vertex and update the adj list for both vertices (addEdge)
+            Graph_addEdge(currentPos, Graph_addVertex(x, y-1, graph), graph); 
+        }
+        if (canGoLeft){
+            Graph_addEdge(currentPos, Graph_addVertex(x+1, y, graph), graph); 
+        }
+        if (canGoRight){
+            Graph_addEdge(currentPos, Graph_addVertex(x-1, y, graph), graph); 
+        }
+    }
+    else if (carDirection == 'E'){ //if the car is facing east
+        if (canGoFront){
+            //create a new vertex and update the adj list for both vertices (addEdge)
+            Graph_addEdge(currentPos, Graph_addVertex(x+1, y, graph), graph); 
+        }
+        if (canGoLeft){
+            Graph_addEdge(currentPos, Graph_addVertex(x, y+1, graph), graph); 
+        }
+        if (canGoRight){
+            Graph_addEdge(currentPos, Graph_addVertex(x, y-1, graph), graph); 
+        }
+    }
+    else if (carDirection == 'W'){ //if the car is facing west
+        if (canGoFront){
+            //create a new vertex and update the adj list for both vertices (addEdge)
+            Graph_addEdge(currentPos, Graph_addVertex(x-1, y, graph), graph); 
+        }
+        if (canGoLeft){
+            Graph_addEdge(currentPos, Graph_addVertex(x, y-1, graph), graph); 
+        }
+        if (canGoRight){
+            Graph_addEdge(currentPos, Graph_addVertex(x, y+1, graph), graph); 
+        }
+    }
+    else{
+        printf("ERROR: updateMap failed - Unknown car direction.\n");
+        return;
+    }
+    printf("updateMap completed sucessfully.\n");
 }
-//     int x = currentPos -> x;
-//     int y = currentPos -> y;
-
-//     if (carDirection == "N"){
-//         if (canGoFront){
-
-//         }
-//         if (canGoLeft){
-
-//         }
-//         if
-//     }
-//     else if (carDirection == "N"){
-
-//     }
-//     else if (carDirection == "N"){
-        
-//     }
-//     else if (carDirection == "N"){
-        
-//     }
-//     else{
-//         printf("ERROR: updateMap failed - Unknown car direction.\n");
-//     }
-//     // customized add for our car, made especially for updateMap() func
-// // adds the vertex created to the list
-// // but also returns the vertex for the graph
-// // for updating adjacent list purposes
-// Vertex *Graph_addVertex(int x, int y, Graph *graph)
-
-// // adds a bidirectional link for both coordinates, if it exists
-// void Graph_addEdge(int x, int y, int x2, int y2, Graph *graph)
-// }
 
 // will delete this, just keeping it here for notes at the moment
 // owner            : Kaho
@@ -193,7 +215,7 @@ void mapMaze(Vertex *start, Graph *graph)
     carCurrentPosition = Graph_addVertex(0, 0, graph);
 
     // this function will create the neccsary vertices adjact to current position
-    updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
+    updateMap(carCurrentPosition, canGoFront, canGoLeft, canGoRight, graph);
 
     Stack *s = Stack_makeStack();
     start->visited = true;
@@ -238,7 +260,7 @@ void mapMaze(Vertex *start, Graph *graph)
         canGoLeft = Ultrasonic_checkLeft();
         canGoRight = Ultrasonic_checkRight();
 
-        updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
+        updateMap(carCurrentPosition, canGoFront, canGoLeft, canGoRight, graph);
 
         for (size_t i = 0; i < 4; i++)
         {
@@ -264,9 +286,43 @@ bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation)
 // owner            : Kevin
 // description      : while car is not correctOrientation
 //                      turn car at 90 degrees to correct the orientation
-void adjustOrientation(Vertex *currentCarPos, char carOrientation)
-{
+void adjustOrientation(Vertex *currentCarPos, char carOrientation){
     // is this still needed? - kev
+}
+bool adjustCarDirection(char directionToTurnTo){
+    if (carDirection == 'N'){
+        if (directionToTurnTo == 'S')
+            Motor_turnLeft(2);
+        else if (directionToTurnTo == 'E')
+            Motor_turnRight(1);
+        else if (directionToTurnTo == 'W')
+            Motor_turnLeft(1);
+    }
+    else if (carDirection == 'E'){
+        if (directionToTurnTo == 'N')
+            Motor_turnLeft(1);
+        else if (directionToTurnTo == 'S')
+            Motor_turnRight(1);
+        else if (directionToTurnTo == 'W')
+            Motor_turnLeft(2);
+    }
+    else if (carDirection == 'S'){
+        if (directionToTurnTo == 'N')
+            Motor_turnLeft(2);
+        else if (directionToTurnTo == 'E')
+            Motor_turnLeft(1);
+        else if (directionToTurnTo == 'W')
+            Motor_turnRight(1);
+    }
+    else if (carDirection == 'W'){
+        if (directionToTurnTo == 'N')
+            Motor_turnRight(1);
+        else if (directionToTurnTo == 'S')
+            Motor_turnLeft(1);
+        else if (directionToTurnTo == 'E')
+            Motor_turnLeft(2);
+    }
+    return true;
 }
 
 // owner            : Irfaan
@@ -295,16 +351,65 @@ void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Vert
 // owner            : Kaho
 // description      : returns a path to the end coordinate if available, else null
 // see https://stackoverflow.com/questions/5201708/how-to-return-a-2d-array-from-a-function-in-c
-int **reconstructPath(int startX, int startY, int endX, int endY, int edgeTo[][2])
-{
-    return 0;
-}
+// int **reconstructPath(int startX, int startY, int endX, int endY, int edgeTo[][2])
+// {
+//     return 0;
+// }
 
-// owner            : Irfaan
+// owner            : Kevin
 // description      : drive car following the path
-// input            : it is a list of coordinates to the end goal
-void driveCarUsingPath(Vertex *targetVertex)
-{
+// input            : it should take in a list of vertex pointers. 
+void driveCarUsingPath(int listOfCoords[][2]){
+    // declaring the require elements
+    int numberOfDirections = (sizeof(listOfCoords)/sizeof(listOfCoords[0]))-1; //number of directions = number of coords -1
+    char directionsArrs[numberOfDirections]; //store the directions the car will need to move
+
+    //go through the corrds and create the char array to store the directions
+    for(int i = 0; i < numberOfDirections; i++){
+        if(listOfCoords[i+1][0] - listOfCoords[i][0]){ //minus the x cord of 2 coords. if not 0 (false), car moves in x axis
+            switch(listOfCoords[i+1][0] - listOfCoords[i][0]){ // if x is positive, move W, if neg, move E
+                case -1:
+                    directionsArrs[i] = 'W';
+                    break;
+                case 1:
+                    directionsArrs[i] = 'E';
+                    break;
+                default:
+                    printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
+                    return;
+            }
+        }
+        else if (listOfCoords[i+1][1] - listOfCoords[i][1]){ //minus the y cord of 2 coords. if not 0 (false), car moves in y axis
+            switch(listOfCoords[i+1][1] - listOfCoords[i][1]){ // if x is positive, move W, if neg, move E
+                case -1:
+                    directionsArrs[i] = 'S';
+                    break;
+                case 1:
+                    directionsArrs[i] = 'N';
+                    break;
+                default:
+                    printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
+                    return;
+            }
+        } 
+        else{
+            //coord somehow wants to move diaganally 
+            printf("ERROR: driveCarUsingPath wants to move diaganally. \n");
+            return;
+        }
+    }
+
+    //given the list of directions, move the car and adjust the orientation accordingly
+    for(int i = 0; i < numberOfDirections; i++){
+        if (carDirection == directionsArrs[i]){ //car is facing the right direction. move up
+            Motor_driveForward(1); 
+        }
+        else{
+            adjustCarDirection(directionsArrs[i]);
+            Motor_driveForward(1);
+        }
+    }
+    return; //end of driveCarUsingPath
 }
 
 // owner            : Kevin
@@ -419,14 +524,18 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
                 tempVisitedNode1 = tempVisitedNode1->parentVertex;
             }
 
-            // moving the car based on path constructed
-            while (stack1->size != 0)
-            {
-                printf("Size of stack: %d \n", stack1->size);
-                Stack_peak(stack1);
-                tempV = Stack_pop(stack1);
-                driveCarUsingPath(tempV); //calling function to drive car by passing in vertices popped
+            // initialize a coor array based on the size of the stack
+            int listOfCoords[stack1->size][2];
+            // moving the car based on path constructed. craft a coord array and send to drive car using path
+            for(int i = 0; stack1 -> size != 0; i++){
+                printf("Size of stack: %d | ", stack1->size); //for debuggin purposes
+                Stack_peak(stack1); //for debuggin purposes
+                tempV = Stack_pop(stack1); //pop the stack
+                listOfCoords[i][0] = tempV -> x; //add the x coord of the vertex from the stack onto the listOfCoords
+                listOfCoords[i][1] = tempV -> y; //add the y coord of the vertex from the stack onto the listOfCoords
             }
+            //passing the pointer of the listOfCoords to the drive function to drive
+            driveCarUsingPath(listOfCoords); 
             //update the car's position
             carCurrentPosition = tempV;
 
@@ -524,7 +633,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
 // owner            : Kaho
 // description      : sends the graphical representation of the graph in adj representation
 //                       for the Communications module to print the map
-void *displayMapOnM5(Graph *graph)
+void displayMapOnM5(Graph *graph)
 {
     Node *trav = graph->list->head;
     char temp[10] = {0};
