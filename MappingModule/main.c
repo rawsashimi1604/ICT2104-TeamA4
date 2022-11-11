@@ -111,6 +111,11 @@ void Mapping_writeHumpData(void)
 //                      Ultrasonic_checkBehind() and UUltrasonic_checkRight() must return false
 void initializeCarPosition(void)
 {
+// - car need to check ultra sensors. it will need to have the condition where the car is in a corner
+// - at least 2 of the ultra sensor needs to be blocked. the 2 sensor that are blocked must NOT be opp of one another.
+// - if above not true, car turn till at least one of the side ultra sensor is blocked. then move forward till front is blocked.
+// - once done, turn arround so that the front is clear. set car as facing north and starting current position as 00, 
+// - kaho’s mapMaze can commense
 }
 
 // owner            : Kevin
@@ -373,8 +378,8 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
             }
 
             //moving the car based on path constructed
-
             while( stack1 -> size != 0){
+                printf("Size of stack: %d \n", stack1->size);
                 Stack_peak(stack1);
                 driveCarUsingPath(Stack_pop(stack1)); //calling function to drive car. 
 
@@ -456,7 +461,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
     }
     Queue_destroy(queue1);
     Stack_destroy(stack1);
-    printf("ERROR: BNF failed.\n");
+    printf("ERROR: Shortest Path could not be constructed.\n");
     return false;
 }
 
@@ -558,7 +563,7 @@ int main(void)
     mapMaze(carCurrentPosition, graph);
 
 
-    if (bfs(carCurrentPosition, Graph_addVertex(-1, -1, graph), graph))
+    if (bfs(carCurrentPosition, Graph_addVertex(1, -1, graph), graph))
         printf("bfs ok\n");
     else
         printf("bfs failed\n");
