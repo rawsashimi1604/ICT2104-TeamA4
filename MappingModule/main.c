@@ -311,7 +311,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
     //push the source node onto the queue, then mark as visited by adding to the list
     Queue_enqueue(sourceV, queue1);
     tempVisitedNode1 = (node)malloc(sizeof(struct VisitedNode)); // allocate memory using malloc()
-    if (tempVisitedNode1){
+    if (tempVisitedNode1 == NULL){
         printf("BFS tempVisitedNode1 allocation failed. \n");
         //garbage collection
         while(visitedListHead != NULL){
@@ -375,7 +375,9 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
             //moving the car based on path constructed
 
             while( stack1 -> size != 0){
+                Stack_peak(stack1);
                 driveCarUsingPath(Stack_pop(stack1)); //calling function to drive car. 
+
             }
 
             //garbage collection
@@ -386,6 +388,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
             }
             Queue_destroy(queue1);
             Stack_destroy(stack1);
+            printf("BFS completed sucessfully.\n");
             return true; //success in BFS n drive
         }
 
@@ -552,16 +555,20 @@ int main(void)
 
     // Vertex_writeStrToBuff(buffer, adj[0]);
     // printf("%s\n", buffer);
-
     mapMaze(carCurrentPosition, graph);
 
+
+    if (bfs(carCurrentPosition, Graph_addVertex(-1, -1, graph), graph))
+        printf("bfs ok\n");
+    else
+        printf("bfs failed\n");
     printf("======\n");
 
     Graph_display(graph);
     printf("Expected: %d == %d\n", graph->numberOfNodesVisited, graph->size);
     printf("Explored: %s\n", Graph_isExplored(graph) ? "true" : "false");
 
-    // frees memory related to graph
+    // frees memory related to graphz
     Graph_destroy(graph);
 }
 
