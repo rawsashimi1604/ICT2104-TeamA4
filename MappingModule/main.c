@@ -390,10 +390,9 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
                 tempVisitedNode1 = tempVisitedNode1->parentVertex;
             }
 
-            // moving the car based on path constructed
-
-            while (stack1->size != 0)
-            {
+            //moving the car based on path constructed
+            while( stack1 -> size != 0){
+                printf("Size of stack: %d \n", stack1->size);
                 Stack_peak(stack1);
                 driveCarUsingPath(Stack_pop(stack1)); // calling function to drive car.
             }
@@ -484,7 +483,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
     }
     Queue_destroy(queue1);
     Stack_destroy(stack1);
-    printf("ERROR: BNF failed.\n");
+    printf("ERROR: Shortest Path could not be constructed.\n");
     return false;
 }
 
@@ -606,7 +605,7 @@ int main(void)
     // printf("%s\n", buffer);
     mapMaze(carCurrentPosition, graph);
 
-    if (bfs(carCurrentPosition, Graph_addVertex(-1, -1, graph), graph))
+    if (bfs(carCurrentPosition, Graph_addVertex(1, -1, graph), graph))
         printf("bfs ok\n");
     else
         printf("bfs failed\n");
