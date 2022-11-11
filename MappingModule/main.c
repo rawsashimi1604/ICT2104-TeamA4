@@ -167,9 +167,10 @@ void mapMaze(Vertex *start, Graph *graph)
     bool canGoRight = Ultrasonic_checkRight();
     carCurrentPosition = Graph_addVertex(0, 0, graph);
 
-    // this function will create the neccsary vertices adjact to current position
+    // this function will create the neccsary vertices adjacent to current position
     updateMap(carCurrentPosition, canGoFront, canGoBack, canGoLeft, canGoRight);
 
+    // modified dfs starting condition to suit maze
     Stack *s = Stack_makeStack();
     start->visited = true;
     graph->numberOfNodesVisited++;
@@ -181,6 +182,7 @@ void mapMaze(Vertex *start, Graph *graph)
         Stack_push(start->adjacencyList[i], s);
     }
 
+    // dfs
     while (s->size != 0)
     {
         Vertex *v = Stack_pop(s);
@@ -188,11 +190,12 @@ void mapMaze(Vertex *start, Graph *graph)
             continue;
 
         // this will ensure that I am within 1 unit of the vertex that I am about to visit
-        // bfs will drive me there
+        // if not, bfs will drive me there
         if (!isVertexAdjacentToCurrent(carCurrentPosition, v))
             bfs(carCurrentPosition, v, graph);
 
         // this will ensure that I am pointing to the vertex that I am about to visit
+        // if not, it will adjust the orientation until I am facing the vertex I am about to visit
         if (!isCorrectOrientation(v, carCurrentOrientation))
             adjustOrientation(carCurrentPosition, carDirection);
 
@@ -208,6 +211,7 @@ void mapMaze(Vertex *start, Graph *graph)
         Vertex_writeStrToBuff(buffer, v);
         printf("visited: %s\n", buffer);
 
+        // check surroundings and update the map accordingly
         canGoFront = Ultrasonic_checkFront();
         canGoBack = Ultrasonic_checkBack();
         canGoLeft = Ultrasonic_checkLeft();
