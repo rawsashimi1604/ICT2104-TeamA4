@@ -43,6 +43,6 @@ void initPortsAndPins();
 void initI2CConfigs();
 void initInterrupts();
 
-void initAccelerometer();
+void Accelerometer_init();
 
 #endif /* INIT_H_ */

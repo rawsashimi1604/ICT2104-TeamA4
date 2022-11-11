@@ -68,7 +68,7 @@ void initI2CConfigs(void)
     return;
 }
 
-void initAccelerometer() {
+void Accelerometer_init() {
     // Init GPIO Pins required for MPU6050
     initPortsAndPins();
 

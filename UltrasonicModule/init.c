@@ -115,7 +115,7 @@ void initTimers() {
     Timer_A_clearTimer(TIMER_A3_BASE);
 
 }
-void Ultrasonic_initUltrasonicSensor() {
+void Ultrasonic_init() {
 
     // Initialize all Ports and Pins
     initPortsAndPins();

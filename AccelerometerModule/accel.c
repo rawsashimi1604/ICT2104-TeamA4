@@ -69,7 +69,7 @@ int main (void) {
     WDT_A_holdTimer();
 
     // Init GPIOs and EUSCI_I2C configurations...
-    initAccelerometer();
+    Accelerometer_init();
 
     while (1)
     {
