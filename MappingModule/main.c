@@ -117,9 +117,8 @@ void initializeCarPosition(void)
 // description      : updates the map based on the car's current position
 //                      and adds it to the map
 //                      and updates the current vertex's adjacency list
-void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGoLeft, bool canGoRight)
-{
-
+void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGoLeft, bool canGoRight){
+    //this function shold take in the cars current position as a vertex, (already created)
     // int x = 0;
     // int y = 0;
     // Node *temp = 0;
@@ -146,8 +145,6 @@ void mapInit(void)
 {
 }
 
-// For Kevin:
-// bfs needs to calculate if I can go there in the first place
 
 // owner            : Kaho
 // description      : drives the car based on the map using dfs
@@ -276,18 +273,18 @@ void driveCarUsingPath(Vertex *targetVertex)
 {
 }
 
+
 // owner            : Kevin
 // description      : takes in the sources vertex, and target vertex. If the car can move there,
 //                    drives the car there and returns true. Otherwise, returns false.
-
 bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
 
     //Declare required structures and var
-    //Custom list that tracks vertices that are visited by BFS, and their parent vertex.
+    //Custom linkedlist that tracks vertices that are visited by BFS, and their parent vertex.
     struct VisitedNode{
         Vertex* vertexPointer; //holds the pointer to the vertex
         struct VisitedNode* parentVertex;  //holds the pointer to the parent of the vertex
-        struct VisitedNode* next;
+        struct VisitedNode* next; //the normal next pointer that points to the next item on the list. 
     };
     typedef struct VisitedNode* node;
     node visitedListHead = NULL; //pointer used as the head of the list
@@ -300,7 +297,6 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
         printf("BFS queue allocation failed. \n");
         return false;
     }
-    // Vertex *vistedList[] = NULL; //List of visited vertex pointers. used to recontruct path
     Stack * stack1 = Stack_makeStack(); //used to recontruct path later on.
     if (stack1 == NULL){
         printf("BFS stack allocation failed. \n");
@@ -310,9 +306,10 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
 
     //push the source node onto the queue, then mark as visited by adding to the list
     Queue_enqueue(sourceV, queue1);
+
     tempVisitedNode1 = (node)malloc(sizeof(struct VisitedNode)); // allocate memory using malloc()
-    if (tempVisitedNode1){
-        printf("BFS tempVisitedNode1 allocation failed. \n");
+    if (tempVisitedNode1 = NULL){ //check that the malloc succeeded
+
         //garbage collection
         while(visitedListHead != NULL){
             tempVisitedNode1 = visitedListHead;
@@ -321,12 +318,14 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
         }
         Queue_destroy(queue1);
         Stack_destroy(stack1);
+
+        printf("BFS tempVisitedNode1 allocation failed. \n");
         return false;
     }
-    tempVisitedNode1-> vertexPointer = sourceV; //set the pointer (sourceV) that this node represents 
-    tempVisitedNode1-> parentVertex = NULL; // sourceV does not have a parent
+    tempVisitedNode1-> vertexPointer = sourceV; //set the pointer (sourceV) that this visitednode represents 
+    tempVisitedNode1-> parentVertex = NULL; // sourceV does not have a parent, as is the root of the BFS graph
     tempVisitedNode1->next = NULL;
-    visitedListHead = tempVisitedNode1; //setting the head of the list
+    visitedListHead = tempVisitedNode1; //setting the head of the list to point to the node just created.
     tempVisitedNode1 = NULL;
 
     //Loop till queue is empty
@@ -455,7 +454,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
     Stack_destroy(stack1);
     printf("ERROR: BNF failed.\n");
     return false;
-}
+}//end of BFS function
 
 // TODO
 // owner            : Kaho
