@@ -120,20 +120,45 @@ void initializeCarPosition(void)
 }
 
 // owner            : Kevin
-// description      : updates the map based on the car's current position
-//                      and adds it to the map
-//                      and updates the current vertex's adjacency list
-void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBehind, bool canGoLeft, bool canGoRight)
+// description      : takes in the car's current position and 
+//                    updates the ajd list of the vertex based on ultra sensors and car orientation. 
+// 
+void updateMap(Vertex *currentPos, bool canGoFront, bool canGoBack, bool canGoLeft, bool canGoRight)
 {
-
-    // int x = 0;
-    // int y = 0;
-    // Node *temp = 0;
-    // if (canGoFront)
-    // {
-    //     Vertex *temp = List_addVertex(x, y, graph);
-    // }
 }
+//     int x = currentPos -> x;
+//     int y = currentPos -> y;
+
+//     if (carDirection == "N"){
+//         if (canGoFront){
+
+//         }
+//         if (canGoLeft){
+
+//         }
+//         if
+//     }
+//     else if (carDirection == "N"){
+
+//     }
+//     else if (carDirection == "N"){
+        
+//     }
+//     else if (carDirection == "N"){
+        
+//     }
+//     else{
+//         printf("ERROR: updateMap failed - Unknown car direction.\n");
+//     }
+//     // customized add for our car, made especially for updateMap() func
+// // adds the vertex created to the list
+// // but also returns the vertex for the graph
+// // for updating adjacent list purposes
+// Vertex *Graph_addVertex(int x, int y, Graph *graph)
+
+// // adds a bidirectional link for both coordinates, if it exists
+// void Graph_addEdge(int x, int y, int x2, int y2, Graph *graph)
+// }
 
 // will delete this, just keeping it here for notes at the moment
 // owner            : Kaho
@@ -297,15 +322,14 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
         struct VisitedNode *parentVertex; // holds the pointer to the parent of the vertex
         struct VisitedNode *next;
     };
-    typedef struct VisitedNode *node;
-    node visitedListHead = NULL;  // pointer used as the head of the list
-    node tempVisitedNode1 = NULL; // pointer used for various operations
-    node tempVisitedNode2 = NULL; // pointer used for various operations
+    typedef struct VisitedNode* node;
+    node visitedListHead = NULL; //pointer used as the head of the list
+    node tempVisitedNode1 = NULL; //pointer used for various operations
+    node tempVisitedNode2 = NULL; //pointer used for various operations
+    Vertex *tempV = NULL; //pointer used for various operations
 
-    Vertex *tempV = NULL;              // use to temp hold Vertex pointers
-    Queue *queue1 = Queue_makeQueue(); // main queue used for BFS
-    if (queue1 == NULL)
-    {
+    Queue *queue1 = Queue_makeQueue(); //main queue used for BFS
+    if (queue1 == NULL){
         printf("BFS queue allocation failed. \n");
         return false;
     }
@@ -400,8 +424,11 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
             {
                 printf("Size of stack: %d \n", stack1->size);
                 Stack_peak(stack1);
-                driveCarUsingPath(Stack_pop(stack1)); // calling function to drive car.
+                tempV = Stack_pop(stack1);
+                driveCarUsingPath(tempV); //calling function to drive car by passing in vertices popped
             }
+            //update the car's position
+            carCurrentPosition = tempV;
 
             // garbage collection
             while (visitedListHead != NULL)
