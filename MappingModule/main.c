@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Ultrasonic module
 #include "init.h"
@@ -226,7 +227,7 @@ void mapMaze(Vertex *start, Graph *graph)
 //                      return True if Yes else False
 bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation)
 {
-    //is this still needed? - kev
+    // is this still needed? - kev
     return true;
 }
 
@@ -235,7 +236,7 @@ bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation)
 //                      turn car at 90 degrees to correct the orientation
 void adjustOrientation(Vertex *currentCarPos, char carOrientation)
 {
-    //is this still needed? - kev
+    // is this still needed? - kev
 }
 
 // owner            : Irfaan
@@ -280,73 +281,85 @@ void driveCarUsingPath(Vertex *targetVertex)
 // description      : takes in the sources vertex, and target vertex. If the car can move there,
 //                    drives the car there and returns true. Otherwise, returns false.
 
-bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
+bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
+{
 
-    //Declare required structures and var
-    //Custom list that tracks vertices that are visited by BFS, and their parent vertices.
-    struct VisitedNode{
-        Vertex* vertexPointer; //holds the pointer to the vertex
-        struct VisitedNode* parentVertex;  //holds the pointer to the parent of the vertex
-        struct VisitedNode* next;
+    // Declare required structures and var
+    // Custom list that tracks vertices that are visited by BFS, and their parent vertices.
+    struct VisitedNode
+    {
+        Vertex *vertexPointer;            // holds the pointer to the vertex
+        struct VisitedNode *parentVertex; // holds the pointer to the parent of the vertex
+        struct VisitedNode *next;
     };
-    typedef struct VisitedNode* node;
-    node visitedListHead = NULL; //pointer used as the head of the list
-    node tempVisitedNode1 = NULL; //pointer used for various operations
-    node tempVisitedNode2 = NULL; //pointer used for various operations
+    typedef struct VisitedNode *node;
+    node visitedListHead = NULL;  // pointer used as the head of the list
+    node tempVisitedNode1 = NULL; // pointer used for various operations
+    node tempVisitedNode2 = NULL; // pointer used for various operations
 
-    Vertex *tempV = NULL; //use to temp hold Vertex pointers 
-    Queue *queue1 = Queue_makeQueue(); //main queue used for BFS
-    if (queue1 == NULL){
+    Vertex *tempV = NULL;              // use to temp hold Vertex pointers
+    Queue *queue1 = Queue_makeQueue(); // main queue used for BFS
+    if (queue1 == NULL)
+    {
         printf("BFS queue allocation failed. \n");
         return false;
     }
     // Vertex *vistedList[] = NULL; //List of visited vertex pointers. used to recontruct path
-    Stack * stack1 = Stack_makeStack(); //used to recontruct path later on.
-    if (stack1 == NULL){
+    Stack *stack1 = Stack_makeStack(); // used to recontruct path later on.
+    if (stack1 == NULL)
+    {
         printf("BFS stack allocation failed. \n");
         return false;
     }
 
-
-    //push the source node onto the queue, then mark as visited by adding to the list
+    // push the source node onto the queue, then mark as visited by adding to the list
     Queue_enqueue(sourceV, queue1);
     tempVisitedNode1 = (node)malloc(sizeof(struct VisitedNode)); // allocate memory using malloc()
-    if (tempVisitedNode1 == NULL){
+    if (tempVisitedNode1 == NULL)
+    {
         printf("BFS tempVisitedNode1 allocation failed. \n");
-        //garbage collection
-        while(visitedListHead != NULL){
+        // garbage collection
+        while (visitedListHead != NULL)
+        {
             tempVisitedNode1 = visitedListHead;
-            visitedListHead = visitedListHead -> next;
+            visitedListHead = visitedListHead->next;
             free(tempVisitedNode1);
         }
         Queue_destroy(queue1);
         Stack_destroy(stack1);
         return false;
     }
-    tempVisitedNode1-> vertexPointer = sourceV; //set the pointer (sourceV) that this node represents 
-    tempVisitedNode1-> parentVertex = NULL; // sourceV does not have a parent
+    tempVisitedNode1->vertexPointer = sourceV; // set the pointer (sourceV) that this node represents
+    tempVisitedNode1->parentVertex = NULL;     // sourceV does not have a parent
     tempVisitedNode1->next = NULL;
-    visitedListHead = tempVisitedNode1; //setting the head of the list
+    visitedListHead = tempVisitedNode1; // setting the head of the list
     tempVisitedNode1 = NULL;
 
-    //Loop till queue is empty
-    while(queue1->size != 0){//check is the queue is empty (size = 0)
-        //dequeue and check if the the pointer is the targetV they are looking for
-        tempV = Queue_dequeue(queue1); 
-        if (tempV == targetV){
-            //targetV has been found. push v pointers to the stack based on vistedList parent    
+    // Loop till queue is empty
+    // check is the queue is empty (size = 0)
+    while (queue1->size != 0)
+    {
+        // dequeue and check if the the pointer is the targetV they are looking for
+        tempV = Queue_dequeue(queue1);
+        if (tempV == targetV)
+        {
+            // targetV has been found. push v pointers to the stack based on vistedList parent
 
-            tempVisitedNode1 = visitedListHead; //setting a pointer to head
-            //look for tempV in the visitedList, set as tempVisitedNode1
-            while(tempVisitedNode1 -> vertexPointer != tempV){
-                tempVisitedNode1 = tempVisitedNode1 -> next; //move down the list
+            tempVisitedNode1 = visitedListHead; // setting a pointer to head
+            // look for tempV in the visitedList, set as tempVisitedNode1
+            while (tempVisitedNode1->vertexPointer != tempV)
+            {
+                tempVisitedNode1 = tempVisitedNode1->next; // move down the list
 
-                if( (tempVisitedNode1 -> next == NULL) && (tempVisitedNode1 -> vertexPointer != tempV) ){ //checking for error case
+                // checking for error case
+                if ((tempVisitedNode1->next == NULL) && (tempVisitedNode1->vertexPointer != tempV))
+                {
                     printf("ERROR: tempV cannot be found in VistedNode linked list.\n");
-                    //garbage collection
-                    while(visitedListHead != NULL){
+                    // garbage collection
+                    while (visitedListHead != NULL)
+                    {
                         tempVisitedNode1 = visitedListHead;
-                        visitedListHead = visitedListHead -> next;
+                        visitedListHead = visitedListHead->next;
                         free(tempVisitedNode1);
                     }
                     Queue_destroy(queue1);
@@ -354,104 +367,119 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
                     return false;
                 }
             }
-            //reconstrcting shortest path
-            while(tempVisitedNode1 != NULL){ //moving back up to source using parent pointer
-                if(!Stack_push(tempVisitedNode1 -> vertexPointer, stack1)){ //pushing vertices onto stack on by one 
+            // reconstrcting shortest path
+            // moving back up to source using parent pointer
+            while (tempVisitedNode1 != NULL)
+            {
+                // pushing vertices onto stack on by one
+                if (!Stack_push(tempVisitedNode1->vertexPointer, stack1))
+                {
                     printf("ERROR: BFS Stack allocation failed.");
 
-                    //garbage collection
-                    while(visitedListHead != NULL){
+                    // garbage collection
+                    while (visitedListHead != NULL)
+                    {
                         tempVisitedNode1 = visitedListHead;
-                        visitedListHead = visitedListHead -> next;
+                        visitedListHead = visitedListHead->next;
                         free(tempVisitedNode1);
                     }
                     Queue_destroy(queue1);
                     Stack_destroy(stack1);
-                    return false; 
+                    return false;
                 }
-                tempVisitedNode1 = tempVisitedNode1 -> parentVertex;
+                tempVisitedNode1 = tempVisitedNode1->parentVertex;
             }
 
-            //moving the car based on path constructed
+            // moving the car based on path constructed
 
-            while( stack1 -> size != 0){
+            while (stack1->size != 0)
+            {
                 Stack_peak(stack1);
-                driveCarUsingPath(Stack_pop(stack1)); //calling function to drive car. 
-
+                driveCarUsingPath(Stack_pop(stack1)); // calling function to drive car.
             }
 
-            //garbage collection
-            while(visitedListHead != NULL){
+            // garbage collection
+            while (visitedListHead != NULL)
+            {
                 tempVisitedNode1 = visitedListHead;
-                visitedListHead = visitedListHead -> next;
+                visitedListHead = visitedListHead->next;
                 free(tempVisitedNode1);
             }
             Queue_destroy(queue1);
             Stack_destroy(stack1);
             printf("BFS completed sucessfully.\n");
-            return true; //success in BFS n drive
+            return true; // success in BFS n drive
         }
 
-        //targetV has not been found. iterate throu adjList of node and enqueue if visited by car and not by BFS
-        for (size_t i = 0; i < 4; i++){ 
-            if (tempV -> adjacencyList[i] == NULL) //breaks if no more ajd vertices
-                break; 
+        // targetV has not been found. iterate throu adjList of node and enqueue if visited by car and not by BFS
+        for (size_t i = 0; i < 4; i++)
+        {
+            if (tempV->adjacencyList[i] == NULL) // breaks if no more ajd vertices
+                break;
 
-            //queue if the vertex is visited by car and not visited by BFS yet
-            //check if the adj vertex has been visited by the car
-            if(tempV -> adjacencyList[i] -> visited){ 
-                tempVisitedNode1 = visitedListHead; //set a pointer to the head of visited node list
-                //interate thru visited list
-                while (tempVisitedNode1 != NULL){
-                    if (tempV -> adjacencyList[i] == tempVisitedNode1 -> vertexPointer) //check if the adj vertex has been visted by BFS                        
-                        break; //adjacent vertex has already been visited has already been visited. skip it
-                    
-                    if (tempVisitedNode1 -> next == NULL){ //check if it is the last item on the Visitedlist
-                        Queue_enqueue(tempV -> adjacencyList[i], queue1); //enqueue as has not been visited by BFS
-                        //set as visited by adding to visited list (repurpose tempVisitedNode1 as is no longer needed)
-                        tempVisitedNode1 = NULL; //(repurpose tempVisitedNode1 as is no longer needed)
+            // queue if the vertex is visited by car and not visited by BFS yet
+            // check if the adj vertex has been visited by the car
+            if (tempV->adjacencyList[i]->visited)
+            {
+                tempVisitedNode1 = visitedListHead; // set a pointer to the head of visited node list
+                // interate thru visited list
+                while (tempVisitedNode1 != NULL)
+                {
+                    if (tempV->adjacencyList[i] == tempVisitedNode1->vertexPointer) // check if the adj vertex has been visted by BFS
+                        break;                                                      // adjacent vertex has already been visited has already been visited. skip it
+
+                    if (tempVisitedNode1->next == NULL)
+                    {                                                   // check if it is the last item on the Visitedlist
+                        Queue_enqueue(tempV->adjacencyList[i], queue1); // enqueue as has not been visited by BFS
+                        // set as visited by adding to visited list (repurpose tempVisitedNode1 as is no longer needed)
+                        tempVisitedNode1 = NULL;                                     //(repurpose tempVisitedNode1 as is no longer needed)
                         tempVisitedNode1 = (node)malloc(sizeof(struct VisitedNode)); // allocate memory using malloc()
-                        if (tempVisitedNode1 == NULL){
+                        if (tempVisitedNode1 == NULL)
+                        {
                             printf("BFS tempVisitedNode1 alloction failed. \n");
-                            //garbage collection
-                            while(visitedListHead != NULL){
+                            // garbage collection
+                            while (visitedListHead != NULL)
+                            {
                                 tempVisitedNode1 = visitedListHead;
-                                visitedListHead = visitedListHead -> next;
+                                visitedListHead = visitedListHead->next;
                                 free(tempVisitedNode1);
                             }
                             Queue_destroy(queue1);
                             Stack_destroy(stack1);
                         }
-                        tempVisitedNode1-> vertexPointer = tempV -> adjacencyList[i]; //set the pointer (sourceV) that this node represents 
+                        tempVisitedNode1->vertexPointer = tempV->adjacencyList[i]; // set the pointer (sourceV) that this node represents
                         // set parent visitNode, which is the ptr of VisitedNode that contains tempV
-                        tempVisitedNode2 = visitedListHead; //setting the head of the list
-                        while(tempVisitedNode2 -> vertexPointer != tempV){ //move pointer till VisitedNode
-                            tempVisitedNode2 = tempVisitedNode2 -> next;
+                        tempVisitedNode2 = visitedListHead; // setting the head of the list
+                        while (tempVisitedNode2->vertexPointer != tempV)
+                        { // move pointer till VisitedNode
+                            tempVisitedNode2 = tempVisitedNode2->next;
                         }
-                        tempVisitedNode1-> parentVertex = tempVisitedNode2; 
+                        tempVisitedNode1->parentVertex = tempVisitedNode2;
                         tempVisitedNode1->next = NULL;
-                        
-                        tempVisitedNode2 = visitedListHead; //setting the head of the list
-                        //moving tempVisitedNode2 down to last item on the list
-                        while(tempVisitedNode2 -> next != NULL){ 
-                            tempVisitedNode2 = tempVisitedNode2 -> next; //moving down list
-                        }
-                        tempVisitedNode2 -> next = tempVisitedNode1; //adding tempVisitedNode1 to back of the list
 
-                        tempVisitedNode1 = NULL; //reset pointer
-                        tempVisitedNode2 = NULL; //reset pointer
-                        
+                        tempVisitedNode2 = visitedListHead; // setting the head of the list
+                        // moving tempVisitedNode2 down to last item on the list
+                        while (tempVisitedNode2->next != NULL)
+                        {
+                            tempVisitedNode2 = tempVisitedNode2->next; // moving down list
+                        }
+                        tempVisitedNode2->next = tempVisitedNode1; // adding tempVisitedNode1 to back of the list
+
+                        tempVisitedNode1 = NULL; // reset pointer
+                        tempVisitedNode2 = NULL; // reset pointer
+
                         break;
                     }
-                    tempVisitedNode1 = tempVisitedNode1->next; //go to next visitednNode
+                    tempVisitedNode1 = tempVisitedNode1->next; // go to next visitednNode
                 };
             }
         }
     }
-    //garbage collection
-    while(visitedListHead != NULL){
+    // garbage collection
+    while (visitedListHead != NULL)
+    {
         tempVisitedNode1 = visitedListHead;
-        visitedListHead = visitedListHead -> next;
+        visitedListHead = visitedListHead->next;
         free(tempVisitedNode1);
     }
     Queue_destroy(queue1);
@@ -462,11 +490,32 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph){
 
 // TODO
 // owner            : Kaho
-// description      : returns a string representation for the Communications module to print the map
-// char *getMap(Graph *graph)
-// {
-//     return Graph_toString(graph);
-// }
+// description      : sends the graphical representation of the graph in adj representation
+//                       for the Communications module to print the map
+void *displayMapOnM5(Graph *graph)
+{
+    Node *trav = graph->list->head;
+    char temp[10] = {0};
+
+    snprintf(buffer, 100, "Car is currently at (%d, %d)", carCurrentPosition->x, carCurrentPosition->y);
+    printf("%s\n", buffer);
+    while (trav != NULL)
+    {
+        Vertex *v = trav->data;
+        snprintf(buffer, 100, "(%d, %d): ", v->x, v->y);
+        for (size_t i = 0; i < 4; i++)
+        {
+            if (v->adjacencyList[i] == NULL)
+                continue;
+            snprintf(temp, 10, "(%d, %d) ", v->adjacencyList[i]->x, v->adjacencyList[i]->y);
+            strcat(buffer, temp);
+        }
+        // strcat(buffer, "\n");
+        // Communications_send(buffer)
+        printf("%s\n", buffer);
+        trav = trav->next;
+    }
+}
 
 // owner            : Kaho
 // description      : iterates through the graph and check if the maze is explored
@@ -557,7 +606,6 @@ int main(void)
     // printf("%s\n", buffer);
     mapMaze(carCurrentPosition, graph);
 
-
     if (bfs(carCurrentPosition, Graph_addVertex(-1, -1, graph), graph))
         printf("bfs ok\n");
     else
@@ -567,6 +615,9 @@ int main(void)
     Graph_display(graph);
     printf("Expected: %d == %d\n", graph->numberOfNodesVisited, graph->size);
     printf("Explored: %s\n", Graph_isExplored(graph) ? "true" : "false");
+
+    printf("======\n");
+    displayMapOnM5(graph);
 
     // frees memory related to graphz
     Graph_destroy(graph);
