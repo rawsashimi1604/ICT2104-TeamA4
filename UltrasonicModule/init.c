@@ -45,9 +45,6 @@ void initInterrupts() {
 
     // Enable interrupt for Timer_A0
     Interrupt_enableInterrupt(INT_TA0_0);
-    Interrupt_enableInterrupt(INT_TA1_0);
-    Interrupt_enableInterrupt(INT_TA2_0);
-    Interrupt_enableInterrupt(INT_TA3_0);
 
     // Enable interrupts globally...
     Interrupt_enableMaster();
@@ -58,7 +55,7 @@ void initTimers() {
     // Halt watchdog timer so that the microcontroller does not restart.
     WDT_A_holdTimer();
 
-    // Set up Timer_A0, used for interrupt count check, first Sensor (1MHz clock).
+    // Set up Timer_A0, used for interrupt count check, (1MHz clock).
     const Timer_A_UpModeConfig upConfig1 =
     {
         TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
@@ -71,48 +68,6 @@ void initTimers() {
 
     Timer_A_configureUpMode(TIMER_A0_BASE, &upConfig1);
     Timer_A_clearTimer(TIMER_A0_BASE);
-
-    //Set up Timer_A1, used for interrupt count check, second Sensor (1MHz clock).
-    const Timer_A_UpModeConfig upConfig2 =
-    {
-        TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_3,          // SMCLK/3 = 1MHz
-        TIMER_A_TICKPERIOD,                     // 1000 tick period
-        TIMER_A_TAIE_INTERRUPT_DISABLE,         // Disable Timer interrupt
-        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE,     // Enable CCR0 interrupt
-        TIMER_A_DO_CLEAR                        // Clear value
-    };
-
-    Timer_A_configureUpMode(TIMER_A1_BASE, &upConfig2);
-    Timer_A_clearTimer(TIMER_A1_BASE);
-
-    //Set up Timer_A2, used for interrupt count check, third Sensor (1MHz clock).
-    const Timer_A_UpModeConfig upConfig3 =
-    {
-        TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_3,          // SMCLK/3 = 1MHz
-        TIMER_A_TICKPERIOD,                     // 1000 tick period
-        TIMER_A_TAIE_INTERRUPT_DISABLE,         // Disable Timer interrupt
-        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE,     // Enable CCR0 interrupt
-        TIMER_A_DO_CLEAR                        // Clear value
-    };
-
-    Timer_A_configureUpMode(TIMER_A2_BASE, &upConfig3);
-    Timer_A_clearTimer(TIMER_A2_BASE);
-
-    //Set up Timer_A3, used for interrupt count check, forth Sensor (1MHz clock).
-    const Timer_A_UpModeConfig upConfig4 =
-    {
-        TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_3,          // SMCLK/3 = 1MHz
-        TIMER_A_TICKPERIOD,                     // 1000 tick period
-        TIMER_A_TAIE_INTERRUPT_DISABLE,         // Disable Timer interrupt
-        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE,     // Enable CCR0 interrupt
-        TIMER_A_DO_CLEAR                        // Clear value
-    };
-
-    Timer_A_configureUpMode(TIMER_A3_BASE, &upConfig4);
-    Timer_A_clearTimer(TIMER_A3_BASE);
 
 }
 void Ultrasonic_init() {
