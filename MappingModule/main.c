@@ -57,7 +57,7 @@ void adjustOrientation(Vertex *currentCarPos, char carOrientation);
 bool isVertexAdjacentToCurrent(Vertex *currentCarPos, Vertex *aboutToVisitVertex);
 void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Vertex *target, Graph *g);
 int **reconstructPath(int startX, int startY, int endX, int endY, int edgeTo[][2]);
-void driveCarUsingPath(int listOfCoords[][2]);
+bool driveCarUsingPath(int listOfCoords[][2]);
 bool bfs(Vertex *sourceV, Vertex *endV, Graph *graph);
 bool isMapExplored(Graph *graph);
 
@@ -199,31 +199,10 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRi
     printf("updateMap completed sucessfully.\n");
 }
 
-// will delete this, just keeping it here for notes at the moment
-// owner            : Kaho
-// description      : checks the car's front, left, back, right using Ultrasonic sensors and initializes the map
-// start condition  : correctCar() is called and car is in a corner
-// end condition    : graph initialized with initial conditions
-// example          : c is the car, | is a wall, - is an empty grid
-// map = []
-// -|-|-
-// -|- -
-// c -|-
-// mapInit()
-// map = [(0, 0, true), (1, 0, false), (0, 1, false)]
-// where each vertex is represent as a struct (int x_coordinate, int y_coordinate, bool isVisited)
-void mapInit(void)
-{
-}
-
-// For Kevin:
-// bfs needs to calculate if I can go there in the first place
-
 // owner            : Kaho
 // description      : drives the car based on the map using dfs
 void mapMaze(Vertex *start, Graph *graph)
 {
-
     // Map initialization for starting conditions
     bool canGoFront = Ultrasonic_checkFront();
     bool canGoBack = Ultrasonic_checkBack();
@@ -248,7 +227,7 @@ void mapMaze(Vertex *start, Graph *graph)
         Stack_push(start->adjacencyList[i], s);
     }
 
-    int pathCoordinate[1][2] = {{0, 0}};
+    int pathCoordinate[2][2] = {{0, 0}, {0, 0}};
 
     // dfs
     while (s->size != 0)
@@ -257,17 +236,14 @@ void mapMaze(Vertex *start, Graph *graph)
         if (v->visited == true)
             continue;
 
+        pathCoordinate[0][0] = carCurrentPosition->x;
+        pathCoordinate[0][1] = carCurrentPosition->y;
+        pathCoordinate[1][0] = v->x;
+        pathCoordinate[1][1] = v->y;
         // this will ensure that I am within 1 unit of the vertex that I am about to visit
         // if not, bfs will drive me there
-        if (!isVertexAdjacentToCurrent(carCurrentPosition, v))
+        if (!driveCarUsingPath(pathCoordinate))
             bfs(carCurrentPosition, v, graph);
-
-        if (carCurrentPosition != v)
-        {
-            pathCoordinate[0][0] = v->x;
-            pathCoordinate[0][1] = v->y;
-            driveCarUsingPath(pathCoordinate);
-        }
 
         v->visited = true;
         graph->numberOfNodesVisited++;
@@ -298,23 +274,9 @@ void mapMaze(Vertex *start, Graph *graph)
     Stack_destroy(s);
 }
 
-// owner            : Kevin
-// description      : check if car is facing the vertex that its about to visit
-//                      return True if Yes else False
-bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation)
-{
-    // is this still needed? - kev
-    return true;
-}
 
-// owner            : Kevin
-// description      : while car is not correctOrientation
-//                      turn car at 90 degrees to correct the orientation
-void adjustOrientation(Vertex *currentCarPos, char carOrientation)
-{
-    // is this still needed? - kev
-}
-
+// owner: kevin
+// desc:  turn the car to the direction that is given 
 bool adjustCarDirection(char directionToTurnTo)
 {
     if (carDirection == 'N')
@@ -368,41 +330,10 @@ bool adjustCarDirection(char directionToTurnTo)
     return true;
 }
 
-// owner            : Irfaan
-// description      : checks if car can visit the vertex v that its is about to visit
-//                      from its current position by driving straight
-// isVertexAd
-// bool canVisitVertexFromCurrent(Vertex *currentCarPos, Vertex *aboutToVisitVertex)
-bool isVertexAdjacentToCurrent(Vertex *currentCarPos, Vertex *aboutToVisitVertex)
-{
-    return true;
-}
-
-// Consult Kevin, probably don't need anymore
-// owner            : Kevin
-// description      : retrace back to the vertex that is adjacent to the vertex that I am about to visit
-//                      this function drives the car
-// void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Node *path)
-// {
-// }
-void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Vertex *target, Graph *g)
-{
-}
-
-// KIV, MIGHT NOT NEED TO DO ANYMORE
-// Consult Kevin, probably don't need anymore
-// owner            : Kaho
-// description      : returns a path to the end coordinate if available, else null
-// see https://stackoverflow.com/questions/5201708/how-to-return-a-2d-array-from-a-function-in-c
-// int **reconstructPath(int startX, int startY, int endX, int endY, int edgeTo[][2])
-// {
-//     return 0;
-// }
-
 // owner            : Kevin
 // description      : drive car following the path
 // input            : it should take in a list of vertex pointers.
-void driveCarUsingPath(int listOfCoords[][2])
+bool driveCarUsingPath(int listOfCoords[][2])
 {
     // declaring the require elements
     int numberOfDirections = (sizeof(listOfCoords) / sizeof(listOfCoords[0])) - 1; // number of directions = number of coords -1
@@ -416,8 +347,7 @@ void driveCarUsingPath(int listOfCoords[][2])
         if (listOfCoords[i + 1][0] - listOfCoords[i][0])
         {
             // if x is positive, move W, if neg, move E
-            switch (listOfCoords[i + 1][0] - listOfCoords[i][0])
-            {
+            switch (listOfCoords[i + 1][0] - listOfCoords[i][0]){
             case -1:
                 directionsArrs[i] = 'W';
                 break;
@@ -426,7 +356,7 @@ void driveCarUsingPath(int listOfCoords[][2])
                 break;
             default:
                 printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
-                return;
+                return false;
             }
         }
         // minus the y cord of 2 coords. if not 0 (false), car moves in y axis
@@ -443,14 +373,14 @@ void driveCarUsingPath(int listOfCoords[][2])
                 break;
             default:
                 printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
-                return;
+                return false;
             }
         }
         else
         {
             // coord somehow wants to move diaganally
             printf("ERROR: driveCarUsingPath wants to move diaganally. \n");
-            return;
+            return false;
         }
     }
 
@@ -468,7 +398,7 @@ void driveCarUsingPath(int listOfCoords[][2])
             Motor_driveForward(1);
         }
     }
-    return; // end of driveCarUsingPath
+    return true; // end of driveCarUsingPath
 }
 
 // owner            : Kevin
@@ -595,7 +525,10 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
                 listOfCoords[i][1] = tempV->y;                // add the y coord of the vertex from the stack onto the listOfCoords
             }
             // passing the pointer of the listOfCoords to the drive function to drive
-            driveCarUsingPath(listOfCoords);
+            if (!driveCarUsingPath(listOfCoords)){
+                printf("ERROR: BFS listOfCoords has wrong coords.\n");
+                return false;
+            }
             // update the car's position
             carCurrentPosition = tempV;
 
@@ -689,7 +622,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
     return false;
 }
 
-// TODO
+// TODO: nice to have graphical map?
 // owner            : Kaho
 // description      : sends the graphical representation of the graph in adj representation
 //                       for the Communications module to print the map
@@ -716,13 +649,6 @@ void displayMapOnM5(Graph *graph)
         printf("%s\n", buffer);
         trav = trav->next;
     }
-}
-
-// owner            : Kaho
-// description      : iterates through the graph and check if the maze is explored
-bool isMapExplored(Graph *graph)
-{
-    return Graph_isExplored(graph);
 }
 
 // graph test
