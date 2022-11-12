@@ -34,6 +34,7 @@ SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "linkedlist.h"
 
@@ -55,20 +56,20 @@ void List_display(List *list)
     if (list->head == NULL)
         return;
 
+    char buffer[100] = {0};
+    char temp[10] = {0};
     for (; current != NULL; current = current->next)
     {
-        printf("coord: (%d, %d) | visited: %s | adjacent: (%d, %d), (%d, %d), (%d, %d), (%d, %d)\n",
-               current->data->x,
-               current->data->y,
-               current->data->visited ? "yes" : "no",
-               current->data->adjacencyList[0] == NULL ? -100 : current->data->adjacencyList[0]->x,
-               current->data->adjacencyList[0] == NULL ? -100 : current->data->adjacencyList[0]->y,
-               current->data->adjacencyList[1] == NULL ? -100 : current->data->adjacencyList[1]->x,
-               current->data->adjacencyList[1] == NULL ? -100 : current->data->adjacencyList[1]->y,
-               current->data->adjacencyList[2] == NULL ? -100 : current->data->adjacencyList[2]->x,
-               current->data->adjacencyList[2] == NULL ? -100 : current->data->adjacencyList[2]->y,
-               current->data->adjacencyList[3] == NULL ? -100 : current->data->adjacencyList[3]->x,
-               current->data->adjacencyList[3] == NULL ? -100 : current->data->adjacencyList[3]->y);
+        snprintf(buffer, 100, "coord: (%d, %d) | visited: %s | adjacent: : ",
+                 current->data->x, current->data->y, current->data->visited ? "yes" : "no");
+        for (size_t i = 0; i < 4; i++)
+        {
+            if (current->data->adjacencyList[i] == NULL)
+                continue;
+            snprintf(temp, 10, "(%d, %d) ", current->data->adjacencyList[i]->x, current->data->adjacencyList[i]->y);
+            strcat(buffer, temp);
+        }
+        printf("%s\n", buffer);
     }
 }
 

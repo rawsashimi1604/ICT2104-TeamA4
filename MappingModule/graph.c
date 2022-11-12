@@ -131,5 +131,3 @@ void Graph_destroy(Graph *graph)
     List_destroy(graph->list);
     free(graph);
 }
-
-char *Graph_toString(Graph *graph);
