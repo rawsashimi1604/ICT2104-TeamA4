@@ -49,14 +49,8 @@ void updateCarDirection(char turn);
 void initializeCarPosition(void);
 void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRight, Graph *graph);
 void mapMaze(Vertex *start, Graph *graph);
-bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation);
-void adjustOrientation(Vertex *currentCarPos, char carOrientation);
-bool isVertexAdjacentToCurrent(Vertex *currentCarPos, Vertex *aboutToVisitVertex);
-void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Vertex *target, Graph *g);
-int **reconstructPath(int startX, int startY, int endX, int endY, int edgeTo[][2]);
-bool driveCarUsingPath(int listOfCoords[][2]);
+bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords);
 bool bfs(Vertex *sourceV, Vertex *endV, Graph *graph);
-bool isMapExplored(Graph *graph);
 
 /* =================================== */
 HumpList *humpData = NULL;
@@ -120,73 +114,49 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRi
     // if the car is facing north
     if (carDirection == 'N')
     {
+        // create a new vertex and update the adj list for both vertices (addEdge)
         if (canGoFront)
-        {
-            // create a new vertex and update the adj list for both vertices (addEdge)
             Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph), graph);
-        }
         if (canGoLeft)
-        {
             Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph), graph);
-        }
         if (canGoRight)
-        {
             Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph), graph);
-        }
     }
 
     // if the car is facing south
     else if (carDirection == 'S')
     {
+        // create a new vertex and update the adj list for both vertices (addEdge)
         if (canGoFront)
-        {
-            // create a new vertex and update the adj list for both vertices (addEdge)
             Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph), graph);
-        }
         if (canGoLeft)
-        {
             Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph), graph);
-        }
         if (canGoRight)
-        {
             Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph), graph);
-        }
     }
 
     // if the car is facing east
     else if (carDirection == 'E')
     {
+        // create a new vertex and update the adj list for both vertices (addEdge)
         if (canGoFront)
-        {
-            // create a new vertex and update the adj list for both vertices (addEdge)
             Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph), graph);
-        }
         if (canGoLeft)
-        {
             Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph), graph);
-        }
         if (canGoRight)
-        {
             Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph), graph);
-        }
     }
 
     // if the car is facing west
     else if (carDirection == 'W')
     {
+        // create a new vertex and update the adj list for both vertices (addEdge)
         if (canGoFront)
-        {
-            // create a new vertex and update the adj list for both vertices (addEdge)
             Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph), graph);
-        }
         if (canGoLeft)
-        {
             Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph), graph);
-        }
         if (canGoRight)
-        {
             Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph), graph);
-        }
     }
     else
     {
@@ -242,7 +212,7 @@ void mapMaze(Vertex *start, Graph *graph)
         // returns true if that is possible
         // returns false if that is not possible
         // BFS will drive me there if I am not adjacent to the vertex
-        if (!driveCarUsingPath(pathCoordinate))
+        if (!driveCarUsingPath(pathCoordinate, 2))
             bfs(carCurrentPosition, v, graph);
 
         v->visited = true;
@@ -331,11 +301,11 @@ bool adjustCarDirection(char directionToTurnTo)
 
 // owner            : Kevin
 // description      : drive car following the path
-// input            : it should take in a list of vertex pointers.
-bool driveCarUsingPath(int listOfCoords[][2])
+// input            : it should take in a list of x y coordinates
+bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
 {
     // declaring the require elements
-    int numberOfDirections = (sizeof(listOfCoords) / sizeof(listOfCoords[0])) - 1; // number of directions = number of coords -1
+    int numberOfDirections = numberOfCoords - 1; // number of directions = number of coords -1
     char directionsArrs[numberOfDirections];                                       // store the directions the car will need to move
     memset(directionsArrs, 0, numberOfDirections);
 
@@ -384,6 +354,15 @@ bool driveCarUsingPath(int listOfCoords[][2])
         }
     }
 
+    //For debugging purposes, prints the directions the car will need to move.
+    // printf("numberOfDirections = %d\n", numberOfDirections);
+    printf("driveCarUsingPath will move car in: ");
+    for (int i = 0; i < numberOfDirections; i++)
+    {
+        printf("%c ", directionsArrs[i]);
+    }
+    printf("\n");
+
     // given the list of directions, move the car and adjust the orientation accordingly
     for (int i = 0; i < numberOfDirections; i++)
     {
@@ -427,7 +406,6 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
         printf("BFS queue allocation failed. \n");
         return false;
     }
-    // Vertex *vistedList[] = NULL; //List of visited vertex pointers. used to recontruct path
     Stack *stack1 = Stack_makeStack(); // used to recontruct path later on.
     if (stack1 == NULL)
     {
@@ -525,7 +503,8 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
                 listOfCoords[i][1] = tempV->y;                // add the y coord of the vertex from the stack onto the listOfCoords
             }
             // passing the pointer of the listOfCoords to the drive function to drive
-            if (!driveCarUsingPath(listOfCoords))
+            // printf("Number of Coords being passed in: %d \n", (sizeof(listOfCoords)/sizeof(listOfCoords[0])));
+            if (!driveCarUsingPath(listOfCoords, (sizeof(listOfCoords)/sizeof(listOfCoords[0]))))
             {
                 printf("ERROR: BFS listOfCoords has wrong coords.\n");
                 return false;

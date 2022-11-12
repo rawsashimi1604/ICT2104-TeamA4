@@ -25,7 +25,7 @@ void Graph_addEdge(Vertex *vertex1, Vertex *vertex2, Graph *graph);
 // returns the adjacency list given the x and y coordinate of a vertex
 Vertex **Graph_adj(int x, int y, Graph *graph);
 Vertex *Graph_getVertex(int x, int y, Graph *graph);
-void *Graph_display(Graph *graph);
+void Graph_display(Graph *graph);
 bool Graph_isExplored(Graph *graph);
 void Graph_destroy(Graph *graph);
 

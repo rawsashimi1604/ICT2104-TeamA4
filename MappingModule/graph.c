@@ -169,7 +169,7 @@ Vertex **Graph_adj(int x, int y, Graph *graph)
     return v->adjacencyList;
 }
 
-void *Graph_display(Graph *graph)
+void Graph_display(Graph *graph)
 {
     List_display(graph->list);
 }
