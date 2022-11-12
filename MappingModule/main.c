@@ -75,33 +75,6 @@ char buffer[100] = {0};
 char carDirection = 'N';
 Vertex *carCurrentPosition; // points to the vertex where the car is currently at
 
-// might not need this anymore
-Vertex *carCurrentOrientation; // points to the vertex that the car is facing, if facing a wall, then it is NULL
-
-//  N
-// W E
-//  S
-// expects a argument of either 'L', or 'R'
-void updateCarDirection(char turn)
-{
-    if (carDirection == 'N' && turn == 'L')
-        carDirection = 'W';
-    else if (carDirection == 'N' && turn == 'R')
-        carDirection = 'E';
-    else if (carDirection == 'E' && turn == 'L')
-        carDirection = 'N';
-    else if (carDirection == 'E' && turn == 'R')
-        carDirection = 'S';
-    else if (carDirection == 'S' && turn == 'L')
-        carDirection = 'E';
-    else if (carDirection == 'S' && turn == 'R')
-        carDirection = 'W';
-    else if (carDirection == 'W' && turn == 'L')
-        carDirection = 'S';
-    else if (carDirection == 'W' && turn == 'R')
-        carDirection = 'N';
-}
-
 // Kaho
 // Might not expose this to other modules
 // Vertex *Mapping_getCarCurrentPosition(void)
@@ -288,11 +261,6 @@ void mapMaze(Vertex *start, Graph *graph)
         // if not, bfs will drive me there
         if (!isVertexAdjacentToCurrent(carCurrentPosition, v))
             bfs(carCurrentPosition, v, graph);
-
-        // this will ensure that I am pointing to the vertex that I am about to visit
-        // if not, it will adjust the orientation until I am facing the vertex I am about to visit
-        if (!isCorrectOrientation(v, carCurrentOrientation))
-            adjustOrientation(carCurrentPosition, carDirection);
 
         if (carCurrentPosition != v)
         {
