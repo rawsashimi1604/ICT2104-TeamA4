@@ -8,8 +8,8 @@
 // to represent our graph
 typedef struct Node
 {
-    struct Vertex *data;
     struct Node *next;
+    struct Vertex *data;
 } Node;
 
 Node *Node_createNode(int x, int y);

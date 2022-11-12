@@ -5,9 +5,9 @@
 
 typedef struct Graph
 {
-    List *list;
     unsigned char size;
     unsigned char numberOfNodesVisited;
+    List *list;
 } Graph;
 
 Graph *Graph_makeGraph(void);

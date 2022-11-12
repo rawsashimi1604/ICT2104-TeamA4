@@ -35,9 +35,9 @@ SOFTWARE.
 
 typedef struct Queue
 {
+    unsigned int size;
     Node *front;
     Node *rear;
-    int size;
 } Queue;
 
 // might not want to expose this method as a public interface

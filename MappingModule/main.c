@@ -15,9 +15,6 @@
 #include "barcode_linkedlist.h"
 #include "hump_linkedlist.h"
 
-#include "cvector.h"
-#include "cvector_utils.h"
-
 /* =================================== */
 
 /* test stubs from other modules */
@@ -240,8 +237,11 @@ void mapMaze(Vertex *start, Graph *graph)
         pathCoordinate[0][1] = carCurrentPosition->y;
         pathCoordinate[1][0] = v->x;
         pathCoordinate[1][1] = v->y;
-        // this will ensure that I am within 1 unit of the vertex that I am about to visit
-        // if not, bfs will drive me there
+
+        // driveCarUsingPath will drive me to the adjacent vertex I want to visit
+        // returns true if that is possible
+        // returns false if that is not possible
+        // BFS will drive me there if I am not adjacent to the vertex
         if (!driveCarUsingPath(pathCoordinate))
             bfs(carCurrentPosition, v, graph);
 
@@ -274,9 +274,8 @@ void mapMaze(Vertex *start, Graph *graph)
     Stack_destroy(s);
 }
 
-
 // owner: kevin
-// desc:  turn the car to the direction that is given 
+// desc:  turn the car to the direction that is given
 bool adjustCarDirection(char directionToTurnTo)
 {
     if (carDirection == 'N')
@@ -347,7 +346,8 @@ bool driveCarUsingPath(int listOfCoords[][2])
         if (listOfCoords[i + 1][0] - listOfCoords[i][0])
         {
             // if x is positive, move W, if neg, move E
-            switch (listOfCoords[i + 1][0] - listOfCoords[i][0]){
+            switch (listOfCoords[i + 1][0] - listOfCoords[i][0])
+            {
             case -1:
                 directionsArrs[i] = 'W';
                 break;
@@ -525,7 +525,8 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
                 listOfCoords[i][1] = tempV->y;                // add the y coord of the vertex from the stack onto the listOfCoords
             }
             // passing the pointer of the listOfCoords to the drive function to drive
-            if (!driveCarUsingPath(listOfCoords)){
+            if (!driveCarUsingPath(listOfCoords))
+            {
                 printf("ERROR: BFS listOfCoords has wrong coords.\n");
                 return false;
             }

@@ -5,9 +5,9 @@
 // where we are using a linked list of nodes
 typedef struct BarcodeNode
 {
-    int x;
-    int y;
     char data;
+    char x;
+    char y;
     struct BarcodeNode *next;
 } BarcodeNode;
 

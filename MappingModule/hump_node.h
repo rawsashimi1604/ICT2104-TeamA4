@@ -5,8 +5,8 @@
 // where we are using a linked list of nodes
 typedef struct HumpNode
 {
-    int x;
-    int y;
+    char x;
+    char y;
     struct HumpNode *next;
 } HumpNode;
 

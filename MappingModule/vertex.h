@@ -7,8 +7,8 @@
 typedef struct Vertex
 {
     // x and y are coordinates in the maze
-    int x;
-    int y;
+    char x;
+    char y;
     bool visited;
 
     // holds the address of adjacent vertices

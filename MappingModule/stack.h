@@ -35,8 +35,8 @@ SOFTWARE.
 
 typedef struct Stack
 {
+    unsigned int size;
     Node *top;
-    int size;
 } Stack;
 
 Stack *Stack_makeStack(void);
