@@ -306,7 +306,7 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
 {
     // declaring the require elements
     int numberOfDirections = numberOfCoords - 1; // number of directions = number of coords -1
-    char directionsArrs[numberOfDirections];                                       // store the directions the car will need to move
+    char directionsArrs[numberOfDirections];     // store the directions the car will need to move
     memset(directionsArrs, 0, numberOfDirections);
 
     // go through the coords and create the char array to store the directions
@@ -354,8 +354,8 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
         }
     }
 
-    //For debugging purposes, prints the directions the car will need to move.
-    // printf("numberOfDirections = %d\n", numberOfDirections);
+    // For debugging purposes, prints the directions the car will need to move.
+    //  printf("numberOfDirections = %d\n", numberOfDirections);
     printf("driveCarUsingPath will move car in: ");
     for (int i = 0; i < numberOfDirections; i++)
     {
@@ -493,6 +493,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
 
             // initialize a coor array based on the size of the stack
             int listOfCoords[stack1->size][2];
+            memset(listOfCoords, 0, stack1->size * 2 * sizeof(int));
             // moving the car based on path constructed. craft a coord array and send to drive car using path
             for (int i = 0; stack1->size != 0; i++)
             {
@@ -504,7 +505,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
             }
             // passing the pointer of the listOfCoords to the drive function to drive
             // printf("Number of Coords being passed in: %d \n", (sizeof(listOfCoords)/sizeof(listOfCoords[0])));
-            if (!driveCarUsingPath(listOfCoords, (sizeof(listOfCoords)/sizeof(listOfCoords[0]))))
+            if (!driveCarUsingPath(listOfCoords, (sizeof(listOfCoords) / sizeof(listOfCoords[0]))))
             {
                 printf("ERROR: BFS listOfCoords has wrong coords.\n");
                 return false;
