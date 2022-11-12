@@ -295,36 +295,44 @@ void adjustOrientation(Vertex *currentCarPos, char carOrientation){
 }
 bool adjustCarDirection(char directionToTurnTo){
     if (carDirection == 'N'){
-        if (directionToTurnTo == 'S')
-            Motor_turnLeft(2);
+        if (directionToTurnTo == 'S'){
+            Motor_turnLeft();
+            Motor_turnLeft();
+        }
         else if (directionToTurnTo == 'E')
-            Motor_turnRight(1);
+            Motor_turnRight();
         else if (directionToTurnTo == 'W')
-            Motor_turnLeft(1);
+            Motor_turnLeft();
     }
     else if (carDirection == 'E'){
         if (directionToTurnTo == 'N')
-            Motor_turnLeft(1);
+            Motor_turnLeft();
         else if (directionToTurnTo == 'S')
-            Motor_turnRight(1);
-        else if (directionToTurnTo == 'W')
-            Motor_turnLeft(2);
+            Motor_turnRight();
+        else if (directionToTurnTo == 'W'){
+            Motor_turnLeft();
+            Motor_turnLeft();
+        }
     }
     else if (carDirection == 'S'){
-        if (directionToTurnTo == 'N')
-            Motor_turnLeft(2);
+        if (directionToTurnTo == 'N'){
+            Motor_turnLeft();
+            Motor_turnLeft();
+        }
         else if (directionToTurnTo == 'E')
-            Motor_turnLeft(1);
+            Motor_turnLeft();
         else if (directionToTurnTo == 'W')
-            Motor_turnRight(1);
+            Motor_turnRight();
     }
     else if (carDirection == 'W'){
         if (directionToTurnTo == 'N')
-            Motor_turnRight(1);
+            Motor_turnRight();
         else if (directionToTurnTo == 'S')
-            Motor_turnLeft(1);
-        else if (directionToTurnTo == 'E')
-            Motor_turnLeft(2);
+            Motor_turnLeft();
+        else if (directionToTurnTo == 'E'){
+            Motor_turnLeft();
+            Motor_turnLeft();
+        }
     }
     return true;
 }
