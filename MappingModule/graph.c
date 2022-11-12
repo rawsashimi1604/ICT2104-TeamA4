@@ -37,13 +37,71 @@ Vertex *Graph_addVertex(int x, int y, Graph *graph)
 }
 
 // adds a bidirectional link for both coordinates, if it exists
-void Graph_addEdge(int x, int y, int x2, int y2, Graph *graph)
+void Graph_addEdge(Vertex *vertex1, Vertex *vertex2, Graph *graph)
+{
+    if (vertex1 == NULL || vertex2 == NULL)
+        return;
+
+    // ensure duplicate edges/self-loops are not added
+    for (size_t i = 0; i < 4; i++)
+    {
+        if (vertex1->adjacencyList[i] == NULL)
+            continue;
+        // check and prevent adding duplicate edges
+        if (vertex1->adjacencyList[i]->x == vertex2->x && vertex1->adjacencyList[i]->y == vertex2->y)
+            return;
+    }
+
+    bool isEdgeOneConnected = false;
+
+    // add v and w to each other
+    for (int i = 0; i < 4; i++)
+    {
+        if (vertex1->adjacencyList[i] != NULL)
+            continue;
+        vertex1->adjacencyList[i] = vertex2;
+        isEdgeOneConnected = true;
+        break;
+    }
+
+    if (!isEdgeOneConnected)
+        return;
+
+    bool isEdgeTwoConnected = false;
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (vertex2->adjacencyList[i] != NULL)
+            continue;
+        vertex2->adjacencyList[i] = vertex1;
+        isEdgeTwoConnected = true;
+        break;
+    }
+
+    // undo edgeOne because edgeTwo did not connect successfully
+    // this means incorrect usage of the method
+    if (!isEdgeTwoConnected)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (vertex1->adjacencyList[i] == vertex2)
+            {
+                vertex1->adjacencyList[i] = NULL;
+                break;
+            }
+        }
+    }
+}
+
+// note: for testing purposes only
+// adds a bidirectional link for both coordinates, if it exists
+void Graph_addEdgeOld(int x, int y, int x2, int y2, Graph *graph)
 {
     Vertex *v = List_getVertex(x, y, graph->list);
     if (v == NULL)
         return;
 
-    // ensure duplicate edges are not added
+    // ensure duplicate edges/self-loops are not added
     for (size_t i = 0; i < 4; i++)
     {
         if (v->adjacencyList[i] == NULL)

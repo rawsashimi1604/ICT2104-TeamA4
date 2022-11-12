@@ -29,4 +29,6 @@ void *Graph_display(Graph *graph);
 bool Graph_isExplored(Graph *graph);
 void Graph_destroy(Graph *graph);
 
+void Graph_addEdgeOld(int x1, int y1, int x2, int y2, Graph *graph);
+
 #endif

@@ -5,8 +5,6 @@
 #include <string.h>
 
 // Ultrasonic module
-#include "init.h"
-#include "ultrasonic.h"
 
 // Motor module
 
@@ -19,6 +17,27 @@
 
 #include "cvector.h"
 #include "cvector_utils.h"
+
+/* =================================== */
+
+/* test stubs from other modules */
+#include "init.h"
+#include "ultrasonic.h"
+
+void Motor_driveForward(int units)
+{
+}
+
+// this is the defined interface from the motor team
+// void Motor_turnRight(void);
+
+// this is not in the defined interface from the motor team
+void Motor_turnLeft(void)
+{
+}
+void Motor_turnRight(void)
+{
+}
 
 /* =================================== */
 
@@ -120,62 +139,87 @@ void initializeCarPosition(void)
 }
 
 // owner            : Kevin
-// description      : takes in the car's current position and 
-//                    updates the ajd list of the vertex based on ultra sensors and car orientation. 
-// 
-void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRight, Graph *graph){
-    int x = currentPos -> x;
-    int y = currentPos -> y;
+// description      : takes in the car's current position and
+//                    updates the ajd list of the vertex based on ultra sensors and car orientation.
+//
+void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRight, Graph *graph)
+{
+    int x = currentPos->x;
+    int y = currentPos->y;
 
-    if (carDirection == 'N'){ //if the car is facing north
-        if (canGoFront){
-            //create a new vertex and update the adj list for both vertices (addEdge)
-            Graph_addEdge(currentPos, Graph_addVertex(x, y+1, graph), graph); 
+    // if the car is facing north
+    if (carDirection == 'N')
+    {
+        if (canGoFront)
+        {
+            // create a new vertex and update the adj list for both vertices (addEdge)
+            Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph), graph);
         }
-        if (canGoLeft){
-            Graph_addEdge(currentPos, Graph_addVertex(x-1, y, graph), graph); 
+        if (canGoLeft)
+        {
+            Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph), graph);
         }
-        if (canGoRight){
-            Graph_addEdge(currentPos, Graph_addVertex(x+1, y, graph), graph); 
-        }
-    }
-    else if (carDirection == 'S'){ //if the car is facing south
-        if (canGoFront){
-            //create a new vertex and update the adj list for both vertices (addEdge)
-            Graph_addEdge(currentPos, Graph_addVertex(x, y-1, graph), graph); 
-        }
-        if (canGoLeft){
-            Graph_addEdge(currentPos, Graph_addVertex(x+1, y, graph), graph); 
-        }
-        if (canGoRight){
-            Graph_addEdge(currentPos, Graph_addVertex(x-1, y, graph), graph); 
+        if (canGoRight)
+        {
+            Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph), graph);
         }
     }
-    else if (carDirection == 'E'){ //if the car is facing east
-        if (canGoFront){
-            //create a new vertex and update the adj list for both vertices (addEdge)
-            Graph_addEdge(currentPos, Graph_addVertex(x+1, y, graph), graph); 
+
+    // if the car is facing south
+    else if (carDirection == 'S')
+    {
+        if (canGoFront)
+        {
+            // create a new vertex and update the adj list for both vertices (addEdge)
+            Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph), graph);
         }
-        if (canGoLeft){
-            Graph_addEdge(currentPos, Graph_addVertex(x, y+1, graph), graph); 
+        if (canGoLeft)
+        {
+            Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph), graph);
         }
-        if (canGoRight){
-            Graph_addEdge(currentPos, Graph_addVertex(x, y-1, graph), graph); 
-        }
-    }
-    else if (carDirection == 'W'){ //if the car is facing west
-        if (canGoFront){
-            //create a new vertex and update the adj list for both vertices (addEdge)
-            Graph_addEdge(currentPos, Graph_addVertex(x-1, y, graph), graph); 
-        }
-        if (canGoLeft){
-            Graph_addEdge(currentPos, Graph_addVertex(x, y-1, graph), graph); 
-        }
-        if (canGoRight){
-            Graph_addEdge(currentPos, Graph_addVertex(x, y+1, graph), graph); 
+        if (canGoRight)
+        {
+            Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph), graph);
         }
     }
-    else{
+
+    // if the car is facing east
+    else if (carDirection == 'E')
+    {
+        if (canGoFront)
+        {
+            // create a new vertex and update the adj list for both vertices (addEdge)
+            Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph), graph);
+        }
+        if (canGoLeft)
+        {
+            Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph), graph);
+        }
+        if (canGoRight)
+        {
+            Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph), graph);
+        }
+    }
+
+    // if the car is facing west
+    else if (carDirection == 'W')
+    {
+        if (canGoFront)
+        {
+            // create a new vertex and update the adj list for both vertices (addEdge)
+            Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph), graph);
+        }
+        if (canGoLeft)
+        {
+            Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph), graph);
+        }
+        if (canGoRight)
+        {
+            Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph), graph);
+        }
+    }
+    else
+    {
         printf("ERROR: updateMap failed - Unknown car direction.\n");
         return;
     }
@@ -214,8 +258,10 @@ void mapMaze(Vertex *start, Graph *graph)
     bool canGoRight = Ultrasonic_checkRight();
     carCurrentPosition = Graph_addVertex(0, 0, graph);
 
+    // comment out for now for testing purposes
+    // because updateMap() is impleted and will create vertices with edges
     // this function will create the neccsary vertices adjact to current position
-    updateMap(carCurrentPosition, canGoFront, canGoLeft, canGoRight, graph);
+    // updateMap(carCurrentPosition, canGoFront, canGoLeft, canGoRight, graph);
 
     // modified dfs starting condition to suit maze
     Stack *s = Stack_makeStack();
@@ -228,6 +274,8 @@ void mapMaze(Vertex *start, Graph *graph)
             break;
         Stack_push(start->adjacencyList[i], s);
     }
+
+    int pathCoordinate[1][2] = {{0, 0}};
 
     // dfs
     while (s->size != 0)
@@ -248,7 +296,9 @@ void mapMaze(Vertex *start, Graph *graph)
 
         if (carCurrentPosition != v)
         {
-            // Motor_driveForward(1);
+            pathCoordinate[0][0] = v->x;
+            pathCoordinate[0][1] = v->y;
+            driveCarUsingPath(pathCoordinate);
         }
 
         v->visited = true;
@@ -264,7 +314,9 @@ void mapMaze(Vertex *start, Graph *graph)
         canGoLeft = Ultrasonic_checkLeft();
         canGoRight = Ultrasonic_checkRight();
 
-        updateMap(carCurrentPosition, canGoFront, canGoLeft, canGoRight, graph);
+        // comment out for now for testing purposes
+        // because updateMap() is impleted and will create vertices with edges
+        // updateMap(carCurrentPosition, canGoFront, canGoLeft, canGoRight, graph);
 
         for (size_t i = 0; i < 4; i++)
         {
@@ -290,41 +342,60 @@ bool isCorrectOrientation(Vertex *aboutToVistVertex, Vertex *carOrientation)
 // owner            : Kevin
 // description      : while car is not correctOrientation
 //                      turn car at 90 degrees to correct the orientation
-void adjustOrientation(Vertex *currentCarPos, char carOrientation){
+void adjustOrientation(Vertex *currentCarPos, char carOrientation)
+{
     // is this still needed? - kev
 }
-bool adjustCarDirection(char directionToTurnTo){
-    if (carDirection == 'N'){
+
+bool adjustCarDirection(char directionToTurnTo)
+{
+    if (carDirection == 'N')
+    {
         if (directionToTurnTo == 'S')
-            Motor_turnLeft(2);
+        {
+            Motor_turnLeft();
+            Motor_turnLeft();
+        }
         else if (directionToTurnTo == 'E')
-            Motor_turnRight(1);
+            Motor_turnRight();
         else if (directionToTurnTo == 'W')
-            Motor_turnLeft(1);
+            Motor_turnLeft();
     }
-    else if (carDirection == 'E'){
+    else if (carDirection == 'E')
+    {
         if (directionToTurnTo == 'N')
-            Motor_turnLeft(1);
+            Motor_turnLeft();
         else if (directionToTurnTo == 'S')
-            Motor_turnRight(1);
+            Motor_turnRight();
         else if (directionToTurnTo == 'W')
-            Motor_turnLeft(2);
+        {
+            Motor_turnLeft();
+            Motor_turnLeft();
+        }
     }
-    else if (carDirection == 'S'){
+    else if (carDirection == 'S')
+    {
         if (directionToTurnTo == 'N')
-            Motor_turnLeft(2);
+        {
+            Motor_turnLeft();
+            Motor_turnLeft();
+        }
         else if (directionToTurnTo == 'E')
-            Motor_turnLeft(1);
+            Motor_turnLeft();
         else if (directionToTurnTo == 'W')
-            Motor_turnRight(1);
+            Motor_turnRight();
     }
-    else if (carDirection == 'W'){
+    else if (carDirection == 'W')
+    {
         if (directionToTurnTo == 'N')
-            Motor_turnRight(1);
+            Motor_turnRight();
         else if (directionToTurnTo == 'S')
-            Motor_turnLeft(1);
+            Motor_turnLeft();
         else if (directionToTurnTo == 'E')
-            Motor_turnLeft(2);
+        {
+            Motor_turnLeft();
+            Motor_turnLeft();
+        }
     }
     return true;
 }
@@ -362,64 +433,79 @@ void retraceBackToVertexAdjacentToAboutToVisitVertex(Vertex *currentCarPos, Vert
 
 // owner            : Kevin
 // description      : drive car following the path
-// input            : it should take in a list of vertex pointers. 
-void driveCarUsingPath(int listOfCoords[][2]){
+// input            : it should take in a list of vertex pointers.
+void driveCarUsingPath(int listOfCoords[][2])
+{
     // declaring the require elements
-    int numberOfDirections = (sizeof(listOfCoords)/sizeof(listOfCoords[0]))-1; //number of directions = number of coords -1
-    char directionsArrs[numberOfDirections]; //store the directions the car will need to move
+    int numberOfDirections = (sizeof(listOfCoords) / sizeof(listOfCoords[0])) - 1; // number of directions = number of coords -1
+    char directionsArrs[numberOfDirections];                                       // store the directions the car will need to move
+    memset(directionsArrs, 0, numberOfDirections);
 
-    //go through the corrds and create the char array to store the directions
-    for(int i = 0; i < numberOfDirections; i++){
-        if(listOfCoords[i+1][0] - listOfCoords[i][0]){ //minus the x cord of 2 coords. if not 0 (false), car moves in x axis
-            switch(listOfCoords[i+1][0] - listOfCoords[i][0]){ // if x is positive, move W, if neg, move E
-                case -1:
-                    directionsArrs[i] = 'W';
-                    break;
-                case 1:
-                    directionsArrs[i] = 'E';
-                    break;
-                default:
-                    printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
-                    return;
+    // go through the coords and create the char array to store the directions
+    for (int i = 0; i < numberOfDirections; i++)
+    {
+        // minus the x cord of 2 coords. if not 0 (false), car moves in x axis
+        if (listOfCoords[i + 1][0] - listOfCoords[i][0])
+        {
+            // if x is positive, move W, if neg, move E
+            switch (listOfCoords[i + 1][0] - listOfCoords[i][0])
+            {
+            case -1:
+                directionsArrs[i] = 'W';
+                break;
+            case 1:
+                directionsArrs[i] = 'E';
+                break;
+            default:
+                printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
+                return;
             }
         }
-        else if (listOfCoords[i+1][1] - listOfCoords[i][1]){ //minus the y cord of 2 coords. if not 0 (false), car moves in y axis
-            switch(listOfCoords[i+1][1] - listOfCoords[i][1]){ // if x is positive, move W, if neg, move E
-                case -1:
-                    directionsArrs[i] = 'S';
-                    break;
-                case 1:
-                    directionsArrs[i] = 'N';
-                    break;
-                default:
-                    printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
-                    return;
+        // minus the y cord of 2 coords. if not 0 (false), car moves in y axis
+        else if (listOfCoords[i + 1][1] - listOfCoords[i][1])
+        {
+            // if x is positive, move W, if neg, move E
+            switch (listOfCoords[i + 1][1] - listOfCoords[i][1])
+            {
+            case -1:
+                directionsArrs[i] = 'S';
+                break;
+            case 1:
+                directionsArrs[i] = 'N';
+                break;
+            default:
+                printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
+                return;
             }
-        } 
-        else{
-            //coord somehow wants to move diaganally 
+        }
+        else
+        {
+            // coord somehow wants to move diaganally
             printf("ERROR: driveCarUsingPath wants to move diaganally. \n");
             return;
         }
     }
 
-    //given the list of directions, move the car and adjust the orientation accordingly
-    for(int i = 0; i < numberOfDirections; i++){
-        if (carDirection == directionsArrs[i]){ //car is facing the right direction. move up
-            Motor_driveForward(1); 
+    // given the list of directions, move the car and adjust the orientation accordingly
+    for (int i = 0; i < numberOfDirections; i++)
+    {
+        // car is facing the right direction. move up
+        if (carDirection == directionsArrs[i])
+        {
+            Motor_driveForward(1);
         }
-        else{
+        else
+        {
             adjustCarDirection(directionsArrs[i]);
             Motor_driveForward(1);
         }
     }
-    return; //end of driveCarUsingPath
+    return; // end of driveCarUsingPath
 }
 
 // owner            : Kevin
 // description      : takes in the sources vertex, and target vertex. If the car can move there,
 //                    drives the car there and returns true. Otherwise, returns false.
-
 bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
 {
 
@@ -431,14 +517,15 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
         struct VisitedNode *parentVertex; // holds the pointer to the parent of the vertex
         struct VisitedNode *next;
     };
-    typedef struct VisitedNode* node;
-    node visitedListHead = NULL; //pointer used as the head of the list
-    node tempVisitedNode1 = NULL; //pointer used for various operations
-    node tempVisitedNode2 = NULL; //pointer used for various operations
-    Vertex *tempV = NULL; //pointer used for various operations
+    typedef struct VisitedNode *node;
+    node visitedListHead = NULL;  // pointer used as the head of the list
+    node tempVisitedNode1 = NULL; // pointer used for various operations
+    node tempVisitedNode2 = NULL; // pointer used for various operations
+    Vertex *tempV = NULL;         // pointer used for various operations
 
-    Queue *queue1 = Queue_makeQueue(); //main queue used for BFS
-    if (queue1 == NULL){
+    Queue *queue1 = Queue_makeQueue(); // main queue used for BFS
+    if (queue1 == NULL)
+    {
         printf("BFS queue allocation failed. \n");
         return false;
     }
@@ -531,16 +618,17 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
             // initialize a coor array based on the size of the stack
             int listOfCoords[stack1->size][2];
             // moving the car based on path constructed. craft a coord array and send to drive car using path
-            for(int i = 0; stack1 -> size != 0; i++){
-                printf("Size of stack: %d | ", stack1->size); //for debuggin purposes
-                Stack_peak(stack1); //for debuggin purposes
-                tempV = Stack_pop(stack1); //pop the stack
-                listOfCoords[i][0] = tempV -> x; //add the x coord of the vertex from the stack onto the listOfCoords
-                listOfCoords[i][1] = tempV -> y; //add the y coord of the vertex from the stack onto the listOfCoords
+            for (int i = 0; stack1->size != 0; i++)
+            {
+                printf("Size of stack: %d | ", stack1->size); // for debuggin purposes
+                Stack_peak(stack1);                           // for debuggin purposes
+                tempV = Stack_pop(stack1);                    // pop the stack
+                listOfCoords[i][0] = tempV->x;                // add the x coord of the vertex from the stack onto the listOfCoords
+                listOfCoords[i][1] = tempV->y;                // add the y coord of the vertex from the stack onto the listOfCoords
             }
-            //passing the pointer of the listOfCoords to the drive function to drive
-            driveCarUsingPath(listOfCoords); 
-            //update the car's position
+            // passing the pointer of the listOfCoords to the drive function to drive
+            driveCarUsingPath(listOfCoords);
+            // update the car's position
             carCurrentPosition = tempV;
 
             // garbage collection
@@ -678,65 +766,76 @@ int main(void)
     Graph *graph = Graph_makeGraph();
 
     // to add verices to a graph with no edges
+
+    // row 1
+    Vertex *v1 = Graph_addVertex(-2, 3, graph);
+    Vertex *v2 = Graph_addVertex(-1, 3, graph);
+    Vertex *v3 = Graph_addVertex(0, 3, graph);
+    Vertex *v4 = Graph_addVertex(1, 3, graph);
+
+    // row2
+    Vertex *v5 = Graph_addVertex(-2, 2, graph);
+    Vertex *v6 = Graph_addVertex(-1, 2, graph);
+    Vertex *v7 = Graph_addVertex(0, 2, graph);
+    Vertex *v8 = Graph_addVertex(1, 2, graph);
+
+    // row 3
+    Vertex *v9 = Graph_addVertex(-2, 1, graph);
+    Vertex *v10 = Graph_addVertex(-1, 1, graph);
+    Vertex *v11 = Graph_addVertex(0, 1, graph);
+    Vertex *v12 = Graph_addVertex(1, 1, graph);
+
+    // row 4
+    Vertex *v13 = Graph_addVertex(-2, 0, graph);
+    Vertex *v14 = Graph_addVertex(-1, 0, graph);
     carCurrentPosition = Graph_addVertex(0, 0, graph);
+    Vertex *v16 = Graph_addVertex(1, 0, graph);
 
-    Graph_addVertex(-2, 3, graph);
-    Graph_addVertex(-1, 3, graph);
-    Graph_addVertex(0, 3, graph);
-    Graph_addVertex(1, 3, graph);
-
-    Graph_addVertex(-2, 2, graph);
-    Graph_addVertex(-1, 2, graph);
-    Graph_addVertex(0, 2, graph);
-    Graph_addVertex(1, 2, graph);
-
-    Graph_addVertex(-2, 1, graph);
-    Graph_addVertex(-1, 1, graph);
-    Graph_addVertex(0, 1, graph);
-    Graph_addVertex(1, 1, graph);
-
-    Graph_addVertex(-2, 0, graph);
-    Graph_addVertex(-1, 0, graph);
-    Graph_addVertex(1, 0, graph);
-
-    Graph_addVertex(-2, -1, graph);
-    Graph_addVertex(-1, -1, graph);
-    Graph_addVertex(0, -1, graph);
-    Graph_addVertex(1, -1, graph);
+    // row 5
+    Vertex *v17 = Graph_addVertex(-2, -1, graph);
+    Vertex *v18 = Graph_addVertex(-1, -1, graph);
+    Vertex *v19 = Graph_addVertex(0, -1, graph);
+    Vertex *v20 = Graph_addVertex(1, -1, graph);
 
     // note: adding an existing vertex will not do anything
-    // although the validation check here is very expensive
+    // although the validation check here is lowkey expensive
     Graph_addVertex(0, 0, graph);
 
     // to add edge between 2 existing vertices in a graph
-    Graph_addEdge(-2, 3, -1, 3, graph);
-    Graph_addEdge(-2, 3, -2, 2, graph);
-    Graph_addEdge(-1, 3, 0, 3, graph);
-    Graph_addEdge(0, 3, 1, 3, graph);
+    // row 1
+    Graph_addEdge(v1, v2, graph);
+    Graph_addEdge(v2, v3, graph);
+    Graph_addEdge(v3, v4, graph);
+    Graph_addEdge(v1, v5, graph);
+    Graph_addEdge(v3, v7, graph);
+    Graph_addEdge(v4, v8, graph);
 
-    Graph_addEdge(1, 3, 1, 2, graph);
-    Graph_addEdge(0, 3, 0, 2, graph);
-    Graph_addEdge(-1, 2, -1, 1, graph);
-    Graph_addEdge(-2, 2, -2, 1, graph);
+    // row2
+    Graph_addEdge(v9, v5, graph);
+    Graph_addEdge(v6, v10, graph);
+    Graph_addEdge(v7, v11, graph);
+    Graph_addEdge(v8, v12, graph);
 
-    Graph_addEdge(-2, 1, -1, 1, graph);
-    Graph_addEdge(0, 2, 0, 1, graph);
-    Graph_addEdge(1, 2, 1, 1, graph);
+    // row 3
+    Graph_addEdge(v9, v13, graph);
+    Graph_addEdge(v9, v10, graph);
+    Graph_addEdge(v11, carCurrentPosition, graph);
+    Graph_addEdge(v16, v12, graph);
 
-    Graph_addEdge(-2, 0, -2, 1, graph);
-    Graph_addEdge(-2, 0, -1, 0, graph);
-    Graph_addEdge(0, 0, -1, 0, graph);
-    Graph_addEdge(0, 0, 0, 1, graph);
-    Graph_addEdge(1, 0, 1, 1, graph);
-    Graph_addEdge(-2, -1, -2, 0, graph);
-    Graph_addEdge(-2, -1, -1, -1, graph);
-    Graph_addEdge(-1, -1, 0, -1, graph);
-    Graph_addEdge(0, -1, 1, -1, graph);
-    Graph_addEdge(1, -1, 1, 0, graph);
+    // row 4
+    Graph_addEdge(v13, v14, graph);
+    Graph_addEdge(v14, carCurrentPosition, graph);
+    Graph_addEdge(v16, v20, graph);
+    Graph_addEdge(v17, v13, graph);
 
-    // note: adding an existing edge between two vertices will not do anything
-    // although the validation check here is very expensive
-    Graph_addEdge(0, 0, 0, 1, graph);
+    // row 5
+    Graph_addEdge(v17, v18, graph);
+    Graph_addEdge(v18, v19, graph);
+    Graph_addEdge(v20, v19, graph);
+
+    // // note: adding an existing edge between two vertices will not do anything
+    // // although the validation check here is lowkey expensive
+    Graph_addEdge(v20, v19, graph);
 
     // how to iterate through the adjacent vertices of a graph
     // Graph_adj(x, y, graph) takes in 3 args: the x and y coordinate of the graph, and the graph itself
@@ -746,6 +845,9 @@ int main(void)
     // {
     //     printf("(%d, %d)\n", adj[i]->x, adj[i]->y);
     // }
+
+    // alternatively, you may access the vertex adj list directly
+    // such as vertex->adj, but make sure not to go beyond size 4
 
     // Vertex_writeStrToBuff(buffer, adj[0]);
     // printf("%s\n", buffer);
