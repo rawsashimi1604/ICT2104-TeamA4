@@ -187,7 +187,8 @@ void mapMaze(Vertex *start, Graph *graph)
     start->visited = true;
     graph->numberOfNodesVisited++;
 
-    for (uint8_t i = 0; i < 4; i++)
+    uint8_t i = 0;
+    for (i = 0; i < 4; i++)
     {
         if (start->adjacencyList[i] == NULL)
             break;
@@ -232,7 +233,7 @@ void mapMaze(Vertex *start, Graph *graph)
         // because updateMap() is impleted and will create vertices with edges
         // updateMap(carCurrentPosition, canGoFront, canGoLeft, canGoRight, graph);
 
-        for (uint8_t i = 0; i < 4; i++)
+        for (i = 0; i < 4; i++)
         {
             if (v->adjacencyList[i] == NULL)
                 break;
@@ -309,8 +310,9 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
     char directionsArrs[numberOfDirections];     // store the directions the car will need to move
     memset(directionsArrs, 0, numberOfDirections);
 
+    uint8_t i = 0;
     // go through the coords and create the char array to store the directions
-    for (uint8_t i = 0; i < numberOfDirections; i++)
+    for (i = 0; i < numberOfDirections; i++)
     {
         // minus the x cord of 2 coords. if not 0 (false), car moves in x axis
         if (listOfCoords[i + 1][0] - listOfCoords[i][0])
@@ -357,14 +359,14 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
     // For debugging purposes, prints the directions the car will need to move.
     //  printf("numberOfDirections = %d\n", numberOfDirections);
     printf("driveCarUsingPath will move car in: ");
-    for (uint8_t i = 0; i < numberOfDirections; i++)
+    for (i = 0; i < numberOfDirections; i++)
     {
         printf("%c ", directionsArrs[i]);
     }
     printf("\n");
 
     // given the list of directions, move the car and adjust the orientation accordingly
-    for (uint8_t i = 0; i < numberOfDirections; i++)
+    for (i = 0; i < numberOfDirections; i++)
     {
         // car is facing the right direction. move up
         if (carDirection == directionsArrs[i])
@@ -436,6 +438,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
     visitedListHead = tempVisitedNode1; // setting the head of the list
     tempVisitedNode1 = NULL;
 
+    uint8_t i = 0;
     // Loop till queue is empty
     // check is the queue is empty (size = 0)
     while (queue1->size != 0)
@@ -495,7 +498,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
             int listOfCoords[stack1->size][2];
             memset(listOfCoords, 0, stack1->size * 2 * sizeof(int));
             // moving the car based on path constructed. craft a coord array and send to drive car using path
-            for (uint8_t i = 0; stack1->size != 0; i++)
+            for (i = 0; stack1->size != 0; i++)
             {
                 printf("Size of stack: %d | ", stack1->size); // for debuggin purposes
                 Stack_peak(stack1);                           // for debuggin purposes
@@ -527,7 +530,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
         }
 
         // targetV has not been found. iterate throu adjList of node and enqueue if visited by car and not by BFS
-        for (uint8_t i = 0; i < 4; i++)
+        for (i = 0; i < 4; i++)
         {
             if (tempV->adjacencyList[i] == NULL) // breaks if no more ajd vertices
                 break;
@@ -612,13 +615,14 @@ void displayMapOnM5(Graph *graph)
     Node *trav = graph->list->head;
     char temp[10] = {0};
 
+    uint8_t i = 0;
     snprintf(buffer, 100, "Car is currently at (%d, %d)", carCurrentPosition->x, carCurrentPosition->y);
     printf("%s\n", buffer);
     while (trav != NULL)
     {
         Vertex *v = trav->data;
         snprintf(buffer, 100, "(%d, %d): ", v->x, v->y);
-        for (uint8_t i = 0; i < 4; i++)
+        for (i = 0; i < 4; i++)
         {
             if (v->adjacencyList[i] == NULL)
                 continue;
@@ -716,7 +720,8 @@ int main(void)
     // Graph_adj(x, y, graph) takes in 3 args: the x and y coordinate of the graph, and the graph itself
     // returns an adj array of 4 pointers to vertices. If not initialized, then it is (-100, -100) for a vertex
     // Vertex **adj = Graph_adj(0, 0, graph);
-    // for (uint8_t i = 0; i < 4; i++)
+    // uint8_t i = 0;
+    // for (i = 0; i < 4; i++)
     // {
     //     printf("(%d, %d)\n", adj[i]->x, adj[i]->y);
     // }

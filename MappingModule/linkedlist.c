@@ -59,11 +59,13 @@ void List_display(List *list)
 
     char buffer[100] = {0};
     char temp[10] = {0};
+
+    uint8_t i = 0;
     for (; current != NULL; current = current->next)
     {
         snprintf(buffer, 100, "coord: (%d, %d) | visited: %s | adjacent: : ",
                  current->data->x, current->data->y, current->data->visited ? "yes" : "no");
-        for (uint8_t i = 0; i < 4; i++)
+        for (i = 0; i < 4; i++)
         {
             if (current->data->adjacencyList[i] == NULL)
                 continue;
