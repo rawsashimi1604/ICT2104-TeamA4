@@ -30,12 +30,14 @@ SOFTWARE.
 #ifndef STACK_HEADER
 #define STACK_HEADER
 
+#include <stdint.h>
+
 #include "vertex.h"
 #include "node.h"
 
 typedef struct Stack
 {
-    unsigned int size;
+    uint8_t size;
     Node *top;
 } Stack;
 

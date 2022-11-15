@@ -1,13 +1,15 @@
 #ifndef BARCODE_NODE_HEADER
 #define BARCODE_NODE_HEADER
 
+#include <stdint.h>
+
 // this is a node in a linked list
 // where we are using a linked list of nodes
 typedef struct BarcodeNode
 {
     char data;
-    char x;
-    char y;
+    int8_t x;
+    int8_t y;
     struct BarcodeNode *next;
 } BarcodeNode;
 

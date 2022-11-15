@@ -30,12 +30,14 @@ SOFTWARE.
 #ifndef QUEUE_HEADER
 #define QUEUE_HEADER
 
+#include <stdint.h>
+
 #include "node.h"
 #include "vertex.h"
 
 typedef struct Queue
 {
-    unsigned int size;
+    uint8_t size;
     Node *front;
     Node *rear;
 } Queue;

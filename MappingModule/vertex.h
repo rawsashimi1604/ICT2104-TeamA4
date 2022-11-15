@@ -1,14 +1,15 @@
 #ifndef VERTEX_HEADER
 #define VERTEX_HEADER
 
+#include <stdint.h>
 #include <stdbool.h>
 
 // this is a graph vertex
 typedef struct Vertex
 {
     // x and y are coordinates in the maze
-    char x;
-    char y;
+    int8_t x;
+    int8_t y;
     bool visited;
 
     // holds the address of adjacent vertices

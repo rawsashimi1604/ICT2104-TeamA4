@@ -1,12 +1,14 @@
 #ifndef GRAPH_HEADER
 #define GRAPH_HEADER
 
+#include <stdint.h>
+
 #include "linkedlist.h"
 
 typedef struct Graph
 {
-    unsigned char size;
-    unsigned char numberOfNodesVisited;
+    uint8_t size;
+    uint8_t numberOfNodesVisited;
     List *list;
 } Graph;
 

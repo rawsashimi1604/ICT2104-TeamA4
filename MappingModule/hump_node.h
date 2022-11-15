@@ -1,12 +1,14 @@
 #ifndef HUMP_NODE_HEADER
 #define HUMP_NODE_HEADER
 
+#include <stdint.h>
+
 // this is a node in a linked list
 // where we are using a linked list of nodes
 typedef struct HumpNode
 {
-    char x;
-    char y;
+    int8_t x;
+    int8_t y;
     struct HumpNode *next;
 } HumpNode;
 
