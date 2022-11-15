@@ -1,3 +1,35 @@
+// // Yo Kevin/Irfaan, you can uncomment out the below when doing the testing
+
+// /* DriverLib Includes */
+// #include "driverlib.h"
+
+// // for MAP_ prefix functions
+// #include "rom_map.h"
+
+// /* Standard Includes */
+// #include <stdio.h>
+// #include <stdint.h>
+// #include <stdbool.h>
+// #include <stdlib.h>
+// #include <string.h>
+
+// // Ultrasonic module
+
+// // Motor module
+
+// // mapping data structures
+// #include "MappingModule/queue.h"
+// #include "MappingModule/stack.h"
+// #include "MappingModule/graph.h"
+// #include "MappingModule/barcode_linkedlist.h"
+// #include "MappingModule/hump_linkedlist.h"
+
+// /* test stubs from other modules */
+// #include "MappingModule/init.h"
+// #include "MappingModule/ultrasonic.h"
+
+// /* ====================================================================== */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -14,8 +46,6 @@
 #include "graph.h"
 #include "barcode_linkedlist.h"
 #include "hump_linkedlist.h"
-
-/* =================================== */
 
 /* test stubs from other modules */
 #include "init.h"
@@ -45,7 +75,7 @@ void updateCarDirection(char turn);
 void initializeCarPosition(void);
 void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRight, Graph *graph);
 void mapMaze(Vertex *start, Graph *graph);
-bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords);
+bool driveCarUsingPath(int *listOfCoords, int numberOfCoords);
 bool bfs(Vertex *sourceV, Vertex *endV, Graph *graph);
 
 /* =================================== */
@@ -340,22 +370,32 @@ bool adjustCarDirection(char directionToTurnTo)
 // owner            : Kevin
 // description      : drive car following the path
 // input            : it should take in a list of x y coordinates
-bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
+bool driveCarUsingPath(int *listOfCoords, int numberOfCoords)
 {
     // declaring the require elements
     int numberOfDirections = numberOfCoords - 1; // number of directions = number of coords -1
-    char directionsArrs[numberOfDirections];     // store the directions the car will need to move
-    memset(directionsArrs, 0, numberOfDirections);
+
+    // char directionsArrs[numberOfDirections];
+    // memset(directionsArrs, 0, numberOfDirections);
+
+    // prevent malloc of < 0
+    if (numberOfDirections < 0)
+        numberOfDirections = 0;
+
+    // store the directions the car will need to move
+    // if number of directions is positive, malloc numberOfDirections
+    // else malloc just 1 byte to prevent any errors
+    char *directionsArrs = malloc(sizeof(char) * (numberOfDirections > 0 ? numberOfDirections : 1));
 
     uint8_t i = 0;
     // go through the coords and create the char array to store the directions
     for (i = 0; i < numberOfDirections; i++)
     {
         // minus the x cord of 2 coords. if not 0 (false), car moves in x axis
-        if (listOfCoords[i + 1][0] - listOfCoords[i][0])
+        if (listOfCoords[(i + 1) * 2 + 0] - listOfCoords[i * 2 + 0])
         {
             // if x is positive, move W, if neg, move E
-            switch (listOfCoords[i + 1][0] - listOfCoords[i][0])
+            switch (listOfCoords[(i + 1) * 2 + 0] - listOfCoords[i * 2 + 0])
             {
             case -1:
                 directionsArrs[i] = 'W';
@@ -365,14 +405,15 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
                 break;
             default:
                 printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
+                free(directionsArrs);
                 return false;
             }
         }
         // minus the y cord of 2 coords. if not 0 (false), car moves in y axis
-        else if (listOfCoords[i + 1][1] - listOfCoords[i][1])
+        else if (listOfCoords[(i + 1) * 2 + 1] - listOfCoords[i * 2 + 1])
         {
             // if x is positive, move W, if neg, move E
-            switch (listOfCoords[i + 1][1] - listOfCoords[i][1])
+            switch (listOfCoords[(i + 1) * 2 + 1] - listOfCoords[i * 2 + 1])
             {
             case -1:
                 directionsArrs[i] = 'S';
@@ -382,6 +423,7 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
                 break;
             default:
                 printf("ERROR: driveCarUsingPath have a coords that skip a step. \n");
+                free(directionsArrs);
                 return false;
             }
         }
@@ -389,6 +431,7 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
         {
             // coord somehow wants to move diaganally
             printf("ERROR: driveCarUsingPath wants to move diaganally. \n");
+            free(directionsArrs);
             return false;
         }
     }
@@ -416,6 +459,7 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
             Motor_driveForward(1);
         }
     }
+    free(directionsArrs);
     return true; // end of driveCarUsingPath
 }
 
@@ -531,23 +575,27 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
                 tempVisitedNode1 = tempVisitedNode1->parentVertex;
             }
 
-            // initialize a coor array based on the size of the stack
-            int listOfCoords[stack1->size][2];
-            memset(listOfCoords, 0, stack1->size * 2 * sizeof(int));
+            // int listOfCoords[stack1->size][2];
+            // memset(listOfCoords, 0, stack1->size * 2 * sizeof(int));
+
+            // initialize a coord array based on the size of the stack
+            int *listOfCoords = malloc(stack1->size * 2 * sizeof(int));
+
             // moving the car based on path constructed. craft a coord array and send to drive car using path
             for (i = 0; stack1->size != 0; i++)
             {
                 printf("Size of stack: %d | ", stack1->size); // for debuggin purposes
                 Stack_peak(stack1);                           // for debuggin purposes
                 tempV = Stack_pop(stack1);                    // pop the stack
-                listOfCoords[i][0] = tempV->x;                // add the x coord of the vertex from the stack onto the listOfCoords
-                listOfCoords[i][1] = tempV->y;                // add the y coord of the vertex from the stack onto the listOfCoords
+                listOfCoords[i * 2 + 0] = tempV->x;           // add the x coord of the vertex from the stack onto the listOfCoords
+                listOfCoords[i * 2 + 1] = tempV->y;           // add the y coord of the vertex from the stack onto the listOfCoords
             }
             // passing the pointer of the listOfCoords to the drive function to drive
             // printf("Number of Coords being passed in: %d \n", (sizeof(listOfCoords)/sizeof(listOfCoords[0])));
-            if (!driveCarUsingPath(listOfCoords, (sizeof(listOfCoords) / sizeof(listOfCoords[0]))))
+            if (!driveCarUsingPath(listOfCoords, stack1->size))
             {
                 printf("ERROR: BFS listOfCoords has wrong coords.\n");
+                free(listOfCoords);
                 return false;
             }
             // update the car's position
@@ -563,6 +611,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
             Queue_destroy(queue1);
             Stack_destroy(stack1);
             printf("BFS completed sucessfully.\n");
+            free(listOfCoords);
             return true; // success in BFS n drive
         }
 
@@ -591,7 +640,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
                         tempVisitedNode1 = (node)malloc(sizeof(struct VisitedNode)); // allocate memory using malloc()
                         if (tempVisitedNode1 == NULL)
                         {
-                            printf("BFS tempVisitedNode1 alloction failed. \n");
+                            printf("BFS tempVisitedNode1 allocation failed. \n");
                             // garbage collection
                             while (visitedListHead != NULL)
                             {
@@ -676,6 +725,14 @@ void displayMapOnM5(Graph *graph)
 // graph test
 int main(void)
 {
+
+    // Yo Kev/Irfaan, you can uncomment these out for faster printing :D
+    /* Setting our MCLK to 48MHz for faster programming */
+    // MAP_PCM_setCoreVoltageLevel(PCM_VCORE1);
+    // FlashCtl_setWaitState(FLASH_BANK0, 2);
+    // FlashCtl_setWaitState(FLASH_BANK1, 2);
+    // MAP_CS_setDCOCenteredFrequency(CS_DCO_FREQUENCY_48);
+
     printf("graph test\n");
     // allocates memory for an empty graph
     // using a linked list to store our graph
@@ -785,6 +842,14 @@ int main(void)
 
     // frees memory related to graphz
     Graph_destroy(graph);
+
+    // Yo Kev/Irfaan, you can uncomment these out if you testing it on the MSP432
+    // printf("Success!\n");
+    // printf("Going to LPM3\n");
+    // while (1)
+    // {
+    //     PCM_gotoLPM3();
+    // }
 }
 
 // hump test
