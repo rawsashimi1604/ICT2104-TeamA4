@@ -32,6 +32,7 @@ SOFTWARE.
 // no memory leaks currently known
 
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -62,7 +63,7 @@ void List_display(List *list)
     {
         snprintf(buffer, 100, "coord: (%d, %d) | visited: %s | adjacent: : ",
                  current->data->x, current->data->y, current->data->visited ? "yes" : "no");
-        for (size_t i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
         {
             if (current->data->adjacencyList[i] == NULL)
                 continue;

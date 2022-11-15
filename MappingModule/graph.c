@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "graph.h"
 
@@ -37,13 +38,13 @@ Vertex *Graph_addVertex(int x, int y, Graph *graph)
 }
 
 // adds a bidirectional link for both coordinates, if it exists
-void Graph_addEdge(Vertex *vertex1, Vertex *vertex2, Graph *graph)
+void Graph_addEdge(Vertex *vertex1, Vertex *vertex2)
 {
     if (vertex1 == NULL || vertex2 == NULL)
         return;
 
     // ensure duplicate edges/self-loops are not added
-    for (size_t i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (vertex1->adjacencyList[i] == NULL)
             continue;
@@ -55,7 +56,7 @@ void Graph_addEdge(Vertex *vertex1, Vertex *vertex2, Graph *graph)
     bool isEdgeOneConnected = false;
 
     // add v and w to each other
-    for (int i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (vertex1->adjacencyList[i] != NULL)
             continue;
@@ -69,7 +70,7 @@ void Graph_addEdge(Vertex *vertex1, Vertex *vertex2, Graph *graph)
 
     bool isEdgeTwoConnected = false;
 
-    for (int i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (vertex2->adjacencyList[i] != NULL)
             continue;
@@ -82,7 +83,7 @@ void Graph_addEdge(Vertex *vertex1, Vertex *vertex2, Graph *graph)
     // this means incorrect usage of the method
     if (!isEdgeTwoConnected)
     {
-        for (int i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
         {
             if (vertex1->adjacencyList[i] == vertex2)
             {
@@ -102,7 +103,7 @@ void Graph_addEdgeOld(int x, int y, int x2, int y2, Graph *graph)
         return;
 
     // ensure duplicate edges/self-loops are not added
-    for (size_t i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (v->adjacencyList[i] == NULL)
             continue;
@@ -118,7 +119,7 @@ void Graph_addEdgeOld(int x, int y, int x2, int y2, Graph *graph)
     bool isEdgeOneConnected = false;
 
     // add v and w to each other
-    for (int i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (v->adjacencyList[i] != NULL)
             continue;
@@ -132,7 +133,7 @@ void Graph_addEdgeOld(int x, int y, int x2, int y2, Graph *graph)
 
     bool isEdgeTwoConnected = false;
 
-    for (int i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (w->adjacencyList[i] != NULL)
             continue;
@@ -145,7 +146,7 @@ void Graph_addEdgeOld(int x, int y, int x2, int y2, Graph *graph)
     // this means incorrect usage of the method
     if (!isEdgeTwoConnected)
     {
-        for (int i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
         {
             if (v->adjacencyList[i] == w)
             {

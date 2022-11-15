@@ -116,11 +116,11 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRi
     {
         // create a new vertex and update the adj list for both vertices (addEdge)
         if (canGoFront)
-            Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph));
         if (canGoLeft)
-            Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph));
         if (canGoRight)
-            Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph));
     }
 
     // if the car is facing south
@@ -128,11 +128,11 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRi
     {
         // create a new vertex and update the adj list for both vertices (addEdge)
         if (canGoFront)
-            Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph));
         if (canGoLeft)
-            Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph));
         if (canGoRight)
-            Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph));
     }
 
     // if the car is facing east
@@ -140,11 +140,11 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRi
     {
         // create a new vertex and update the adj list for both vertices (addEdge)
         if (canGoFront)
-            Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x + 1, y, graph));
         if (canGoLeft)
-            Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph));
         if (canGoRight)
-            Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph));
     }
 
     // if the car is facing west
@@ -152,11 +152,11 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRi
     {
         // create a new vertex and update the adj list for both vertices (addEdge)
         if (canGoFront)
-            Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x - 1, y, graph));
         if (canGoLeft)
-            Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x, y - 1, graph));
         if (canGoRight)
-            Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph), graph);
+            Graph_addEdge(currentPos, Graph_addVertex(x, y + 1, graph));
     }
     else
     {
@@ -187,7 +187,7 @@ void mapMaze(Vertex *start, Graph *graph)
     start->visited = true;
     graph->numberOfNodesVisited++;
 
-    for (size_t i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         if (start->adjacencyList[i] == NULL)
             break;
@@ -232,7 +232,7 @@ void mapMaze(Vertex *start, Graph *graph)
         // because updateMap() is impleted and will create vertices with edges
         // updateMap(carCurrentPosition, canGoFront, canGoLeft, canGoRight, graph);
 
-        for (size_t i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
         {
             if (v->adjacencyList[i] == NULL)
                 break;
@@ -310,7 +310,7 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
     memset(directionsArrs, 0, numberOfDirections);
 
     // go through the coords and create the char array to store the directions
-    for (int i = 0; i < numberOfDirections; i++)
+    for (uint8_t i = 0; i < numberOfDirections; i++)
     {
         // minus the x cord of 2 coords. if not 0 (false), car moves in x axis
         if (listOfCoords[i + 1][0] - listOfCoords[i][0])
@@ -357,14 +357,14 @@ bool driveCarUsingPath(int listOfCoords[][2], int numberOfCoords)
     // For debugging purposes, prints the directions the car will need to move.
     //  printf("numberOfDirections = %d\n", numberOfDirections);
     printf("driveCarUsingPath will move car in: ");
-    for (int i = 0; i < numberOfDirections; i++)
+    for (uint8_t i = 0; i < numberOfDirections; i++)
     {
         printf("%c ", directionsArrs[i]);
     }
     printf("\n");
 
     // given the list of directions, move the car and adjust the orientation accordingly
-    for (int i = 0; i < numberOfDirections; i++)
+    for (uint8_t i = 0; i < numberOfDirections; i++)
     {
         // car is facing the right direction. move up
         if (carDirection == directionsArrs[i])
@@ -495,7 +495,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
             int listOfCoords[stack1->size][2];
             memset(listOfCoords, 0, stack1->size * 2 * sizeof(int));
             // moving the car based on path constructed. craft a coord array and send to drive car using path
-            for (int i = 0; stack1->size != 0; i++)
+            for (uint8_t i = 0; stack1->size != 0; i++)
             {
                 printf("Size of stack: %d | ", stack1->size); // for debuggin purposes
                 Stack_peak(stack1);                           // for debuggin purposes
@@ -527,7 +527,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
         }
 
         // targetV has not been found. iterate throu adjList of node and enqueue if visited by car and not by BFS
-        for (size_t i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
         {
             if (tempV->adjacencyList[i] == NULL) // breaks if no more ajd vertices
                 break;
@@ -618,7 +618,7 @@ void displayMapOnM5(Graph *graph)
     {
         Vertex *v = trav->data;
         snprintf(buffer, 100, "(%d, %d): ", v->x, v->y);
-        for (size_t i = 0; i < 4; i++)
+        for (uint8_t i = 0; i < 4; i++)
         {
             if (v->adjacencyList[i] == NULL)
                 continue;
@@ -678,45 +678,45 @@ int main(void)
 
     // to add edge between 2 existing vertices in a graph
     // row 1
-    Graph_addEdge(v1, v2, graph);
-    Graph_addEdge(v2, v3, graph);
-    Graph_addEdge(v3, v4, graph);
-    Graph_addEdge(v1, v5, graph);
-    Graph_addEdge(v3, v7, graph);
-    Graph_addEdge(v4, v8, graph);
+    Graph_addEdge(v1, v2);
+    Graph_addEdge(v2, v3);
+    Graph_addEdge(v3, v4);
+    Graph_addEdge(v1, v5);
+    Graph_addEdge(v3, v7);
+    Graph_addEdge(v4, v8);
 
     // row2
-    Graph_addEdge(v9, v5, graph);
-    Graph_addEdge(v6, v10, graph);
-    Graph_addEdge(v7, v11, graph);
-    Graph_addEdge(v8, v12, graph);
+    Graph_addEdge(v9, v5);
+    Graph_addEdge(v6, v10);
+    Graph_addEdge(v7, v11);
+    Graph_addEdge(v8, v12);
 
     // row 3
-    Graph_addEdge(v9, v13, graph);
-    Graph_addEdge(v9, v10, graph);
-    Graph_addEdge(v11, carCurrentPosition, graph);
-    Graph_addEdge(v16, v12, graph);
+    Graph_addEdge(v9, v13);
+    Graph_addEdge(v9, v10);
+    Graph_addEdge(v11, carCurrentPosition);
+    Graph_addEdge(v16, v12);
 
     // row 4
-    Graph_addEdge(v13, v14, graph);
-    Graph_addEdge(v14, carCurrentPosition, graph);
-    Graph_addEdge(v16, v20, graph);
-    Graph_addEdge(v17, v13, graph);
+    Graph_addEdge(v13, v14);
+    Graph_addEdge(v14, carCurrentPosition);
+    Graph_addEdge(v16, v20);
+    Graph_addEdge(v17, v13);
 
     // row 5
-    Graph_addEdge(v17, v18, graph);
-    Graph_addEdge(v18, v19, graph);
-    Graph_addEdge(v20, v19, graph);
+    Graph_addEdge(v17, v18);
+    Graph_addEdge(v18, v19);
+    Graph_addEdge(v20, v19);
 
     // // note: adding an existing edge between two vertices will not do anything
     // // although the validation check here is lowkey expensive
-    Graph_addEdge(v20, v19, graph);
+    Graph_addEdge(v20, v19);
 
     // how to iterate through the adjacent vertices of a graph
     // Graph_adj(x, y, graph) takes in 3 args: the x and y coordinate of the graph, and the graph itself
     // returns an adj array of 4 pointers to vertices. If not initialized, then it is (-100, -100) for a vertex
     // Vertex **adj = Graph_adj(0, 0, graph);
-    // for (size_t i = 0; i < 4; i++)
+    // for (uint8_t i = 0; i < 4; i++)
     // {
     //     printf("(%d, %d)\n", adj[i]->x, adj[i]->y);
     // }
