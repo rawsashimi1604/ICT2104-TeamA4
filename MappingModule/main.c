@@ -100,6 +100,47 @@ void initializeCarPosition(void)
     // - if above not true, car turn till at least one of the side ultra sensor is blocked. then move forward till front is blocked.
     // - once done, turn arround so that the front is clear. set car as facing north and starting current position as 00,
     // - kaho’s mapMaze can commence
+
+    bool objFront = Ultrasonic_checkFront();
+    bool objBehind = Ultrasonic_checkBehind();
+    bool objLeft = Ultrasonic_checkLeft();
+    bool objRight = Ultrasonic_checkRight();
+
+    if ((objFront == false && objLeft == false && objBehind == true && objRight == true) ||
+        (objFront == false && objLeft == true && objBehind == true && objRight == false))
+    {
+        printf("Car is Ready!");
+    }
+    else if (objFront == true && objLeft == true && objBehind == false && objRight == false)
+    {
+        Motor_TurnRight();
+        printf("Car turned right");
+    }
+    else if (objFront == true && objLeft == false && objBehind == false && objRight == true)
+    {
+        Motor_TurnLeft();
+        printf("Car turned left");
+    }
+    else if (objFront == true && objLeft == false && objBehind == true)
+    {
+        Motor_TurnLeft();
+        printf("Car turned left");
+        while (objFront == false)
+        {
+            Motor_MoveForward();
+            printf("Car moving forward");
+        }
+    }
+    else if (objFront == false && objLeft == false && objBehind == true && objRight == false)
+    {
+        Motor_TurnLeft();
+        printf("Car turned left");
+        while (objFront == false)
+        {
+            Motor_MoveForward();
+            printf("Car moving forward");
+        }
+    }
 }
 
 // owner            : Kevin
