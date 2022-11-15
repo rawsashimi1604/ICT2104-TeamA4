@@ -262,6 +262,9 @@ void mapMaze(Vertex *start, Graph *graph)
         Stack_push(start->adjacencyList[i], s);
     }
 
+    // might want to change to pointer on heap instead, see how @Kevin
+    // just to match the new function signature
+    // if want to change then remember to free it
     int pathCoordinate[2][2] = {{0, 0}, {0, 0}};
 
     // dfs
