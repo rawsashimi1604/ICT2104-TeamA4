@@ -25,10 +25,6 @@ void Motor_driveForward(int units)
 {
 }
 
-// this is the defined interface from the motor team
-// void Motor_turnRight(void);
-
-// this is not in the defined interface from the motor team
 void Motor_turnLeft(void)
 {
 }
@@ -91,8 +87,8 @@ void Mapping_writeHumpData(void)
 // end condition    : one of the following conditions must hold:
 //                      Ultrasonic_checkFront() and Ultrasonic_checkLeft() must return false
 //                      Ultrasonic_checkFront() and Ultrasonic_checkRight() must return false
-//                      Ultrasonic_checkBehind() and Ultrasonic_checkLeft() must return false
-//                      Ultrasonic_checkBehind() and UUltrasonic_checkRight() must return false
+//                      Ultrasonic_checkBack() and Ultrasonic_checkLeft() must return false
+//                      Ultrasonic_checkBack() and UUltrasonic_checkRight() must return false
 void initializeCarPosition(void)
 {
     // - car need to check ultra sensors. it will need to have the condition where the car is in a corner
@@ -102,7 +98,7 @@ void initializeCarPosition(void)
     // - kaho’s mapMaze can commence
 
     bool objFront = Ultrasonic_checkFront();
-    bool objBehind = Ultrasonic_checkBehind();
+    bool objBehind = Ultrasonic_checkBack();
     bool objLeft = Ultrasonic_checkLeft();
     bool objRight = Ultrasonic_checkRight();
 
@@ -113,31 +109,31 @@ void initializeCarPosition(void)
     }
     else if (objFront == true && objLeft == true && objBehind == false && objRight == false)
     {
-        Motor_TurnRight();
+        Motor_turnRight();
         printf("Car turned right");
     }
     else if (objFront == true && objLeft == false && objBehind == false && objRight == true)
     {
-        Motor_TurnLeft();
+        Motor_turnLeft();
         printf("Car turned left");
     }
     else if (objFront == true && objLeft == false && objBehind == true)
     {
-        Motor_TurnLeft();
+        Motor_turnLeft();
         printf("Car turned left");
         while (objFront == false)
         {
-            Motor_MoveForward();
+            Motor_driveForward(1);
             printf("Car moving forward");
         }
     }
     else if (objFront == false && objLeft == false && objBehind == true && objRight == false)
     {
-        Motor_TurnLeft();
+        Motor_turnLeft();
         printf("Car turned left");
         while (objFront == false)
         {
-            Motor_MoveForward();
+            Motor_driveForward(1);
             printf("Car moving forward");
         }
     }
