@@ -583,7 +583,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
 
             // initialize a coord array based on the size of the stack
             int *listOfCoords = malloc(stack1->size * 2 * sizeof(int));
-
+            int stackSize = stack1->size;
             // moving the car based on path constructed. craft a coord array and send to drive car using path
             for (i = 0; stack1->size != 0; i++)
             {
@@ -595,7 +595,7 @@ bool bfs(Vertex *sourceV, Vertex *targetV, Graph *graph)
             }
             // passing the pointer of the listOfCoords to the drive function to drive
             // printf("Number of Coords being passed in: %d \n", (sizeof(listOfCoords)/sizeof(listOfCoords[0])));
-            if (!driveCarUsingPath(listOfCoords, stack1->size))
+            if (!driveCarUsingPath(listOfCoords, stackSize))
             {
                 printf("ERROR: BFS listOfCoords has wrong coords.\n");
                 free(listOfCoords);
