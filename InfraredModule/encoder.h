@@ -23,6 +23,7 @@
  */
 
 void getSpeed(void);
+void PORT2_IRQHandler(void);
 void TA1_0_IRQHandler(void);
 
 #endif /* ENCODER_H_ */
