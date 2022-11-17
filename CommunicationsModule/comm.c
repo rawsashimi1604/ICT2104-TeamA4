@@ -1,8 +1,8 @@
 /* DriverLib Includes */
+#include <CommunicationsModule/comm.h>
 #include "driverlib.h"
 
 /* Standard Includes */
-#include "CommunicationsModule/comm.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -58,24 +58,25 @@ void sendData(unsigned short identifier, unsigned long data){
     unsigned short i = 0;
     switch (identifier){
     case 1:
-        tmp_char_array[0] = 0x41;
+        tmp_char_array[0] = 0x53; //S
         break;
     case 2:
-        tmp_char_array[0] = 0x42;
+        tmp_char_array[0] = 0x48; //H
         break;
     case 3:
-        tmp_char_array[0] = 0x43;
+        tmp_char_array[0] = 0x42; //B
         break;
     }
-    tmp_char_array[1] = (data & 0xff000000) >> 24;
-    tmp_char_array[2] = (data & 0x00ff0000) >> 16;
-    tmp_char_array[3] = (data & 0x0000ff00) >>  8;
-    tmp_char_array[4] = (data & 0x000000ff)      ;
+    tmp_char_array[4] = (data & 0xff000000) >> 24;
+    tmp_char_array[3] = (data & 0x00ff0000) >> 16;
+    tmp_char_array[2] = (data & 0x0000ff00) >>  8;
+    tmp_char_array[1] = (data & 0x000000ff)      ;
 
     while(*(tmp_char_array+i)){
         UART_transmitData(EUSCI_A2_BASE, *(tmp_char_array+i));  // Write the character at the location specified by pointer
         i++;                                             // Increment pointer to point to the next character
     }
+    UART_transmitData(EUSCI_A2_BASE, 0x0a);
 }
 
 void EUSCIA0_IRQHandler(void)
