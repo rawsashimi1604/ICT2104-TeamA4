@@ -12,10 +12,10 @@
  * INCLUDES
  */
 #include "driverlib/MSP432P4xx/driverlib.h"
-#include "Utility/DataStructures/queue.h"
 #include "ultrasonic.h"
 
 #include <stdio.h>
+#include <Utility/DataStructures/float_queue.h>
 
 /*************************************************************
  * DEFINITIONS
@@ -58,8 +58,8 @@
 /*************************************************************
  * VARIABLES
  */
-Queue* smaQueue;
-Queue* emaQueue;
+FloatQueue* smaQueue;
+FloatQueue* emaQueue;
 
 /*************************************************************
  * FUNCTIONS

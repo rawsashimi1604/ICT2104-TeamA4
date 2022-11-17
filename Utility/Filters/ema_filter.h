@@ -12,8 +12,8 @@
  * INCLUDES
  */
 #include <stdbool.h>
+#include <Utility/DataStructures/float_queue.h>
 
-#include "Utility/DataStructures/queue.h"
 #include "Utility/Filters/sma_filter.h"
 
 
@@ -32,6 +32,6 @@ float previousEMA;
  * FUNCTIONS
  */
 
-float Filter_EMAFilter(Queue* queue, float value);
+float Filter_EMAFilter(FloatQueue* queue, float value);
 
 #endif /* UTILITY_FILTERS_EMA_FILTER_H_ */

@@ -12,7 +12,7 @@
 /*************************************************************
  * FUNCTIONS
  */
-float Filter_SMAFilter(Queue* queue){
+float Filter_SMAFilter(FloatQueue* queue){
 
     int i;
     float sum = 0;

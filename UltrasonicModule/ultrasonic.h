@@ -11,12 +11,12 @@
 /*************************************************************
  * INCLUDES
  */
+#include <Utility/DataStructures/float_queue.h>
 #include "driverlib/MSP432P4xx/driverlib.h"
 #include "Utility/time_utility.h"
 #include "Utility/Filters/kalman_filter.h"
 #include "Utility/Filters/sma_filter.h"
 #include "Utility/Filters/ema_filter.h"
-#include "Utility/DataStructures/queue.h"
 #include "init.h"
 
 /*************************************************************
@@ -33,17 +33,10 @@
 /*************************************************************
  * VARIABLES
  */
-
-
 float latestSensorDistances[4];      // Stores the latest distances captured from sensor.
-float frontDist;
-float filteredValue;
 
 
 uint32_t sensor1InterruptCount;
-uint32_t sensor2InterruptCount;
-uint32_t sensor3InterruptCount;
-uint32_t sensor4InterruptCount;
 
 /*************************************************************
  * STRUCTS

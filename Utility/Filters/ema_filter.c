@@ -19,7 +19,7 @@ bool isFirstValue = true;
  * FUNCTIONS
  */
 
-float Filter_EMAFilter(Queue* queue, float value) {
+float Filter_EMAFilter(FloatQueue* queue, float value) {
 
     // If the EMA queue is not full, we cannot calculate,
     // Return SMA avg

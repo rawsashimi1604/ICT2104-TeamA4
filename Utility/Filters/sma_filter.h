@@ -11,11 +11,11 @@
 /*************************************************************
  * INCLUDES
  */
-#include "Utility/DataStructures/queue.h"
+#include <Utility/DataStructures/float_queue.h>
 
 /*************************************************************
  * FUNCTIONS
  */
-float Filter_SMAFilter(Queue* queue);
+float Filter_SMAFilter(FloatQueue* queue);
 
 #endif /* UTILITY_FILTERS_SMA_FILTER_H_ */

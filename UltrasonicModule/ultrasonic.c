@@ -137,8 +137,6 @@ static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig)
 
     printf("Distance: %.2fcm\n", distance);
 
-    frontDist = distance;
-
     return hasObject;
 }
 
