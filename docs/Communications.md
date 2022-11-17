@@ -15,10 +15,12 @@
 3. 
 -->
 ### Pre-requisite
-1. [Burn](https://docs.m5stack.com/en/download) your M5 StickCPlus with UIFlow_StickC_Plus v1.9.8-plus filmware
-2. Configure your M5 in Internet Mode
-3. Enter your SSID and Password (Ensure that your PC is on the same network as well)
-4. Note down your API key
+1. Download the [M5 Burner](https://docs.m5stack.com/en/download)
+2. Ensure that you have choose the correct port and set the baud rate to 115200
+3. Burn your M5 StickCPlus with UIFlow_StickC_Plus v1.9.8-plus filmware
+4. Configure your M5 in Internet Mode
+5. Enter your SSID and Password (Ensure that your PC is on the same network as well)
+6. Note down your API key
 
 ### How to get the M5 Ready
 1. Proceed to https://flow.m5stack.com/
