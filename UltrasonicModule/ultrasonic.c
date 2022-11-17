@@ -23,7 +23,7 @@ UltrasonicSensorConfiguration sensor1Config = {
    ULTRASONIC_TRIGGER_PIN1,
    ULTRASONIC_ECHO_PORT1,
    ULTRASONIC_ECHO_PIN1,
-   TIMER_A0_BASE,
+   ULTRASONIC_TIMER_MODULE,
    &sensor1InterruptCount,
    ULTRASONIC_BUFFER_FRONT_INDEX
 };
@@ -33,7 +33,7 @@ UltrasonicSensorConfiguration sensor2Config = {
    ULTRASONIC_TRIGGER_PIN2,
    ULTRASONIC_ECHO_PORT2,
    ULTRASONIC_ECHO_PIN2,
-   TIMER_A0_BASE,
+   ULTRASONIC_TIMER_MODULE,
    &sensor1InterruptCount,
    ULTRASONIC_BUFFER_LEFT_INDEX
 };
@@ -43,7 +43,7 @@ UltrasonicSensorConfiguration sensor3Config = {
    ULTRASONIC_TRIGGER_PIN3,
    ULTRASONIC_ECHO_PORT3,
    ULTRASONIC_ECHO_PIN3,
-   TIMER_A0_BASE,
+   ULTRASONIC_TIMER_MODULE,
    &sensor1InterruptCount,
    ULTRASONIC_BUFFER_RIGHT_INDEX
 };
@@ -53,7 +53,7 @@ UltrasonicSensorConfiguration sensor4Config = {
    ULTRASONIC_TRIGGER_PIN4,
    ULTRASONIC_ECHO_PORT4,
    ULTRASONIC_ECHO_PIN4,
-   TIMER_A0_BASE,
+   ULTRASONIC_TIMER_MODULE,
    &sensor1InterruptCount,
    ULTRASONIC_BUFFER_BACK_INDEX
 };
@@ -197,14 +197,14 @@ static float getDistance(UltrasonicSensorConfiguration* sensorConfig) {
     return distance;
 }
 
-void TA0_0_IRQHandler(void)
+void TA1_0_IRQHandler(void)
 {
 
     // Increase global interrupt count
     sensor1InterruptCount++;
 
     /* Clear interrupt flag */
-    Timer_A_clearCaptureCompareInterrupt(TIMER_A0_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
+    Timer_A_clearCaptureCompareInterrupt(ULTRASONIC_TIMER_MODULE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
 }
 
 

@@ -43,8 +43,8 @@ static void initPortsAndPins() {
 
 static void initInterrupts() {
 
-    // Enable interrupt for Timer_A0
-    Interrupt_enableInterrupt(INT_TA0_0);
+    // Enable interrupt for Timer_A1
+    Interrupt_enableInterrupt(ULTRASONIC_TIMER_INT);
 
     // Enable interrupts globally...
     Interrupt_enableMaster();
@@ -55,8 +55,8 @@ static void initTimers() {
     // Halt watchdog timer so that the microcontroller does not restart.
     WDT_A_holdTimer();
 
-    // Set up Timer_A0, used for interrupt count check, (1MHz clock).
-    const Timer_A_UpModeConfig upConfig1 =
+    // Set up Timer_A1, used for interrupt count check, (1MHz clock).
+    const Timer_A_UpModeConfig upConfig =
     {
         TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
         TIMER_A_CLOCKSOURCE_DIVIDER_3,          // SMCLK/3 = 1MHz
@@ -66,8 +66,8 @@ static void initTimers() {
         TIMER_A_DO_CLEAR                        // Clear value
     };
 
-    Timer_A_configureUpMode(TIMER_A0_BASE, &upConfig1);
-    Timer_A_clearTimer(TIMER_A0_BASE);
+    Timer_A_configureUpMode(ULTRASONIC_TIMER_MODULE, &upConfig);
+    Timer_A_clearTimer(ULTRASONIC_TIMER_MODULE);
 
 }
 

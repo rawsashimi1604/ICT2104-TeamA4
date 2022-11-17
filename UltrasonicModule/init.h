@@ -48,6 +48,8 @@
 #define ULTRASONIC_ECHO_PIN4         GPIO_PIN4
 
 // Timers
+#define ULTRASONIC_TIMER_MODULE      TIMER_A1_BASE
+#define ULTRASONIC_TIMER_INT         INT_TA1_0
 #define TIMER_A_TICKPERIOD           1000
 
 // Threshold in cm
