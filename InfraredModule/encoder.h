@@ -22,8 +22,16 @@
  * FUNCTIONS
  */
 
+// PRIVATE FUNCTIONS
+void initTimer(void);
+void initPins(void);
+void initInterrupts(void);
 void getSpeed(void);
 void PORT2_IRQHandler(void);
 void TA1_0_IRQHandler(void);
+
+// PUBLIC FUNCTIONS
+void Encoder_init(void);
+void Encoder_main(void);
 
 #endif /* ENCODER_H_ */

@@ -9,49 +9,55 @@ volatile int last_rev_interval = 0;
 volatile int start_time = 0;
 volatile int end_time = 0;
 
-/* Timer_A UpMode Configuration Parameter */
-const Timer_A_UpModeConfig upConfig = {
-    TIMER_A_CLOCKSOURCE_SMCLK,          // SMCLK Clock Source
-    TIMER_A_CLOCKSOURCE_DIVIDER_20,     // SMCLK/20 = 3MHz / 20 = 150000Hz
-    TIMER_PERIOD,                       // 150 tick period, every tick 0.001s
-    TIMER_A_TAIE_INTERRUPT_DISABLE,     // Disable Timer interrupt
-    TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE, // Enable CCR0 interrupt
-    TIMER_A_DO_CLEAR                    // Clear value
-};
-
-int main(void)
+void initTimer(void)
 {
-    /* Stop Watchdog  */
-    MAP_WDT_A_holdTimer();
+    /* Timer_A UpMode Configuration Parameter */
+    const Timer_A_UpModeConfig upConfig = {
+        TIMER_A_CLOCKSOURCE_SMCLK,          // SMCLK Clock Source
+        TIMER_A_CLOCKSOURCE_DIVIDER_20,     // SMCLK/20 = 3MHz / 20 = 150000Hz
+        TIMER_PERIOD,                       // 150 tick period, every tick 0.001s
+        TIMER_A_TAIE_INTERRUPT_DISABLE,     // Disable Timer interrupt
+        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE, // Enable CCR0 interrupt
+        TIMER_A_DO_CLEAR                    // Clear value
+    };
 
+    // Timer Config
+    Timer_A_configureUpMode(TIMER_A1_BASE, &upConfig);
+}
+
+void initPins(void)
+{
     // Sensor
     GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P2, GPIO_PIN5);
 
     // Select edge that triggers the interrupt
     GPIO_interruptEdgeSelect(GPIO_PORT_P2, GPIO_PIN5,
                              GPIO_LOW_TO_HIGH_TRANSITION);
+}
 
+void initInterrupts(void)
+{
     // Clear pin's interrupt flag for P2.5
     GPIO_clearInterruptFlag(GPIO_PORT_P2, GPIO_PIN5);
 
     // Enable interrupt bit of the specific GPIO pin
     GPIO_enableInterrupt(GPIO_PORT_P2, GPIO_PIN5);
 
-    // Timer Config
-    Timer_A_configureUpMode(TIMER_A1_BASE, &upConfig);
-
     // Set interrupt enable (IE) bit of corresponding interrupt source
     Interrupt_enableInterrupt(INT_TA1_0);
     Interrupt_enableInterrupt(INT_PORT2);
+}
 
-    // Enable interrupts globally (set GIE bit)
-    Interrupt_enableMaster();
+void Encoder_init(void)
+{
+    initTimer();
+    initPins();
+    initInterrupts();
+}
+
+void Encoder_main(void) // Call once in main
+{
     Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_UP_MODE);
-
-    while (1)
-    {
-        PCM_gotoLPM3();
-    }
 }
 
 void PORT2_IRQHandler(void)
@@ -121,3 +127,12 @@ void TA1_0_IRQHandler(void) // interrupts every 0.001 seconds
     Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
                                          TIMER_A_CAPTURECOMPARE_REGISTER_0);
 }
+
+// int main(void)
+// {
+
+//     while (1)
+//     {
+//         PCM_gotoLPM3();
+//     }
+// }
