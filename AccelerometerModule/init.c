@@ -13,7 +13,7 @@
 /*************************************************************
  * FUNCTIONS
  */
-void initPortsAndPins()
+static void initPortsAndPins()
 {
     // Set up I2C Pins
     // Set up SDA PIN...
@@ -29,18 +29,58 @@ void initPortsAndPins()
             ACCEL_SCL_PIN,
             GPIO_PRIMARY_MODULE_FUNCTION
     );
+
+    // --------------------------------------------
+    // Set up button pin for testing
+    // Set Button 1 as pull up resistor
+    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1);
 }
 
-void initInterrupts() {
-    // Enable and clear the interrupt flags
+static void initInterrupts() {
+    // Clear the interrupt flags for I2C
     I2C_clearInterruptFlag(
             I2C_MODULE,
             EUSCI_B_I2C_TRANSMIT_INTERRUPT0 |
             EUSCI_B_I2C_RECEIVE_INTERRUPT0
     );
+
+    // DEBUG --------------------------------------------
+    GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN1);
+    GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN1);
+    Interrupt_enableInterrupt(INT_PORT1);
+    // --------------------------------------------
+
+    // Enable interrupts for TIMER_A1
+    Interrupt_enableInterrupt(INT_TA1_0);
+
+    // Enable interrupts globally...
+    Interrupt_enableMaster();
+
 }
 
-void initI2CConfigs(void)
+static void initTimers() {
+
+    // Halt watchdog timer so that the microcontroller does not restart.
+    WDT_A_holdTimer();
+
+    // Enable timer needed for roll and pitch measurement (1MHz clock)
+    const Timer_A_UpModeConfig upConfig =
+    {
+        TIMER_A_CLOCKSOURCE_ACLK,              // ACLK 32768Hz Clock Source
+        TIMER_DIVIDER,                         // ACLK/10 = 3276.8 Hz
+        TIMER_TICKPERIOD,                      // 10 sec interrupt
+        TIMER_A_TAIE_INTERRUPT_DISABLE,        // Disable Timer interrupt
+        TIMER_A_CCIE_CCR0_INTERRUPT_DISABLE,   // Enable CCR0 interrupt
+        TIMER_A_DO_CLEAR                       // Clear value
+    };
+
+
+    // Configure and reset timer...
+    Timer_A_configureUpMode(TIMER_MODULE, &upConfig);
+    Timer_A_clearTimer(TIMER_MODULE);
+}
+
+static void initI2CConfigs(void)
 {
 
     // I2C Config
@@ -69,17 +109,22 @@ void initI2CConfigs(void)
 }
 
 void Accelerometer_init() {
+
     // Init GPIO Pins required for MPU6050
     initPortsAndPins();
 
     // Init I2C Configurations required for MPU6050 communication
     initI2CConfigs();
 
-    // Enable interrupts for I2C
+    // Init Timers
+    initTimers();
+
+    // Enable interrupts for I2C Protocol and Timers
     initInterrupts();
 
     // Reset MPU6050 on program start
     resetMPU6050();
+
 }
 
 
