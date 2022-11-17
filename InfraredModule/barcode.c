@@ -36,14 +36,61 @@ char firstChar[10];
 char secondChar[10];
 char thirdChar[10];
 
-Timer_A_UpModeConfig upConfig = {
-    TIMER_A_CLOCKSOURCE_SMCLK, // SMCLK Source
-    TIMER_A_CLOCKSOURCE_DIVIDER_1,
-    50,                                 // SMCLK /1 = 3MHz, 750 tick period means interrupt every 0.000015625s
-    TIMER_A_TAIE_INTERRUPT_DISABLE,     // Disable Timer interrupt
-    TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE, // Enable CCR0 interrupt
-    TIMER_A_DO_CLEAR                    // Clear value
-};
+void initTimer(void)
+{
+    Timer_A_UpModeConfig upConfig = {
+        TIMER_A_CLOCKSOURCE_SMCLK, // SMCLK Source
+        TIMER_A_CLOCKSOURCE_DIVIDER_1,
+        50,                                 // SMCLK /1 = 3MHz, 750 tick period means interrupt every 0.000015625s
+        TIMER_A_TAIE_INTERRUPT_DISABLE,     // Disable Timer interrupt
+        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE, // Enable CCR0 interrupt
+        TIMER_A_DO_CLEAR                    // Clear value
+    };
+
+    // Set timer as UP mode
+    Timer_A_configureUpMode(TIMER_A0_BASE, &upConfig);
+}
+
+void initADC(void)
+{
+    /* Setting Flash wait state */
+    MAP_FlashCtl_setWaitState(FLASH_BANK0, 2);
+    MAP_FlashCtl_setWaitState(FLASH_BANK1, 2);
+    /* Setting DCO to 48MHz  */
+    MAP_PCM_setPowerState(PCM_AM_LDO_VCORE1);
+    MAP_CS_setDCOCenteredFrequency(CS_DCO_FREQUENCY_48);
+    /* Enabling the FPU for floating point operation */
+    MAP_FPU_enableModule();
+    MAP_FPU_enableLazyStacking();
+    /* Initializing ADC (MCLK/1/4) */
+    MAP_ADC14_enableModule();
+    MAP_ADC14_initModule(ADC_CLOCKSOURCE_MCLK, ADC_PREDIVIDER_1, ADC_DIVIDER_4,
+                         0);
+    /* Configuring P1.0 as output */
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
+    /* Configuring GPIOs (5.5 A0) */
+    MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P5, GPIO_PIN5,
+                                                   GPIO_TERTIARY_MODULE_FUNCTION);
+    /* Configuring ADC Memory */
+    MAP_ADC14_configureSingleSampleMode(ADC_MEM0, true);
+    MAP_ADC14_configureConversionMemory(ADC_MEM0, ADC_VREFPOS_AVCC_VREFNEG_VSS,
+                                        ADC_INPUT_A0, false);
+    /* Configuring Sample Timer */
+    MAP_ADC14_enableSampleTimer(ADC_MANUAL_ITERATION);
+    /* Enabling/Toggling Conversion */
+    MAP_ADC14_enableConversion();
+    MAP_ADC14_toggleConversionTrigger();
+}
+
+void initInterrupts(void)
+{
+    /* Enabling interrupts */
+    MAP_ADC14_enableInterrupt(ADC_INT0);
+    MAP_Interrupt_enableInterrupt(INT_ADC14);
+
+    /* Enabling timer interrupt */
+    Interrupt_enableInterrupt(INT_TA0_0);
+}
 
 /* Timer Interrupt Handler*/
 void TA0_0_IRQHandler(void) // This is basically polling every 250us via an
@@ -54,7 +101,7 @@ void TA0_0_IRQHandler(void) // This is basically polling every 250us via an
     { // barcode fully read, stop timer, clear timer and clear isr flag
         Timer_A_stopTimer(TIMER_A0_BASE);
         Timer_A_clearTimer(TIMER_A0_BASE);
-        printf("TIMER STOPPED\n");
+        // printf("TIMER STOPPED\n");
         barCodesScanned++;
         readThicknessFlag = 1;
 
@@ -62,7 +109,7 @@ void TA0_0_IRQHandler(void) // This is basically polling every 250us via an
         breakDownBarcode(combined);
         currentInt = decodeSChar(secondChar);
         currentascii = getChar(currentInt);
-        // send to comms here
+        // send to comms here(idk how???)
 
         // reset the values for the next barcode
         max = 0;
@@ -127,99 +174,47 @@ void TA0_0_IRQHandler(void) // This is basically polling every 250us via an
                                          TIMER_A_CAPTURECOMPARE_REGISTER_0);
 }
 
-int main(void)
+void Barcode_init(void)
 {
-    /* Halting the Watchdog  */
-    MAP_WDT_A_holdTimer();
+    initTimer();
+    initADC();
+    initInterrupts();
+}
 
-    Interrupt_disableMaster();
-
-    /* Setting Flash wait state */
-    MAP_FlashCtl_setWaitState(FLASH_BANK0, 2);
-    MAP_FlashCtl_setWaitState(FLASH_BANK1, 2);
-
-    /* Setting DCO to 48MHz  */
-    MAP_PCM_setPowerState(PCM_AM_LDO_VCORE1);
-    MAP_CS_setDCOCenteredFrequency(CS_DCO_FREQUENCY_48);
-
-    /* Enabling the FPU for floating point operation */
-    MAP_FPU_enableModule();
-    MAP_FPU_enableLazyStacking();
-
-    /* Initializing ADC (MCLK/1/4) */
-    MAP_ADC14_enableModule();
-    MAP_ADC14_initModule(ADC_CLOCKSOURCE_MCLK, ADC_PREDIVIDER_1, ADC_DIVIDER_4,
-                         0);
-
-    /* Configuring P1.0 as output */
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
-
-    /* Configuring GPIOs (5.5 A0) */
-    MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P5, GPIO_PIN5,
-                                                   GPIO_TERTIARY_MODULE_FUNCTION);
-
-    /* Configuring ADC Memory */
-    MAP_ADC14_configureSingleSampleMode(ADC_MEM0, true);
-    MAP_ADC14_configureConversionMemory(ADC_MEM0, ADC_VREFPOS_AVCC_VREFNEG_VSS,
-                                        ADC_INPUT_A0, false);
-
-    /* Configuring Sample Timer */
-    MAP_ADC14_enableSampleTimer(ADC_MANUAL_ITERATION);
-
-    /* Enabling/Toggling Conversion */
-    MAP_ADC14_enableConversion();
-    MAP_ADC14_toggleConversionTrigger();
-
-    /* Enabling interrupts */
-    MAP_ADC14_enableInterrupt(ADC_INT0);
-    MAP_Interrupt_enableInterrupt(INT_ADC14);
-
-    // Set timer as UP mode
-    Timer_A_configureUpMode(TIMER_A0_BASE, &upConfig);
-
-    /* Enabling timer interrupt */
-    Interrupt_enableInterrupt(INT_TA0_0);
-
-    Interrupt_enableMaster();
-
-    while (1)
+void Barcode_main_while(void) // Need to Keep calling this in the main file while(1)
+{
+    if ((max / min) < 1.5f)
     {
-        //    MAP_PCM_gotoLPM0(); // if i dont get to sleep, this bitch ass MSP
-        //    doesnt get to either
-
-        if ((max / min) < 1.5f)
-        {
-            // meaning it still on the way to find the barcode
-        }
-        else
-        {
-            barCodeFound = 1;
-            printf("READING BARCODE\n");
-            if (startTimer == 1)
-            {
-                startTimer = 0;
-                max = 0;
-                min = 20000;
-                //               threshold =0;
-                Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_UP_MODE); // start timer
-            }
-            //          lookingForBlack = 1;
-        }
-
-        if (readThicknessFlag)
-        {
-            ADC14_disableConversion();
-            // printf("ADC STOPPED\n");
-            // printf("TRANSLATING THICCNESS\n");
-            readThickness();
-            // printf("MERGING ARRAYS\n");
-            mergeArray(bars, spaces, combined);
-            readThicknessFlag = 0;
-            // printf("RESULT = \n");
-            // printArray(combined);
-        }
-        // if whiteCounter exceeds certain threshold reset everything?
+        // meaning it still on the way to find the barcode
     }
+    else
+    {
+        barCodeFound = 1;
+        printf("READING BARCODE\n");
+        if (startTimer == 1)
+        {
+            startTimer = 0;
+            max = 0;
+            min = 20000;
+            //               threshold =0;
+            Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_UP_MODE); // start timer
+        }
+        //          lookingForBlack = 1;
+    }
+
+    if (readThicknessFlag)
+    {
+        ADC14_disableConversion();
+        // printf("ADC STOPPED\n");
+        // printf("TRANSLATING THICCNESS\n");
+        readThickness();
+        // printf("MERGING ARRAYS\n");
+        mergeArray(bars, spaces, combined);
+        readThicknessFlag = 0;
+        // printf("RESULT = \n");
+        // printArray(combined);
+    }
+    // if whiteCounter exceeds certain threshold reset everything?
 }
 
 /* ADC Interrupt Handler. This handler is called whenever there is a conversion
@@ -509,3 +504,12 @@ void breakDownBarcode(char *wholeBarcode)
         }
     }
 }
+
+// int main(void)
+// {
+//     while (1)
+//     {
+//         //    MAP_PCM_gotoLPM0(); // if i dont get to sleep, this bitch ass MSP
+//         //    doesnt get to either
+//     }
+// }
