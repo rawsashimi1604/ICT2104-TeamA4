@@ -13,7 +13,7 @@
 /*************************************************************
  * Functions
  */
-void initPortsAndPins() {
+static void initPortsAndPins() {
 
     // Configure LED1 pin as output
     GPIO_setOutputLowOnPin(LED1_PORT, LED1_PIN);
@@ -41,7 +41,7 @@ void initPortsAndPins() {
 
 }
 
-void initInterrupts() {
+static void initInterrupts() {
 
     // Enable interrupt for Timer_A0
     Interrupt_enableInterrupt(INT_TA0_0);
@@ -50,7 +50,7 @@ void initInterrupts() {
     Interrupt_enableMaster();
 
 }
-void initTimers() {
+static void initTimers() {
 
     // Halt watchdog timer so that the microcontroller does not restart.
     WDT_A_holdTimer();
@@ -70,6 +70,17 @@ void initTimers() {
     Timer_A_clearTimer(TIMER_A0_BASE);
 
 }
+
+static void initFilters() {
+
+    // Create Queue for SMA
+    smaQueue = createQueue(SMA_PERIOD);
+
+    // Create Queue for EMA
+    emaQueue = createQueue(EMA_PERIOD);
+
+}
+
 void Ultrasonic_init() {
 
     // Initialize all Ports and Pins
@@ -80,5 +91,8 @@ void Ultrasonic_init() {
 
     // Initialize interrupt settings
     initInterrupts();
+
+    // Initialize queues for ultrasonic filters
+    initFilters();
 
 }

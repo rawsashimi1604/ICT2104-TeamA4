@@ -16,12 +16,14 @@ struct Queue* createQueue(unsigned capacity)
     struct Queue* queue = (struct Queue*)malloc(
         sizeof(struct Queue));
     queue->capacity = capacity;
-    queue->front = queue->size = 0;
+    queue->size = 0;
 
     // This is important, see the enqueue
-    queue->rear = capacity - 1;
     queue->array = (float*)malloc(
         queue->capacity * sizeof(float));
+
+    // memset queue array values
+    memset(queue->array, 0, queue->capacity * sizeof(float));
     return queue;
 }
 
@@ -40,42 +42,62 @@ int isEmpty(struct Queue* queue)
 
 // Function to add an item to the queue.
 // It changes rear and size
-void enqueue(struct Queue* queue, int item)
+void enqueue(struct Queue* queue, float item)
 {
-    if (isFull(queue))
-        return;
-    queue->rear = (queue->rear + 1)
-                  % queue->capacity;
-    queue->array[queue->rear] = item;
-    queue->size = queue->size + 1;
-    printf("%d enqueued to queue\n", item);
+    // Add item to queue
+    // if its not full, add to index size
+    if (!isFull(queue)) {
+        queue->array[queue->size] = item;
+
+    }
+
+    // If its full, dequeue the first element
+    // mvoe all items by 1
+    else {
+        dequeue(queue);
+        int i;
+        for (i = 1; i < queue->capacity; i++) {
+            queue->array[i-1] = queue->array[i];
+        }
+
+        queue->array[queue->size] = item;
+
+    }
+    queue->size++;
+
+    printf("\nSMA Queue:\n");
+    printQueue(queue);
 }
 
 // Function to remove an item from queue.
 // It changes front and size
 float dequeue(struct Queue* queue)
 {
-    if (isEmpty(queue))
+    // Invalid operation, queue is empty...
+    if (isEmpty(queue)) {
         return FLT_MIN;
-    float item = queue->array[queue->front];
-    queue->front = (queue->front + 1)
-                   % queue->capacity;
-    queue->size = queue->size - 1;
-    return item;
+    }
+
+    // Get the dequeued item
+    float dequeuedItem = queue->array[0];
+
+    queue->size--;
+
+    return dequeuedItem;
 }
 
-// Function to get front of queue
-float front(struct Queue* queue)
-{
-    if (isEmpty(queue))
-        return FLT_MIN;
-    return queue->array[queue->front];
-}
+// Print queue
+void printQueue(struct Queue* queue){
 
-// Function to get rear of queue
-float rear(struct Queue* queue)
-{
-    if (isEmpty(queue))
-        return FLT_MIN;
-    return queue->array[queue->rear];
+    // print all values in the queue
+    printf("[");
+    int i;
+    for (i = 0; i < queue->size; i++) {
+        (i < queue->size - 1) ?
+            printf("%.2f, ", queue->array[i]):
+            printf("%.2f", queue->array[i]);
+    }
+    printf("]\n");
+
+
 }

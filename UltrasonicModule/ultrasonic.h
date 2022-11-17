@@ -12,6 +12,11 @@
  * INCLUDES
  */
 #include "driverlib/MSP432P4xx/driverlib.h"
+#include "Utility/time_utility.h"
+#include "Utility/Filters/kalman_filter.h"
+#include "Utility/Filters/sma_filter.h"
+#include "Utility/Filters/ema_filter.h"
+#include "Utility/DataStructures/queue.h"
 #include "init.h"
 
 /*************************************************************
@@ -22,10 +27,18 @@
 #define ULTRASONIC_BUFFER_RIGHT_INDEX   2
 #define ULTRASONIC_BUFFER_BACK_INDEX    3
 
+#define SMA_PERIOD                      20
+#define EMA_PERIOD                      20
+
 /*************************************************************
  * VARIABLES
  */
+
+
 float latestSensorDistances[4];      // Stores the latest distances captured from sensor.
+float frontDist;
+float filteredValue;
+
 
 uint32_t sensor1InterruptCount;
 uint32_t sensor2InterruptCount;
@@ -63,15 +76,14 @@ float Ultrasonic_getDistanceFromLeftSensor();
 float Ultrasonic_getDistanceFromRightSensor();
 float Ultrasonic_getDistanceFromBackSensor();
 
-// Private functions
-void Delay(uint32_t loop);
-
-bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig);
-void triggerUltrasonicSensor(UltrasonicSensorConfiguration* sensorConfig);
-uint32_t getDuration(UltrasonicSensorConfiguration* sensorConfig);
-float getDistance(UltrasonicSensorConfiguration* sensorConfig);
-
 // Interrupts
 void TA0_0_IRQHandler(void);
+
+// Private functions
+static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig);
+static void triggerUltrasonicSensor(UltrasonicSensorConfiguration* sensorConfig);
+static uint32_t getDuration(UltrasonicSensorConfiguration* sensorConfig);
+static float getDistance(UltrasonicSensorConfiguration* sensorConfig);
+
 
 #endif /* ULTRASONICMODULE_ULTRASONIC_H_ */

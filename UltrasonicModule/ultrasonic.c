@@ -98,15 +98,7 @@ float Ultrasonic_getDistanceFromBackSensor() {
     return latestSensorDistances[ULTRASONIC_BUFFER_BACK_INDEX];
 }
 
-
-void Delay(uint32_t loop)
-{
-    volatile uint32_t i;
-
-    for (i = 0 ; i < loop ; i++);
-}
-
-bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig) {
+static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig) {
 
     bool hasObject = false;
 
@@ -116,26 +108,52 @@ bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig) {
     // Get distance from object.
     float distance = getDistance(sensorConfig);
 
+    // Filter values
+    // KALMAN FILTER!
+//    filteredValue = Filter_KalmanFilter(distance, &KALMAN_DATA);
+//    printf("FilteredValue: %.2f\n", filteredValue);
+
+    // SMA FILTER!
+    // Add to queue
+    enqueue(smaQueue, distance);
+
+    // Get the SMA
+    float smaFilterVal = Filter_SMAFilter(smaQueue);
+    printf("\nSMA: %.2f\n", smaFilterVal);
+
+    // EMA FILTER!
+    // Add to queue
+    enqueue(emaQueue, distance);
+
+    // Get the EMA
+    float emaFilterVal = Filter_EMAFilter(emaQueue, distance);
+    printf("EMA: %.2f\n", emaFilterVal);
+
     // Sets global distance buffer that stores latest distances captured from sensor.
     latestSensorDistances[sensorConfig->bufferIndex] = distance;
 
     // If distance is lower then threshold, object is near.
     hasObject = distance < ULTRASONIC_THRESHOLD;
 
-    printf("Distance: %.2f\n", distance);
+    printf("Distance: %.2fcm\n", distance);
+
+    frontDist = distance;
 
     return hasObject;
 }
 
-void triggerUltrasonicSensor(UltrasonicSensorConfiguration* sensorConfig) {
+static void triggerUltrasonicSensor(UltrasonicSensorConfiguration* sensorConfig) {
 
     GPIO_setOutputHighOnPin(sensorConfig->triggerPort, sensorConfig->triggerPin);
-    Delay(1000);
+
+    // Set delay of 1ms to trigger ultrasonic sensor
+    UtilityTime_delay(1);
+
     GPIO_setOutputLowOnPin(sensorConfig->triggerPort, sensorConfig->triggerPin);
 
 }
 
-uint32_t getDuration(UltrasonicSensorConfiguration* sensorConfig) {
+static uint32_t getDuration(UltrasonicSensorConfiguration* sensorConfig) {
 
     uint32_t pulseTime = 0;
 
@@ -145,12 +163,10 @@ uint32_t getDuration(UltrasonicSensorConfiguration* sensorConfig) {
     // Clear Timer
     Timer_A_clearTimer(sensorConfig->timer);
 
-    Delay(3000);
-
     return pulseTime;
 }
 
-float getDistance(UltrasonicSensorConfiguration* sensorConfig) {
+static float getDistance(UltrasonicSensorConfiguration* sensorConfig) {
     uint32_t pulseDuration = 0;
     float distance = 0;
 
