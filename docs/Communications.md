@@ -22,6 +22,10 @@
 5. Enter your SSID and Password (Ensure that your PC is on the same network as well)
 6. Note down your API key
 
+### How to connect the MSP to M5
+MSP GPIO 3.2 &rarr; M5 G26  
+MSP GPIO 3.3 &rarr; M5 G0
+
 ### How to get the M5 Ready
 1. Proceed to https://flow.m5stack.com/
 2. Enter your API key (retrievable from pre-requisite) and choose the correct device
@@ -32,6 +36,11 @@
 ### Remote+
 - On Remote+ you will be able to see the data being sent from MSP432
 - You can key in Input to sent the data over to MSP
+
+### On MSP432
+1. Open the terminal console
+2. Choose the correct serial port, Baud rate: 115200, Data size: 8, Parity: None, Stop bits: 1 
+3. Data sent from Remote+ will be display here
 
 ### Button legend
 A = Clear the data  
