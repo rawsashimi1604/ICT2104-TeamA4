@@ -195,7 +195,7 @@ static float getDistance(UltrasonicSensorConfiguration* sensorConfig) {
     return distance;
 }
 
-void TA1_0_IRQHandler(void)
+void TA2_0_IRQHandler(void)
 {
 
     // Increase global interrupt count

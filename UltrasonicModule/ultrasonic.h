@@ -70,7 +70,7 @@ float Ultrasonic_getDistanceFromRightSensor();
 float Ultrasonic_getDistanceFromBackSensor();
 
 // Interrupts
-void TA1_0_IRQHandler(void);
+void TA2_0_IRQHandler(void);
 
 // Private functions
 static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig);
