@@ -98,6 +98,36 @@ float Ultrasonic_getDistanceFromBackSensor() {
     return latestSensorDistances[ULTRASONIC_BUFFER_BACK_INDEX];
 }
 
+static float filterUltrasonicSensorValues(float distance) {
+
+    // Filter values
+        // KALMAN FILTER!
+    //    filteredValue = Filter_KalmanFilter(distance, &KALMAN_DATA);
+    //    printf("FilteredValue: %.2f\n", filteredValue);
+
+    // Use the Limit filter
+    // Remove anamolies
+    if (distance < 200.0) {
+        // SMA FILTER!
+        // Add to queue
+        enqueue(smaQueue, distance);
+
+        // Get the SMA
+        float smaFilterVal = Filter_SMAFilter(smaQueue);
+
+        // EMA FILTER!
+        // Add to queue
+        enqueue(emaQueue, distance);
+
+        // Get the EMA
+        float emaFilterVal = Filter_EMAFilter(emaQueue, distance);
+        return emaFilterVal;
+
+    }
+    return peek(smaQueue);
+
+}
+
 static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig) {
 
     bool hasNoObject = false;
@@ -108,33 +138,15 @@ static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig)
     // Get distance from object.
     float distance = getDistance(sensorConfig);
 
-    // Filter values
-    // KALMAN FILTER!
-//    filteredValue = Filter_KalmanFilter(distance, &KALMAN_DATA);
-//    printf("FilteredValue: %.2f\n", filteredValue);
-
-    // SMA FILTER!
-    // Add to queue
-    enqueue(smaQueue, distance);
-
-    // Get the SMA
-    float smaFilterVal = Filter_SMAFilter(smaQueue);
-
-    // EMA FILTER!
-    // Add to queue
-    enqueue(emaQueue, distance);
-
-    // Get the EMA
-    float emaFilterVal = Filter_EMAFilter(emaQueue, distance);
+    float filteredDistance = filterUltrasonicSensorValues(distance);
 
     // Sets global distance buffer that stores latest distances captured from sensor.
-    latestSensorDistances[sensorConfig->bufferIndex] = distance;
+    latestSensorDistances[sensorConfig->bufferIndex] = filteredDistance;
 
     // If distance is lower then threshold, object is near.
-    hasNoObject = distance > ULTRASONIC_THRESHOLD;
+    hasNoObject = filteredDistance > ULTRASONIC_THRESHOLD;
 
-    printf("Distance: %.2fcm\n", distance);
-
+    printf("%.2fcm %.2fcm\n", distance, filteredDistance);
 
     return hasNoObject;
 }

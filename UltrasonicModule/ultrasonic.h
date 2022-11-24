@@ -27,8 +27,8 @@
 #define ULTRASONIC_BUFFER_RIGHT_INDEX   2
 #define ULTRASONIC_BUFFER_BACK_INDEX    3
 
-#define SMA_PERIOD                      20
-#define EMA_PERIOD                      20
+#define SMA_PERIOD                      5
+#define EMA_PERIOD                      5
 
 /*************************************************************
  * VARIABLES
@@ -73,6 +73,7 @@ float Ultrasonic_getDistanceFromBackSensor();
 void TA2_0_IRQHandler(void);
 
 // Private functions
+static float filterUltrasonicSensorValues(float distance);
 static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig);
 static void triggerUltrasonicSensor(UltrasonicSensorConfiguration* sensorConfig);
 static uint32_t getDuration(UltrasonicSensorConfiguration* sensorConfig);
