@@ -12,6 +12,7 @@
 // Public
 void Communication_init(void);
 void Communication_sendData(unsigned short identifier, unsigned long data);
+void Communication_sendMap(unsigned char * TxArray);
 
 // Private
 void uPrintf(unsigned char * TxArray);

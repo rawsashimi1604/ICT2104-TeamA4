@@ -76,11 +76,6 @@ void Communication_sendData(unsigned short identifier, unsigned long data){
     case 3:
         tmp_char_array[0] = 0x42; //B
         break;
-    case 4:
-        tmp_char_array[0] = 0x4d; //M
-        break;
-    case 5:
-        tmp_char_array[0] = 0x54; //T
     }
     tmp_char_array[4] = (data & 0xff000000) >> 24;
     tmp_char_array[3] = (data & 0x00ff0000) >> 16;
@@ -89,6 +84,16 @@ void Communication_sendData(unsigned short identifier, unsigned long data){
 
     while(*(tmp_char_array+i)){
         UART_transmitData(EUSCI_A2_BASE, *(tmp_char_array+i));  // Write the character at the location specified by pointer
+        i++;                                             // Increment pointer to point to the next character
+    }
+    UART_transmitData(EUSCI_A2_BASE, 0x0a);
+}
+
+void Communication_sendMap(unsigned char * TxArray){
+    unsigned short i = 0;
+    UART_transmitData(EUSCI_A2_BASE, 0x4d);
+    while(*(TxArray+i)){
+        UART_transmitData(EUSCI_A2_BASE, *(TxArray+i));  // Write the character at the location specified by pointer
         i++;                                             // Increment pointer to point to the next character
     }
     UART_transmitData(EUSCI_A2_BASE, 0x0a);
