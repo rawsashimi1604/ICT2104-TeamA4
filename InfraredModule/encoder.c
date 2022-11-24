@@ -9,6 +9,12 @@ volatile int last_rev_interval = 0;
 volatile int start_time = 0;
 volatile int end_time = 0;
 
+volatile int notchCounting = 0;
+volatile int notchCounter;
+
+void Encoder_startNotchesCount(void);
+int Encoder_stopNotchesCount(void);
+
 void initTimer(void)
 {
     /* Timer_A UpMode Configuration Parameter */
@@ -69,6 +75,10 @@ void PORT2_IRQHandler(void)
     if (status)
     {
         notchesdetected++;
+                if (notchCounting)
+        {
+            notchCounter++;
+        }
     }
 
     // this is 1 pulse
@@ -92,6 +102,25 @@ void getSpeed(void)
     printf("\t Linear Speed = %.2f m/s\n", meterPerSecond);
     // TODO:
     //  return whatever unit they want
+}
+
+void Encoder_startNotchesCount(void)
+{
+    if (!notchCounting)
+    {
+        notchCounting = 1;
+    }
+}
+
+int Encoder_stopNotchesCount(void)
+{
+    if (notchCounting)
+    {
+        notchCounting = 0;
+        int results = notchCounter;
+        notchCounter = 0;
+        return results;
+    }
 }
 
 void TA1_0_IRQHandler(void) // interrupts every 0.001 seconds
