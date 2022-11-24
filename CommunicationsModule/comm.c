@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 const eUSCI_UART_Config uartConfig =
 {
@@ -21,6 +22,8 @@ const eUSCI_UART_Config uartConfig =
 };
 
 void uPrintf(unsigned char * TxArray);
+
+char location[10];
 
 void Communication_init(void){
     /* Selecting P1.2 and P1.3 in UART mode */
@@ -68,13 +71,18 @@ void Communication_sendData(unsigned short identifier, unsigned long data){
     unsigned short i = 0;
     switch (identifier){
     case 1:
-        tmp_char_array[0] = 0x53; //S
+        tmp_char_array[0] = 0x53; //Speed
         break;
     case 2:
-        tmp_char_array[0] = 0x48; //H
+        tmp_char_array[0] = 0x48; //Hump detection
+        if(data == 1){
+            data = 0x736559;
+        }else{
+            data = 0x6F4E;
+        }
         break;
     case 3:
-        tmp_char_array[0] = 0x42; //B
+        tmp_char_array[0] = 0x42; //Barcode encoder
         break;
     }
     tmp_char_array[4] = (data & 0xff000000) >> 24;
@@ -111,6 +119,7 @@ void EUSCIA2_IRQHandler(void)
 {
     unsigned char a = 0;
     a = UART_receiveData(EUSCI_A2_BASE);
+    strcpy(location, a);
     uPrintf(&a);
 }
 
