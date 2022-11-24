@@ -65,8 +65,6 @@ void enqueue(struct FloatQueue* queue, float item)
     }
     queue->size++;
 
-    printf("\nSMA Queue:\n");
-    printQueue(queue);
 }
 
 // Function to remove an item from queue.

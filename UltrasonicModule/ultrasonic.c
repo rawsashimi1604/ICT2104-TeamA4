@@ -119,7 +119,6 @@ static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig)
 
     // Get the SMA
     float smaFilterVal = Filter_SMAFilter(smaQueue);
-    printf("\nSMA: %.2f\n", smaFilterVal);
 
     // EMA FILTER!
     // Add to queue
@@ -127,7 +126,6 @@ static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig)
 
     // Get the EMA
     float emaFilterVal = Filter_EMAFilter(emaQueue, distance);
-    printf("EMA: %.2f\n", emaFilterVal);
 
     // Sets global distance buffer that stores latest distances captured from sensor.
     latestSensorDistances[sensorConfig->bufferIndex] = distance;
