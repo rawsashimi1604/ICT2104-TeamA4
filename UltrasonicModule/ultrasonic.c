@@ -63,7 +63,7 @@ UltrasonicSensorConfiguration sensor4Config = {
  */
 
 bool Ultrasonic_checkFront() {
-    printf("Front -> ");
+//    printf("Front -> ");
     return checkSensorDetectObject(&sensor1Config);
 }
 
@@ -100,7 +100,7 @@ float Ultrasonic_getDistanceFromBackSensor() {
 
 static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig) {
 
-    bool hasObject = false;
+    bool hasNoObject = false;
 
     // Reset sensor interrupt count
     *(sensorConfig->sensorInterruptCount) = 0;
@@ -131,11 +131,12 @@ static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig)
     latestSensorDistances[sensorConfig->bufferIndex] = distance;
 
     // If distance is lower then threshold, object is near.
-    hasObject = distance < ULTRASONIC_THRESHOLD;
+    hasNoObject = distance > ULTRASONIC_THRESHOLD;
 
     printf("Distance: %.2fcm\n", distance);
 
-    return hasObject;
+
+    return hasNoObject;
 }
 
 static void triggerUltrasonicSensor(UltrasonicSensorConfiguration* sensorConfig) {
