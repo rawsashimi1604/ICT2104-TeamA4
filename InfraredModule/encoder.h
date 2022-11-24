@@ -1,3 +1,12 @@
+/** @file encoder.h
+ *
+ * @brief This module is able to
+ * 1) calculate linear velocity of the car
+ * 2) calculate linear distance travelled by the car
+ *
+ * @par
+ * COPYRIGHT NOTICE: (c) 2018 Barr Group.  All rights reserved.
+ */
 
 #ifndef ENCODER_H_
 #define ENCODER_H_
@@ -33,8 +42,10 @@ void updateRPM(volatile Encoder *e);
 // PUBLIC FUNCTIONS
 void Encoder_init(void);
 void Encoder_main(void);
-float Infrared_getCarSpeed(void);
 void Infrared_startNotchesCount(void);
 int  Infrared_stopNotchesCount(void);
+int  Infrared_getCarSpeed(void);
 
 #endif /* ENCODER_H_ */
+
+/*** end of file ***/
