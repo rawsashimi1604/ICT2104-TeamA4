@@ -33,8 +33,8 @@ void updateRPM(volatile Encoder *e);
 // PUBLIC FUNCTIONS
 void Encoder_init(void);
 void Encoder_main(void);
-void Infrared_startNotchesCount(void);
 float Infrared_getCarSpeed(void);
-int Infrared_stopNotchesCount(void);
+void Infrared_startNotchesCount(void);
+int  Infrared_stopNotchesCount(void);
 
 #endif /* ENCODER_H_ */

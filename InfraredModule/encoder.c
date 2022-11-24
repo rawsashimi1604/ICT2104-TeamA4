@@ -68,7 +68,7 @@ void initInterrupts(void)
     GPIO_enableInterrupt(GPIO_PORT_P3, GPIO_PIN5|GPIO_PIN7);
 
     // Set interrupt enable (IE) bit of corresponding interrupt source
-    Interrupt_enableInterrupt(INT_TA1_0);
+    Interrupt_enableInterrupt(INT_TA2_0);
     Interrupt_enableInterrupt(INT_PORT3);
 }
 
