@@ -1,57 +1,75 @@
 #include "encoder.h"
 
 volatile int TIME_MS = 0;
-volatile int notchesdetected = 0;
-volatile int pulses_p_min = 0;
-volatile int prevRPM = 0;
-volatile int newRPM = 0;
-volatile int last_rev_interval = 0;
-volatile int start_time = 0;
-volatile int end_time = 0;
-
 volatile int notchCounting = 0;
 volatile int notchCounter;
 
-void Encoder_startNotchesCount(void);
-int Encoder_stopNotchesCount(void);
+typedef struct EncoderStruct
+{
+    volatile int notchesdetected;
+    volatile int notchCounter;
+    volatile int pulses_p_min;
+    volatile int prevRPM;
+    volatile int newRPM;
+    volatile int last_pulse_interval;
+    volatile int start_time;
+    volatile int end_time;
+} Encoder;
+
+volatile Encoder L_E = { 0 };
+volatile Encoder R_E = { 0 };
+
+volatile Encoder *L_Encoder = &L_E;
+volatile Encoder *R_Encoder = &R_E;
+
+void Infrared_startNotchesCount(void);
+int Infrared_stopNotchesCount(void);
+float Infrared_getCarSpeed(void);
+
+void detectPulse(volatile Encoder *e);
+void updateRPM(volatile Encoder *e);
 
 void initTimer(void)
 {
-    /* Timer_A UpMode Configuration Parameter */
-    const Timer_A_UpModeConfig upConfig = {
-        TIMER_A_CLOCKSOURCE_SMCLK,          // SMCLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_20,     // SMCLK/20 = 3MHz / 20 = 150000Hz
-        TIMER_PERIOD,                       // 150 tick period, every tick 0.001s
-        TIMER_A_TAIE_INTERRUPT_DISABLE,     // Disable Timer interrupt
-        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE, // Enable CCR0 interrupt
-        TIMER_A_DO_CLEAR                    // Clear value
+    WDT_A_holdTimer();
+
+    // Set up Timer_A2, used for interrupt count check, (1MHz clock).
+    const Timer_A_UpModeConfig upConfig =
+    {
+        TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
+        TIMER_A_CLOCKSOURCE_DIVIDER_3,          // SMCLK/3 = 1MHz
+        TIMER_A_TICKPERIOD,                     // 1000 tick period
+        TIMER_A_TAIE_INTERRUPT_DISABLE,         // Disable Timer interrupt
+        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE,     // Enable CCR0 interrupt
+        TIMER_A_DO_CLEAR                        // Clear value
     };
 
-    // Timer Config
-    Timer_A_configureUpMode(TIMER_A1_BASE, &upConfig);
+    Timer_A_configureUpMode(TIMER_A2_BASE, &upConfig);
+    Timer_A_clearTimer(TIMER_A2_BASE);
 }
 
 void initPins(void)
 {
-    // Sensor
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P2, GPIO_PIN5);
+    // Left Encoder & Right Encoder
+    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P3, GPIO_PIN5|GPIO_PIN7);
 
     // Select edge that triggers the interrupt
-    GPIO_interruptEdgeSelect(GPIO_PORT_P2, GPIO_PIN5,
+    GPIO_interruptEdgeSelect(GPIO_PORT_P3, GPIO_PIN5|GPIO_PIN7,
                              GPIO_LOW_TO_HIGH_TRANSITION);
+
 }
 
 void initInterrupts(void)
 {
-    // Clear pin's interrupt flag for P2.5
-    GPIO_clearInterruptFlag(GPIO_PORT_P2, GPIO_PIN5);
+    // Clear pin's interrupt flag for P3.5 & P3.7
+    GPIO_clearInterruptFlag(GPIO_PORT_P3, GPIO_PIN5|GPIO_PIN7);
 
-    // Enable interrupt bit of the specific GPIO pin
-    GPIO_enableInterrupt(GPIO_PORT_P2, GPIO_PIN5);
+    // Enable interrupt bit of P3.5 & P3.7
+    GPIO_enableInterrupt(GPIO_PORT_P3, GPIO_PIN5|GPIO_PIN7);
 
     // Set interrupt enable (IE) bit of corresponding interrupt source
     Interrupt_enableInterrupt(INT_TA1_0);
-    Interrupt_enableInterrupt(INT_PORT2);
+    Interrupt_enableInterrupt(INT_PORT3);
 }
 
 void Encoder_init(void)
@@ -63,48 +81,61 @@ void Encoder_init(void)
 
 void Encoder_main(void) // Call once in main
 {
-    Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_UP_MODE);
+    Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
 }
 
-void PORT2_IRQHandler(void)
+void PORT3_IRQHandler(void)
 {
     uint32_t status;
 
-    status = GPIO_getEnabledInterruptStatus(GPIO_PORT_P2);
+    status = GPIO_getEnabledInterruptStatus(GPIO_PORT_P3);
 
-    if (status)
+    if (status & GPIO_PIN5) // P3.5 interrupt
     {
-        notchesdetected++;
-                if (notchCounting)
+        L_Encoder->notchesdetected++;
+        if (notchCounting)
         {
-            notchCounter++;
+            L_Encoder->notchCounter++;
         }
     }
 
-    // this is 1 pulse
-    if (notchesdetected == 4)
-    { // hit 5 time = 1 revolution
-        end_time = TIME_MS;
-        last_rev_interval = end_time - start_time;
-        start_time = end_time; // basically means the start time for next pulse
-        printf("1 pulse took %d ms\n", last_rev_interval);
-        notchesdetected = 0;
+    if (status & GPIO_PIN7) // P3.7 interrupt
+    {
+        R_Encoder->notchesdetected++;
+        if (notchCounting)
+        {
+            R_Encoder->notchCounter++;
+        }
     }
 
-    GPIO_clearInterruptFlag(GPIO_PORT_P2, GPIO_PIN5);
+    detectPulse(L_Encoder);
+    detectPulse(R_Encoder);
+
+    GPIO_clearInterruptFlag(GPIO_PORT_P3, GPIO_PIN5 | GPIO_PIN7);
 }
 
-// only prints speed for now
-void getSpeed(void)
+void TA2_0_IRQHandler(void) // interrupts every 0.001 seconds
 {
-    float meterPerSecond = newRPM * 0.22 / 60.0;
-    printf("RPM: %d\n", newRPM);
-    printf("\t Linear Speed = %.2f m/s\n", meterPerSecond);
-    // TODO:
-    //  return whatever unit they want
+    TIME_MS += 1;
+
+    // print carspeed
+    if (TIME_MS % 500 == 0)
+    {
+        Infrared_getCarSpeed();
+    }
+
+    // calculate RPM
+    if (TIME_MS % 1000 == 0)
+    {
+        updateRPM(L_Encoder);
+        updateRPM(R_Encoder);
+    }
+
+    Timer_A_clearCaptureCompareInterrupt(TIMER_A2_BASE,
+    TIMER_A_CAPTURECOMPARE_REGISTER_0);
 }
 
-void Encoder_startNotchesCount(void)
+void Infrared_startNotchesCount(void)
 {
     if (!notchCounting)
     {
@@ -112,56 +143,58 @@ void Encoder_startNotchesCount(void)
     }
 }
 
-int Encoder_stopNotchesCount(void)
+int Infrared_stopNotchesCount(void)
 {
+    int results;
     if (notchCounting)
     {
         notchCounting = 0;
-        int results = notchCounter;
-        notchCounter = 0;
-        return results;
+        results = (L_Encoder->notchCounter + R_Encoder->notchCounter) / 2;
+        L_Encoder->notchCounter = 0;
+        R_Encoder->notchCounter = 0;
     }
+    return results;
 }
 
-void TA1_0_IRQHandler(void) // interrupts every 0.001 seconds
+float Infrared_getCarSpeed(void)
 {
-    TIME_MS += 1;
-
-    if (TIME_MS % 500 == 0)
-    {
-        float meterPerSecond = newRPM * 0.22 / 60.0;
-        printf("RPM: %d\n", newRPM);
-        printf("\t Linear Speed = %.2f m/s\n", meterPerSecond);
-    }
-
-    // calculate RPM
-    if (TIME_MS % 1000 == 0)
-    {
-        if ((TIME_MS - start_time) > 2000)
-        {
-            pulses_p_min = 0;
-            newRPM = 0;
-        }
-        else
-        {
-            pulses_p_min = 60000 / last_rev_interval;
-            newRPM = pulses_p_min / 5;
-        }
-        if (newRPM != prevRPM)
-        {
-            prevRPM = newRPM;
-            printf("RPM: %d\n", newRPM);
-        }
-    }
-    Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
-                                         TIMER_A_CAPTURECOMPARE_REGISTER_0);
+    float cmPerSecond = ((L_Encoder->newRPM + R_Encoder->newRPM) / 2) * 22
+            / 60.0;
+    return cmPerSecond;
 }
 
-// int main(void)
-// {
+void detectPulse(volatile Encoder *encoder)
+{
+    // this is 1 pulse
+    if (encoder->notchesdetected == 4)
+    { // hit 5 time = 1 revolution
+        encoder->end_time = TIME_MS;
+        encoder->last_pulse_interval = encoder->end_time - encoder->start_time;
+        encoder->start_time = encoder->end_time; // basically means the start time for next pulse
+        encoder->notchesdetected = 0;
+    }
+}
 
-//     while (1)
-//     {
-//         PCM_gotoLPM3();
-//     }
-// }
+void updateRPM(volatile Encoder *encoder)
+{
+    // if last pulse was 2 seconds ago
+    if ((TIME_MS - encoder->start_time) > 2000)
+    {
+        encoder->pulses_p_min = 0;
+        encoder->newRPM = 0;
+    }
+    else
+    {
+        // calculate pulse/min by taking intervals between pulses
+        encoder->pulses_p_min = 60000 / encoder->last_pulse_interval;
+
+        // calculate new RPM as every 4 pulse is 1 revolution
+        encoder->newRPM = encoder->pulses_p_min / 5;
+    }
+
+    // update prevRPM if different
+    if (encoder->newRPM != encoder->prevRPM)
+    {
+        encoder->prevRPM = encoder->newRPM;
+    }
+}
