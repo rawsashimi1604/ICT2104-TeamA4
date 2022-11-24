@@ -217,6 +217,11 @@ void Barcode_main_while(void) // Need to Keep calling this in the main file whil
     // if whiteCounter exceeds certain threshold reset everything?
 }
 
+int Barcode_getChar(void)
+{
+    return currentascii;
+}
+
 /* ADC Interrupt Handler. This handler is called whenever there is a conversion
  * that is finished for ADC_MEM0. */
 void ADC14_IRQHandler(void)
@@ -471,7 +476,8 @@ int decodeSChar(char *bin)
 {
     long binLength = strlen(bin);
     double dec = 0;
-    for (int i = 0; i < binLength; ++i)
+    int i = 0;
+    for (i = 0; i < binLength; ++i)
     {
         dec += (bin[i] - 48) * pow(2, ((binLength - i) - 1));
     }
@@ -488,7 +494,8 @@ int decodeSChar(char *bin)
 void breakDownBarcode(char *wholeBarcode)
 {
     long barLength = strlen(wholeBarcode);
-    for (int i = 1; i < barLength - 1; i++)
+    int i = 0;
+    for (i = 1; i < barLength - 1; i++)
     {
         if (i < 10)
         {
