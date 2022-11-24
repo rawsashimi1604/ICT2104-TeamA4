@@ -1,3 +1,14 @@
+
+/* DriverLib Includes */
+#include "driverlib.h"
+
+/* Standard Includes */
+#include <stdint.h>
+
+#include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+
 #include "barcode.h"
 
 /* Statics */
@@ -32,9 +43,13 @@ int combined[31] = {0};
 int currentInt;
 int currentascii;
 
-char firstChar[10];
-char secondChar[10];
-char thirdChar[10];
+int firstChar[10];
+int secondChar[9];
+int thirdChar[10];
+
+void readThickness(void);
+void mergeArray(int[], int[], int[]);
+void printArray(int[]);
 
 void initTimer(void)
 {
@@ -99,29 +114,27 @@ void TA0_0_IRQHandler(void) // This is basically polling every 250us via an
     if ((indexBar + indexSpace) ==
         31)
     { // barcode fully read, stop timer, clear timer and clear isr flag
-        Timer_A_stopTimer(TIMER_A0_BASE);
-        Timer_A_clearTimer(TIMER_A0_BASE);
+
         // printf("TIMER STOPPED\n");
         barCodesScanned++;
         readThicknessFlag = 1;
 
-        // decode part
-        breakDownBarcode(combined);
-        currentInt = decodeSChar(secondChar);
-        currentascii = getChar(currentInt);
+
         // send to comms here(idk how???)
 
         // reset the values for the next barcode
-        max = 0;
-        max2 = 0;
-        min = 20000;
+//        max = 0;
+//        max2 = 0;
+//        min = 20000;
         indexBar = 0;
         indexSpace = 0;
         lookingForBlack = 1;
         startTimer = 1;
-        barCodeFound = 0;
+//        barCodeFound = 0;
         // what else?
 
+        Timer_A_stopTimer(TIMER_A0_BASE);
+        Timer_A_clearTimer(TIMER_A0_BASE);
         Timer_A_clearCaptureCompareInterrupt(TIMER_A0_BASE,
                                              TIMER_A_CAPTURECOMPARE_REGISTER_0);
     }
@@ -190,11 +203,13 @@ void Barcode_main_while(void) // Need to Keep calling this in the main file whil
     else
     {
         barCodeFound = 1;
+//        ADC14_toggleConversionTrigger();
         printf("READING BARCODE\n");
         if (startTimer == 1)
         {
             startTimer = 0;
             max = 0;
+//            max2 = 0;
             min = 20000;
             //               threshold =0;
             Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_UP_MODE); // start timer
@@ -204,15 +219,22 @@ void Barcode_main_while(void) // Need to Keep calling this in the main file whil
 
     if (readThicknessFlag)
     {
-        ADC14_disableConversion();
+//        ADC14_disableConversion();
         // printf("ADC STOPPED\n");
         // printf("TRANSLATING THICCNESS\n");
         readThickness();
         // printf("MERGING ARRAYS\n");
         mergeArray(bars, spaces, combined);
         readThicknessFlag = 0;
+        // decode part
+        breakDownBarcode(combined);
+        printArray(combined);
+        currentInt = decodeSChar(secondChar);
+        currentascii = getChar(currentInt);
+        min = 20000;
+        max = 0;
         // printf("RESULT = \n");
-        // printArray(combined);
+//        printArray(combined);
     }
     // if whiteCounter exceeds certain threshold reset everything?
 }
@@ -325,6 +347,7 @@ void printArray(int array[])
     {
         printf("%d", array[i]);
     }
+    printf("\n");
 }
 
 // retrun an ascii char in decimal by comparing the decoded character
@@ -472,14 +495,14 @@ int getChar(int dec)
 }
 
 // convert the array value into int
-int decodeSChar(char *bin)
+int decodeSChar(int *bin)
 {
-    long binLength = strlen(bin);
+//    long binLength = strlen(bin);
     double dec = 0;
     int i = 0;
-    for (i = 0; i < binLength; ++i)
+    for (i = 0; i < 9; i++)
     {
-        dec += (bin[i] - 48) * pow(2, ((binLength - i) - 1));
+        dec += (bin[i]) * pow(2, ((9 - i) - 1));
     }
     // if the dec within the letter range, add the offset, else check the symbol
     // one by one
@@ -491,32 +514,39 @@ int decodeSChar(char *bin)
 }
 
 // split the merged barcode into three different arrays.
-void breakDownBarcode(char *wholeBarcode)
+void breakDownBarcode(int* combined)
 {
-    long barLength = strlen(wholeBarcode);
+    printf("run -1\n");
+//    long barLength = strlen((char*)combined);
+//    printf("%d\n",barLength);
     int i = 0;
-    for (i = 1; i < barLength - 1; i++)
+    for (i = 10; i < 19; i++)
     {
+//        printf("run 0");
         if (i < 10)
         {
-            firstChar[i - 1] = wholeBarcode[i];
+            firstChar[i - 1] = combined[i];
         }
-        else if (i >= 11 && i < 20)
+        else if (i >= 10 && i < 19)
         {
-            secondChar[i - 11] = wholeBarcode[i];
+//            printf("run 2\n");
+//            printf("%d", combined[i]);
+            secondChar[i - 10] = combined[i];
         }
         else if (i >= 21 && i < 30)
         {
-            thirdChar[i - 21] = wholeBarcode[i];
+            thirdChar[i - 21] = combined[i];
         }
     }
 }
 
-// int main(void)
-// {
-//     while (1)
-//     {
-//         //    MAP_PCM_gotoLPM0(); // if i dont get to sleep, this bitch ass MSP
-//         //    doesnt get to either
-//     }
-// }
+//  int main(void)
+//  {
+//      Barcode_init();
+//      while (1)
+//      {
+//          Barcode_main_while();
+//          //    MAP_PCM_gotoLPM0(); // if i dont get to sleep, this bitch ass MSP
+//          //    doesnt get to either
+//      }
+//  }

@@ -27,8 +27,8 @@ void readThickness(void);
 void mergeArray(int bars[], int spaces[], int combined[]);
 void printArray(int array[]);
 int getChar(int dec);
-int decodeSChar(char *bin);
-void breakDownBarcode(char *wholeBarcode);
+int decodeSChar(int *bin);
+void breakDownBarcode(int* combined);
 void ADC14_IRQHandler(void);
 void TA0_0_IRQHandler(void);
 
