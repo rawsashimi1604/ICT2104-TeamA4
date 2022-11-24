@@ -22,11 +22,21 @@ const eUSCI_UART_Config uartConfig =
 
 void uPrintf(unsigned char * TxArray);
 
-void comms_init(void){
+void Communication_init(void){
     /* Selecting P1.2 and P1.3 in UART mode */
     GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1, GPIO_PIN2 | GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+
     /* Selecting P3.2 and P3.3 in UART mode */
     GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P3, GPIO_PIN2 | GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+
+    /* LED PIN Indicator*/
+    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
+
+    /* SysTick Timer*/
+    SysTick_enableModule();
+    SysTick_setPeriod(3000000);
+    Interrupt_enableSleepOnIsrExit();
+    SysTick_enableInterrupt();
 
     /* Configuring UART Modules */
     UART_initModule(EUSCI_A0_BASE, &uartConfig);
@@ -53,7 +63,7 @@ void uPrintf(unsigned char * TxArray){
     }
 
 }
-void sendData(unsigned short identifier, unsigned long data){
+void Communication_sendData(unsigned short identifier, unsigned long data){
     unsigned char tmp_char_array[5];
     unsigned short i = 0;
     switch (identifier){
@@ -68,6 +78,9 @@ void sendData(unsigned short identifier, unsigned long data){
         break;
     case 4:
         tmp_char_array[0] = 0x4d; //M
+        break;
+    case 5:
+        tmp_char_array[0] = 0x54; //T
     }
     tmp_char_array[4] = (data & 0xff000000) >> 24;
     tmp_char_array[3] = (data & 0x00ff0000) >> 16;
@@ -94,4 +107,9 @@ void EUSCIA2_IRQHandler(void)
     unsigned char a = 0;
     a = UART_receiveData(EUSCI_A2_BASE);
     uPrintf(&a);
+}
+
+void SysTick_Handler(void)
+{
+    GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
 }

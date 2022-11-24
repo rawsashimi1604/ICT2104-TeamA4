@@ -9,10 +9,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-void comms_init(void);
+// Public
+void Communication_init(void);
+void Communication_sendData(unsigned short identifier, unsigned long data);
+
+// Private
 void uPrintf(unsigned char * TxArray);
-void sendData(unsigned short identifier, unsigned long data);
+
+// Interrupts
 void EUSCIA0_IRQHandler(void);
 void EUSCIA2_IRQHandler(void);
+void SysTick_Handler(void);
 
 #endif /* COMM_H_ */
