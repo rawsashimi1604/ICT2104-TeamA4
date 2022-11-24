@@ -37,6 +37,7 @@ int isFull(struct FloatQueue* queue);
 int isEmpty(struct FloatQueue* queue);
 void enqueue(struct FloatQueue* queue, float item);
 float dequeue(struct FloatQueue* queue);
+float peek(struct FloatQueue* queue);
 void printQueue(struct FloatQueue* queue);
 
 #endif /* UTILITY_DATASTRUCTURES_FLOAT_QUEUE_H_ */

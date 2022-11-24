@@ -84,6 +84,15 @@ float dequeue(struct FloatQueue* queue)
     return dequeuedItem;
 }
 
+float peek(struct FloatQueue* queue) {
+    if (isEmpty(queue)) {
+        return FLT_MIN;
+    }
+
+    return queue->array[0];
+
+}
+
 // Print queue
 void printQueue(struct FloatQueue* queue){
 
