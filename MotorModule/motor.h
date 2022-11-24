@@ -27,9 +27,28 @@ typedef struct _Car
     uint16_t right_wheel_count;
 } Car;
 
+#define LEFT 'L'
+#define RIGHT 'R'
+#define LEFT45 'Q'
+#define RIGHT45 'P'
+#define FORWARD 'F'
+#define BACKWARD 'B'
+#define STRAIGHT 'S'
+#define S_RIGHT 'O'
+#define S_LEFT 'I'
+
 void Motor_init(void);
-void Motor_start(int, int);
-void Motor_stop(void);
-void Motor_direction(char);
+void Motor_stop(void); //called in encoder interrupt to know when to stop
+
+void Motor_driveForward(void);
+void Motor_reverse(void);
+
+void Motor_turnLeft(void);
+void Motor_turnRight(void);
+
+void Motor_pivotRight(void);
+void Motor_pivotLeft(void);
+void Motor_turn45Left(void);
+void Motor_turn45Right(void);
 
 #endif /* MOTOR_H_ */

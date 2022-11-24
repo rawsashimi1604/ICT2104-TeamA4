@@ -1,17 +1,38 @@
 
 #include "motor.h"
 #include <stdint.h>
+
+#define MOTOR_PORT GPIO_PORT_P4
+#define LEFTWHEEL_A GPIO_PIN6
+#define LEFTWHEEL_B GPIO_PIN7
+#define RIGHTWHEEL_A GPIO_PIN1
+#define RIGHTWHEEL_B GPIO_PIN2
 /**
  * Set default direction of motor driver
  */
+
+void Wheel_init(void)
+{
+    /* Right motor GPIO */
+    GPIO_setAsOutputPin(MOTOR_PORT, RIGHTWHEEL_A); // Configuring P4.1 as output
+    GPIO_setAsOutputPin(MOTOR_PORT, RIGHTWHEEL_B); // Configuring P4.2 as output
+    GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_A); // Set output LOW on P4.1
+    GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_B); // Set output LOW on P4.2
+    /* Left motor GPIO */
+    GPIO_setAsOutputPin(MOTOR_PORT, LEFTWHEEL_A); // Configuring P4.3 as output
+    GPIO_setAsOutputPin(MOTOR_PORT, LEFTWHEEL_B); // Configuring P4.4 as output
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_A); // Set output LOW on P4.3
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_B); // Set output LOW on P4.4
+}
+
 void Set_forward(void)
 {
     /* Right motor GPIO Front*/
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN1); // Set output LOW on P4.1
-    GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN2); // Set output HIGH on P4.2
+    GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_A); // Set output LOW on P4.1
+    GPIO_setOutputHighOnPin(MOTOR_PORT, RIGHTWHEEL_B); // Set output HIGH on P4.2
     /* Left motor GPIO Front*/
-    GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN3); // Set output HIGH on P4.3
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4); // Set output LOW on P4.4
+    GPIO_setOutputHighOnPin(MOTOR_PORT, LEFTWHEEL_A); // Set output HIGH on P4.3
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_B); // Set output LOW on P4.4
 }
 
 /**
@@ -20,28 +41,38 @@ void Set_forward(void)
 void Set_reverse(void)
 {
     /* Right motor GPIO Reverse */
-    GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN1); // Set output HIGH on P4.1
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN2); // Set output LOW on P4.2
+    GPIO_setOutputHighOnPin(MOTOR_PORT, RIGHTWHEEL_A); // Set output HIGH on P4.1
+    GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_B); // Set output LOW on P4.2
     /* Left motor GPIO Reverse*/
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN3); // Set output LOW on P4.3
-    GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4); // Set output HIGH on P4.4
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_A); // Set output LOW on P4.3
+    GPIO_setOutputHighOnPin(MOTOR_PORT, LEFTWHEEL_B); // Set output HIGH on P4.4
 }
 
-void set_leftFrontRightBack(void)
+void Set_leftFrontRightBack(void)
 {
     /* Left motor GPIO */
-    GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN3); // Set output HIGH on P4.3
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4); // Set output LOW on P4.4
+    GPIO_setOutputHighOnPin(MOTOR_PORT, LEFTWHEEL_A); // Set output HIGH on P4.3
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_B); // Set output LOW on P4.4
     /* Right motor GPIO  Reverse */
-    GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN1); // Set output HIGH on P4.1
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN2); // Set output LOW on P4.2
+    GPIO_setOutputHighOnPin(MOTOR_PORT, RIGHTWHEEL_A); // Set output HIGH on P4.1
+    GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_B); // Set output LOW on P4.2
 }
-void set_leftBackRightFront(void)
+void Set_leftBackRightFront(void)
 {
     /* Left motor GPIO Reverse */
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN3); // Set output LOW on P4.3
-    GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4); // Set output HIGH on P4.4
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_A); // Set output LOW on P4.3
+    GPIO_setOutputHighOnPin(MOTOR_PORT, LEFTWHEEL_B); // Set output HIGH on P4.4
     /* Right motor GPIO */
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN1); // Set output LOW on P4.1
-    GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN2); // Set output HIGH on P4.2
+    GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_A); // Set output LOW on P4.1
+    GPIO_setOutputHighOnPin(MOTOR_PORT, RIGHTWHEEL_B); // Set output HIGH on P4.2
+}
+
+void Set_stop(void)
+{
+    /* Right motor GPIO Reverse */
+    GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_A); // Set output HIGH on P4.1
+    GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_B); // Set output LOW on P4.2
+    /* Left motor GPIO Reverse*/
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_A); // Set output LOW on P4.3
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_B); // Set output HIGH on P4.4
 }
