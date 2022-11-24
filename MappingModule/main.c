@@ -111,62 +111,89 @@ void Mapping_writeHumpData(void)
     HumpList_addNode(carCurrentPosition->x, carCurrentPosition->y, humpData);
 }
 
-// owner            : Irfaan
+// owner            : Kevin
+// description      : checks and return a bool if the car is in the optimal starting position
+// conditions that needs to be met
+// 1. the back must be blocked
+// 2. L or R must be blocked
+// Assuming the car always start along the border of the map, at least one side will always be blocked. 
+bool isCorrectStartingPosition(bool canGoLeft, bool canGoRight, bool canGoBack){
+    //checking if back is blocked
+    if (!canGoBack){
+        if (!canGoLeft || !canGoRight){
+            //at least left or right is blocked, corner is met
+            printf("Starting conditions are met.\n");
+            return true;
+        }
+    }    
+    //starting conditions met
+    printf("Starting condition not met\n");
+    return false;
+}
+
+// owner            : Kevin
 // description      : drives the robot car until it reaches a corner
-// start condition  : anywhere on the maze
+// start condition  : anywhere on the maze, and return true. If starting position cant be fonud, return false;
 // end condition    : one of the following conditions must hold:
 //                      Ultrasonic_checkFront() and Ultrasonic_checkLeft() must return false
 //                      Ultrasonic_checkFront() and Ultrasonic_checkRight() must return false
 //                      Ultrasonic_checkBack() and Ultrasonic_checkLeft() must return false
 //                      Ultrasonic_checkBack() and UUltrasonic_checkRight() must return false
-void initializeCarPosition(void)
-{
+
+bool initializeCarPosition(void){
     // - car need to check ultra sensors. it will need to have the condition where the car is in a corner
     // - at least 2 of the ultra sensor needs to be blocked. the 2 sensor that are blocked must NOT be opp of one another.
     // - if above not true, car turn till at least one of the side ultra sensor is blocked. then move forward till front is blocked.
     // - once done, turn arround so that the front is clear. set car as facing north and starting current position as 00,
     // - kaho’s mapMaze can commence
 
-    bool objFront = Ultrasonic_checkFront();
-    bool objBehind = Ultrasonic_checkBack();
-    bool objLeft = Ultrasonic_checkLeft();
-    bool objRight = Ultrasonic_checkRight();
+    // Ultrasonic_checkFront();
+    // Ultrasonic_checkBack();
+    // Ultrasonic_checkLeft();
+    // Ultrasonic_checkRight(); 
 
-    if ((objFront == false && objLeft == false && objBehind == true && objRight == true) ||
-        (objFront == false && objLeft == true && objBehind == true && objRight == false))
-    {
-        printf("Car is Ready!");
+    int maxTries = 4; //max times the car can turn before it determines that a starting position cant be found
+    int tries = 0; //track the number of times the car tries to find a starting position
+
+    if (!Ultrasonic_checkLeft() && !Ultrasonic_checkRight() && !Ultrasonic_checkFront() && !Ultrasonic_checkBack()){
+        //check that all 4 sides are not blocked (car boxed up)
+        printf("The car is boxed up!! \n");
+        return false;
     }
-    else if (objFront == true && objLeft == true && objBehind == false && objRight == false)
-    {
-        Motor_turnRight();
-        printf("Car turned right");
-    }
-    else if (objFront == true && objLeft == false && objBehind == false && objRight == true)
-    {
-        Motor_turnLeft();
-        printf("Car turned left");
-    }
-    else if (objFront == true && objLeft == false && objBehind == true)
-    {
-        Motor_turnLeft();
-        printf("Car turned left");
-        while (objFront == false)
-        {
-            Motor_driveForward(1);
-            printf("Car moving forward");
+    while(!isCorrectStartingPosition(Ultrasonic_checkLeft(), Ultrasonic_checkRight(), Ultrasonic_checkBack())){
+        if (tries == maxTries){
+            printf("Car Exhauseted all tries\n");
+            return false;
         }
-    }
-    else if (objFront == false && objLeft == false && objBehind == true && objRight == false)
-    {
-        Motor_turnLeft();
-        printf("Car turned left");
-        while (objFront == false)
-        {
-            Motor_driveForward(1);
-            printf("Car moving forward");
+
+        //turn till the car front is clear and one of the side is blocked
+        while(!Ultrasonic_checkFront() && !(!Ultrasonic_checkLeft() || !Ultrasonic_checkRight())){
+            if (tries == maxTries){
+                printf("Car Exhauseted all tries\n");
+                return false;
+            }
+            Motor_turnLeft();
+            tries++;
         }
+        tries = 0; //reset the tries
+
+        //check if is in corect position again
+        if (isCorrectStartingPosition(Ultrasonic_checkLeft(), Ultrasonic_checkRight(), Ultrasonic_checkBack())){
+            printf("Starting Position Set\n");
+            return true;
+        }
+
+        //move forward until front is blocked
+        while(Ultrasonic_checkFront()){
+            Motor_driveForward(1);
+        }
+        //turn 180 degrees
+        Motor_turnLeft();
+        Motor_turnLeft();
     }
+    //if the code reaches here, it found a optimal starting condition
+    printf("Starting condition found.\n");
+    return true;
 }
 
 // owner            : Kevin
@@ -234,7 +261,8 @@ void updateMap(Vertex *currentPos, bool canGoFront, bool canGoLeft, bool canGoRi
 }
 
 // owner            : Kaho
-// description      : drives the car based on the map using dfs
+// description      : The core part of the mapping phase. 
+//                    drives the car based on the map using a modified DFS. (uses BFS to backtrack instead)
 void mapMaze(Vertex *start, Graph *graph)
 {
     // Map initialization for starting conditions
@@ -316,7 +344,7 @@ void mapMaze(Vertex *start, Graph *graph)
 }
 
 // owner: kevin
-// desc:  turn the car to the direction that is given
+// desc:  turn the car to the direction (map's pespective) that is given
 bool adjustCarDirection(char directionToTurnTo)
 {
     if (carDirection == 'N')
