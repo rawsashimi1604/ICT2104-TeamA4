@@ -34,7 +34,7 @@
 void initTimer(void);
 void initPins(void);
 void initInterrupts(void);
-void PORT3_IRQHandler(void);
+void PORT5_IRQHandler(void);
 void TA2_0_IRQHandler(void);
 void detectPulse(volatile Encoder *e);
 void updateRPM(volatile Encoder *e);
@@ -44,7 +44,7 @@ void Encoder_init(void);
 void Encoder_main(void);
 void Infrared_startNotchesCount(void);
 int  Infrared_stopNotchesCount(void);
-int  Infrared_getCarSpeed(void);
+float  Infrared_getCarSpeed(void);
 
 #endif /* ENCODER_H_ */
 
