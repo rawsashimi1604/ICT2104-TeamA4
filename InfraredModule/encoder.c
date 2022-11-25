@@ -8,6 +8,10 @@
  * COPYRIGHT NOTICE: (c) 2018 Barr Group. All rights reserved.
  */
 
+#define PORT          GPIO_PORT_P5
+#define LEFT_ENCODER  GPIO_PORT_5
+#define RIGHT_ENCODER GPIO_PORT_4
+
 volatile int g_time_ms          = 0;
 volatile int g_b_notch_counting = 0;
 
@@ -59,34 +63,34 @@ initTimer(void)
 }
 
 /*!
- * @brief Initialise pins P3.5, P3.7
+ * @brief Initialise pins P5.5, P5.4
  */
 void
 initPins(void)
 {
     // Left Encoder & Right Encoder
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P3, GPIO_PIN5 | GPIO_PIN7);
+    GPIO_setAsInputPinWithPullUpResistor(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 
     // Select edge that triggers the interrupt
     GPIO_interruptEdgeSelect(
-        GPIO_PORT_P3, GPIO_PIN5 | GPIO_PIN7, GPIO_LOW_TO_HIGH_TRANSITION);
+        PORT, LEFT_ENCODER | RIGHT_ENCODER, GPIO_LOW_TO_HIGH_TRANSITION);
 }
 
 /*!
- * @brief Initialise interrupt for P3.5, P3.7 and TIMER_A2_BASE
+ * @brief Initialise interrupt for P5.5, P5.4 and TIMER_A2_BASE
  */
 void
 initInterrupts(void)
 {
-    // Clear pin's interrupt flag for P3.5 & P3.7
-    GPIO_clearInterruptFlag(GPIO_PORT_P3, GPIO_PIN5 | GPIO_PIN7);
+    // Clear pin's interrupt flag for P5.5 & P5.4
+    GPIO_clearInterruptFlag(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 
-    // Enable interrupt bit of P3.5 & P3.7
-    GPIO_enableInterrupt(GPIO_PORT_P3, GPIO_PIN5 | GPIO_PIN7);
+    // Enable interrupt bit of P5.5 & P5.4
+    GPIO_enableInterrupt(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 
     // Set interrupt enable (IE) bit of corresponding interrupt source
     Interrupt_enableInterrupt(INT_TA2_0);
-    Interrupt_enableInterrupt(INT_PORT3);
+    Interrupt_enableInterrupt(INT_PORT5);
 }
 
 void
@@ -104,24 +108,24 @@ Encoder_main(void) // Call once in main
 }
 
 /*!
- * @brief Handle Port 3 interrupts.
- * If P3.5 interrupts,
+ * @brief Handle Port 5 interrupts.
+ * If P5.5 interrupts,
  * a) counts notches for left encoder
  * b) calculates time taken for one pulse
  *
- * If P3.7 interrupts,
+ * If P5.4 interrupts,
  * a) counts notches for right encoder
  * b) calculates time taken for one pulse
  *
  */
 void
-PORT3_IRQHandler(void)
+PORT5_IRQHandler(void)
 {
     uint32_t status;
 
-    status = GPIO_getEnabledInterruptStatus(GPIO_PORT_P3);
+    status = GPIO_getEnabledInterruptStatus(PORT);
 
-    if (status & GPIO_PIN5) // P3.5 interrupt
+    if (status & LEFT_ENCODER) // P5.5 interrupt
     {
         p_left_encoder->notches_detected++;
         if (g_b_notch_counting)
@@ -130,7 +134,7 @@ PORT3_IRQHandler(void)
         }
     }
 
-    if (status & GPIO_PIN7) // P3.7 interrupt
+    if (status & RIGHT_ENCODER) // P5.4 interrupt
     {
         p_right_encoder->notches_detected++;
         if (g_b_notch_counting)
@@ -142,7 +146,7 @@ PORT3_IRQHandler(void)
     detectPulse(p_left_encoder);
     detectPulse(p_right_encoder);
 
-    GPIO_clearInterruptFlag(GPIO_PORT_P3, GPIO_PIN5 | GPIO_PIN7);
+    GPIO_clearInterruptFlag(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 }
 
 /*!
