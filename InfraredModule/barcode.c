@@ -16,7 +16,7 @@ static volatile uint16_t curADCResult;
 
 /* Variables for barcode reading */
 volatile int max;
-volatile int max2; // placeholder to deconflict max reading when in track and not barcode
+// volatile int max2; // placeholder to deconflict max reading when in track and not barcode
 volatile int min = 20000;
 volatile int threshold;
 
@@ -43,9 +43,7 @@ int combined[31] = {0};
 int currentInt;
 int currentascii;
 
-int firstChar[10];
 int secondChar[9];
-int thirdChar[10];
 
 void readThickness(void);
 void mergeArray(int[], int[], int[]);
@@ -411,7 +409,6 @@ int decodeSChar(int *bin){
 
 // split the merged barcode into three different arrays.
 void breakDownBarcode(int* combined){
-    printf("run -1\n");
     //long barLength = strlen((char*)combined);
     int i = 0;
     for (i = 10; i < 19; i++){
