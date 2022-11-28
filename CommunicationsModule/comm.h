@@ -4,7 +4,6 @@
 #include "driverlib.h"
 
 /* Standard Includes */
-//#include <comm.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
