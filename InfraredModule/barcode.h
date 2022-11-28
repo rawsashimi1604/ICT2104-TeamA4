@@ -19,18 +19,20 @@
  * FUNCTIONS
  */
 
-// PRIVATE FUNCTIONS
-void initTimer(void);
-void initADC(void);
-void initInterrupts(void);
-void readThickness(void);
-void mergeArray(int bars[], int spaces[], int combined[]);
-void printArray(int array[]);
-int getChar(int dec);
-int decodeSChar(int *bin);
-void breakDownBarcode(int* combined);
+// INTERRUPTS
 void ADC14_IRQHandler(void);
-void TA0_0_IRQHandler(void);
+
+// PRIVATE FUNCTIONS
+static void initTimer(void);
+static void initADC(void);
+static void initInterrupts(void);
+static void readThickness(void);
+static void mergeArray(int bars[], int spaces[], int combined[]);
+static void printArray(int array[]);
+static int getChar(int dec);
+static int decodeSChar(int *bin);
+static void breakDownBarcode(int* combined);
+static void TA0_0_IRQHandler(void);
 
 // PUBLIC FUNCTIONS
 void Barcode_init(void);       // Call in main to init all the stuff for barcode

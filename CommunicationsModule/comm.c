@@ -58,6 +58,7 @@ void Communication_init(void){
     Interrupt_enableInterrupt(INT_EUSCIA0);
     Interrupt_enableInterrupt(INT_EUSCIA2);
     Interrupt_enableMaster();
+    uPrintf("Comms init");
 }
 
 /*To print on serial terminal*/

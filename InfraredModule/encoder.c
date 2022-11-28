@@ -8,37 +8,32 @@
  * COPYRIGHT NOTICE: (c) 2018 Barr Group. All rights reserved.
  */
 
-#define PORT          GPIO_PORT_P5
-#define LEFT_ENCODER  GPIO_PORT_5
-#define RIGHT_ENCODER GPIO_PORT_4
+/* DriverLib Includes */
+#include "driverlib.h"
+
+// for MAP_ prefix functions
+#include "rom_map.h"
+#include "encoder.h"
+
+#include "../MotorModule/motor.h"
+
+#define PORT GPIO_PORT_P5
+#define LEFT_ENCODER GPIO_PIN5
+#define RIGHT_ENCODER GPIO_PIN4
+
+extern Car car;
+extern volatile int16_t g_counter;
+extern volatile int16_t g_left_counter;
+extern volatile int16_t g_right_counter;
 
 volatile int g_time_ms          = 0;
 volatile int g_b_notch_counting = 0;
-
-typedef struct EncoderStruct
-{
-    volatile int notches_detected;
-    volatile int notch_counter;
-    volatile int pulses_p_min;
-    volatile int prev_RPM;
-    volatile int new_RPM;
-    volatile int last_pulse_interval;
-    volatile int start_time;
-    volatile int end_time;
-} Encoder;
 
 volatile Encoder left_enc_obj  = { 0 };
 volatile Encoder right_enc_obj = { 0 };
 
 volatile Encoder *p_left_encoder  = &left_enc_obj;
 volatile Encoder *p_right_encoder = &right_enc_obj;
-
-void  Infrared_startNotchesCount(void);
-int   Infrared_stopNotchesCount(void);
-float Infrared_getCarSpeed(void);
-
-void detectPulse(volatile Encoder *e);
-void updateRPM(volatile Encoder *e);
 
 /*!
  * @brief Initialise TIMER_A2_BASE
@@ -77,15 +72,15 @@ initPins(void)
 }
 
 /*!
- * @brief Initialise interrupt for P5.5, P5.4 and TIMER_A2_BASE
+ * @brief Initialise interrupt for P3.5, P3.7 and TIMER_A2_BASE
  */
 void
 initInterrupts(void)
 {
-    // Clear pin's interrupt flag for P5.5 & P5.4
+    // Clear pin's interrupt flag for P3.5 & P3.7
     GPIO_clearInterruptFlag(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 
-    // Enable interrupt bit of P5.5 & P5.4
+    // Enable interrupt bit of P3.5 & P3.7
     GPIO_enableInterrupt(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 
     // Set interrupt enable (IE) bit of corresponding interrupt source
@@ -108,18 +103,17 @@ Encoder_main(void) // Call once in main
 }
 
 /*!
- * @brief Handle Port 5 interrupts.
- * If P5.5 interrupts,
+ * @brief Handle Port 3 interrupts.
+ * If P3.5 interrupts,
  * a) counts notches for left encoder
  * b) calculates time taken for one pulse
  *
- * If P5.4 interrupts,
+ * If P3.7 interrupts,
  * a) counts notches for right encoder
  * b) calculates time taken for one pulse
  *
  */
-void
-PORT5_IRQHandler(void)
+void PORT5_IRQHandler(void)
 {
     uint32_t status;
 
@@ -146,6 +140,20 @@ PORT5_IRQHandler(void)
     detectPulse(p_left_encoder);
     detectPulse(p_right_encoder);
 
+   if (status & LEFT_ENCODER)
+   {
+       g_left_counter++;
+       car.right_wheel_count++;
+   }
+   if (status & RIGHT_ENCODER)
+   {
+       g_right_counter++;
+       car.left_wheel_count++;
+   }
+
+   // Take average of the left and right wheel count
+   g_counter = (car.left_wheel_count + car.right_wheel_count) / 2;
+
     GPIO_clearInterruptFlag(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 }
 
@@ -153,20 +161,20 @@ PORT5_IRQHandler(void)
  * @brief timer that interrupts every 1 milliseconds
  * a) updates RPM for left and right encoder every second
  */
-void
-TA2_0_IRQHandler(void)
-{
-    g_time_ms += 1;
-
-    if (g_time_ms % 1000 == 0)
-    {
-        updateRPM(p_left_encoder);
-        updateRPM(p_right_encoder);
-    }
-
-    Timer_A_clearCaptureCompareInterrupt(TIMER_A2_BASE,
-                                         TIMER_A_CAPTURECOMPARE_REGISTER_0);
-}
+//void
+//TA2_0_IRQHandler(void)
+//{
+//    g_time_ms += 1;
+//
+//    if (g_time_ms % 1000 == 0)
+//    {
+//        updateRPM(p_left_encoder);
+//        updateRPM(p_right_encoder);
+//    }
+//
+//    Timer_A_clearCaptureCompareInterrupt(TIMER_A2_BASE,
+//                                         TIMER_A_CAPTURECOMPARE_REGISTER_0);
+//}
 
 /*!
  * @brief Start counting notches

@@ -57,12 +57,28 @@ extern unsigned long __STACK_END;
 /* External declarations for the interrupt handlers used by the application. */
 
 /* To be added by user */
-extern void TA0_0_IRQHandler(void);
-extern void TA1_0_IRQHandler(void);
-extern void TA2_0_IRQHandler(void);
-extern void TA3_0_IRQHandler(void);
+
+// Motor
+extern void TA3_0_IRQHandler(void); // conflict 1 with comms
+extern void PORT5_IRQHandler(void);
+
+// Ultrasonic and Accelo
+extern void TA2_0_IRQHandler(void); // conflict 2 with infrared
+extern void T32_0_IRQHandler(void);
+
+//extern void PORT1_IRQHandler(void) // accel
+
+// Infrared
+//extern void TA2_0_IRQHandler(void); // conflict 2 with ultrasonic
+extern void ADC14_IRQHandler(void); // barcode
+//extern void PORT2_IRQHandler(void);
+//extern void PORT3_IRQHandler(void); // encoder
+
+// Communications
+//extern void TA3_0_IRQHandler(void); // conflict 1 with motor
 extern void EUSCIA0_IRQHandler(void);
 extern void EUSCIA2_IRQHandler(void);
+extern void SysTick_Handler(void);
 
 /* Interrupt vector table.  Note that the proper constructs must be placed on this to  */
 /* ensure that it ends up at physical address 0x0000.0000 or at the start of          */
@@ -87,7 +103,7 @@ void (* const interruptVectors[])(void) =
     defaultISR,                             /* Debug monitor handler     */
     0,                                      /* Reserved                  */
     defaultISR,                             /* The PendSV handler        */
-    defaultISR,                             /* The SysTick handler       */
+    SysTick_Handler,                             /* The SysTick handler       */
     defaultISR,                             /* PSS ISR                   */
     defaultISR,                             /* CS ISR                    */
     defaultISR,                             /* PCM ISR                   */
@@ -96,9 +112,9 @@ void (* const interruptVectors[])(void) =
     defaultISR,                             /* FLCTL ISR                 */
     defaultISR,                             /* COMP0 ISR                 */
     defaultISR,                             /* COMP1 ISR                 */
-    TA0_0_IRQHandler,                             /* TA0_0 ISR                 */
+    defaultISR,                             /* TA0_0 ISR                 */
     defaultISR,                             /* TA0_N ISR                 */
-    TA1_0_IRQHandler,                             /* TA1_0 ISR                 */
+    defaultISR,                             /* TA1_0 ISR                 */
     defaultISR,                             /* TA1_N ISR                 */
     TA2_0_IRQHandler,                             /* TA2_0 ISR                 */
     defaultISR,                             /* TA2_N ISR                 */
@@ -112,8 +128,8 @@ void (* const interruptVectors[])(void) =
     defaultISR,                             /* EUSCIB1 ISR               */
     defaultISR,                             /* EUSCIB2 ISR               */
     defaultISR,                             /* EUSCIB3 ISR               */
-    defaultISR,                             /* ADC14 ISR                 */
-    defaultISR,                             /* T32_INT1 ISR              */
+    ADC14_IRQHandler,                             /* ADC14 ISR                 */
+    T32_0_IRQHandler,                       /* T32_INT1 ISR              */
     defaultISR,                             /* T32_INT2 ISR              */
     defaultISR,                             /* T32_INTC ISR              */
     defaultISR,                             /* AES ISR                   */
@@ -127,7 +143,7 @@ void (* const interruptVectors[])(void) =
     defaultISR,                             /* PORT2 ISR                 */
     defaultISR,                             /* PORT3 ISR                 */
     defaultISR,                             /* PORT4 ISR                 */
-    defaultISR,                             /* PORT5 ISR                 */
+    PORT5_IRQHandler,                             /* PORT5 ISR                 */
     defaultISR,                             /* PORT6 ISR                 */
     defaultISR,                             /* Reserved 41               */
     defaultISR,                             /* Reserved 42               */

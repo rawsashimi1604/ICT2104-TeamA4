@@ -226,14 +226,14 @@ static float getDistance(UltrasonicSensorConfiguration* sensorConfig) {
     return distance;
 }
 
-void TA2_0_IRQHandler(void)
-{
-
-    // Increase global interrupt count
-    sensor1InterruptCount++;
-
-    /* Clear interrupt flag */
-    Timer_A_clearCaptureCompareInterrupt(ULTRASONIC_TIMER_MODULE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
-}
+//void TA2_0_IRQHandler(void)
+//{
+//
+//    // Increase global interrupt count
+//    sensor1InterruptCount++;
+//
+//    /* Clear interrupt flag */
+//    Timer_A_clearCaptureCompareInterrupt(ULTRASONIC_TIMER_MODULE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
+//}
 
 

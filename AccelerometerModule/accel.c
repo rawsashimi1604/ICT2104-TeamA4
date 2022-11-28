@@ -140,12 +140,12 @@ static float readMPU6050Temp() {
     return (readValue/340.0) + 36.53;
 }
 
-void PORT1_IRQHandler(void) {
-    uint32_t pinActivated;
-    printf("button interrupt\n");
-    pinActivated = GPIO_getEnabledInterruptStatus(GPIO_PORT_P1);
-    GPIO_clearInterruptFlag(GPIO_PORT_P1, pinActivated);
-}
+//void PORT1_IRQHandler(void) {
+//    uint32_t pinActivated;
+//    printf("button interrupt\n");
+//    pinActivated = GPIO_getEnabledInterruptStatus(GPIO_PORT_P1);
+//    GPIO_clearInterruptFlag(GPIO_PORT_P1, pinActivated);
+//}
 
 float getPitchAngle() {
 

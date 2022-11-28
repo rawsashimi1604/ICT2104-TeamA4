@@ -26,17 +26,31 @@
 /* Application Defines  */
 #define TIMER_A_TICKPERIOD 1000
 
+typedef struct EncoderStruct
+{
+    volatile int notches_detected;
+    volatile int notch_counter;
+    volatile int pulses_p_min;
+    volatile int prev_RPM;
+    volatile int new_RPM;
+    volatile int last_pulse_interval;
+    volatile int start_time;
+    volatile int end_time;
+} Encoder;
+
 /*************************************************************
  * FUNCTIONS
  */
 
-// PRIVATE FUNCTIONS
-void initTimer(void);
-void initPins(void);
-void initInterrupts(void);
-void PORT5_IRQHandler(void);
+// INTERRUPTS
 void TA2_0_IRQHandler(void);
-void detectPulse(volatile Encoder *e);
+void PORT3_IRQHandler(void);
+
+// PRIVATE FUNCTIONS
+static void initTimer(void);
+static void initPins(void);
+static void initInterrupts(void);
+static void detectPulse(volatile Encoder *e);
 void updateRPM(volatile Encoder *e);
 
 // PUBLIC FUNCTIONS
@@ -44,7 +58,7 @@ void Encoder_init(void);
 void Encoder_main(void);
 void Infrared_startNotchesCount(void);
 int  Infrared_stopNotchesCount(void);
-float  Infrared_getCarSpeed(void);
+float Infrared_getCarSpeed(void);
 
 #endif /* ENCODER_H_ */
 

@@ -19,10 +19,10 @@ void Wheel_init(void)
     GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_A); // Set output LOW on P4.1
     GPIO_setOutputLowOnPin(MOTOR_PORT, RIGHTWHEEL_B); // Set output LOW on P4.2
     /* Left motor GPIO */
-    GPIO_setAsOutputPin(MOTOR_PORT, LEFTWHEEL_A); // Configuring P4.3 as output
-    GPIO_setAsOutputPin(MOTOR_PORT, LEFTWHEEL_B); // Configuring P4.4 as output
-    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_A); // Set output LOW on P4.3
-    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_B); // Set output LOW on P4.4
+    GPIO_setAsOutputPin(MOTOR_PORT, LEFTWHEEL_A); // Configuring P4.6 as output
+    GPIO_setAsOutputPin(MOTOR_PORT, LEFTWHEEL_B); // Configuring P4.7 as output
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_A); // Set output LOW on P4.6
+    GPIO_setOutputLowOnPin(MOTOR_PORT, LEFTWHEEL_B); // Set output LOW on P4.7
 }
 
 void Set_forward(void)
