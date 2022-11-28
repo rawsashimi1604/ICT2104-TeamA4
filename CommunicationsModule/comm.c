@@ -3,6 +3,7 @@
 #include "driverlib.h"
 
 /* Standard Includes */
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -23,7 +24,9 @@ const eUSCI_UART_Config uartConfig =
 
 void uPrintf(unsigned char * TxArray);
 
-char location[10];
+char g_userInput[5];
+int g_inputCounter = 0;
+int g_inputX, g_inputY = 0;
 
 void Communication_init(void){
     /* Selecting P1.2 and P1.3 in UART mode */
@@ -116,18 +119,29 @@ void Communication_sendMap(unsigned char * TxArray){
 
 void EUSCIA0_IRQHandler(void) //Interrupt handler for MSP432
 {
-    unsigned char a = 0;
-    a = UART_receiveData(EUSCI_A0_BASE);
-    UART_transmitData(EUSCI_A2_BASE, a);
-    uPrintf(&a);
+    unsigned char received = 0;
+    received = UART_receiveData(EUSCI_A0_BASE);
+    UART_transmitData(EUSCI_A2_BASE, received);
+    uPrintf(&received);
 }
 
 void EUSCIA2_IRQHandler(void) //Interrupt handler for M5
 {
-    unsigned char a = 0;
-    a = UART_receiveData(EUSCI_A2_BASE);
-    strcpy(location, a);
-    uPrintf(&a);
+    unsigned char received = 0;
+    char xInput[1] = "";
+    char yInput[1] = "";
+    received = UART_receiveData(EUSCI_A2_BASE);
+    if(g_inputCounter <= 4){
+        strncat(g_userInput, &received, 1);
+        g_inputCounter ++;
+    }else{
+        g_inputCounter = 0;
+        strncat(xInput,&g_userInput[1],1);
+        strncat(yInput,&g_userInput[3],1);
+        g_inputX = atoi(xInput);
+        g_inputY = atoi(yInput);
+    }
+    uPrintf(&received);
 }
 
 void SysTick_Handler(void) //Toggle LED every 1s
