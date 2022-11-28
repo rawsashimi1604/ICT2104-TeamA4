@@ -38,8 +38,10 @@ Many auxiliary data structures has also been added to support the mapping module
 
 ![image](https://user-images.githubusercontent.com/71180280/204321543-5aee568c-83c9-4890-852f-a6f14289788f.png)
 
-## Mapping algorithm bounds
+## Mapping algorithm bounds and generalizability
 
 For our mapping algorithm, there is no bounds on the map. It can keep going so long as the car has memory and has not overflowed the int8_t data type. If you refer to the Vertex structure shown earlier, you can see that we use x, y coordinates to store a representation of the map. What this means is our map can go as far as 256 x 256 map, and as long as the car has enough memory. Based on our estimation, if a 5x4 map around 3KB, and there's 64KB SRAM on the MSP432, then it should have no issues storing a 100 x 100 map.
 
 We purposefully chose a generic algorithm for this reason.
+
+In fact, the car can start at any vertex of the maze, and it will map the maze accurately.
