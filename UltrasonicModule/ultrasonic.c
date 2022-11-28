@@ -63,7 +63,7 @@ UltrasonicSensorConfiguration sensor4Config = {
  */
 
 bool Ultrasonic_checkFront() {
-//    printf("Front -> ");
+    printf("Front -> ");
     return checkSensorDetectObject(&sensor1Config);
 }
 
@@ -107,7 +107,7 @@ static float filterUltrasonicSensorValues(float distance) {
 
     // Use the Limit filter
     // Remove anamolies
-    if (distance < 200.0) {
+    if (distance < 400.0) {
         // SMA FILTER!
         // Add to queue
         enqueue(smaQueue, distance);
@@ -136,17 +136,37 @@ static bool checkSensorDetectObject(UltrasonicSensorConfiguration* sensorConfig)
     *(sensorConfig->sensorInterruptCount) = 0;
 
     // Get distance from object.
-    float distance = getDistance(sensorConfig);
+    int i = 0;
 
-    float filteredDistance = filterUltrasonicSensorValues(distance);
+    while (i < ULTRASONIC_CHECK_COUNT) {
+
+        // Get the value
+        float distance = getDistance(sensorConfig);
+
+        // Delay in between checks (60ms)
+        UtilityTime_delay(60);
+
+        // Check the limit, its a valid value
+        if (distance < 400.0) {
+            // Add to SMA queue
+            enqueue(smaQueue, distance);
+
+            // Up the count...
+            i++;
+        }
+    }
+
+    // Get the filtered distance (SMA average)
+//    float avgVal = total / ULTRASONIC_CHECK_COUNT;
+    float smaFilterVal = Filter_SMAFilter(smaQueue);
 
     // Sets global distance buffer that stores latest distances captured from sensor.
-    latestSensorDistances[sensorConfig->bufferIndex] = filteredDistance;
+    latestSensorDistances[sensorConfig->bufferIndex] = smaFilterVal;
 
     // If distance is lower then threshold, object is near.
-    hasNoObject = filteredDistance > ULTRASONIC_THRESHOLD;
+    hasNoObject = smaFilterVal > ULTRASONIC_THRESHOLD;
 
-    printf("%.2fcm %.2fcm\n", distance, filteredDistance);
+    printf("%.2fcm\n", smaFilterVal);
 
     return hasNoObject;
 }

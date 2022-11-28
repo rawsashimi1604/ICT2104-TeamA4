@@ -27,8 +27,8 @@
 #define ULTRASONIC_BUFFER_RIGHT_INDEX   2
 #define ULTRASONIC_BUFFER_BACK_INDEX    3
 
-#define SMA_PERIOD                      5
-#define EMA_PERIOD                      5
+#define SMA_PERIOD                      20
+#define EMA_PERIOD                      20
 
 /*************************************************************
  * VARIABLES
