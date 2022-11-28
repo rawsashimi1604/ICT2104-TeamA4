@@ -59,6 +59,12 @@ We have designed and developed the motor controller using PWM to control the two
 `void Motor_turn45Right(void)` <br>
 - Initalizes `Set_forward()` and `Motor_start(int left_duty_cycle, int right_duty_cycle)` to set the PWM duty cycle for both the motors to turn 45 degrees to the left.
 
+`void Motor_pivotLeft(void)` <br>
+- Initalizes `Set_forward()` and `Motor_start(int left_duty_cycle, int right_duty_cycle)` to set the PWM duty cycle for both the motors to pivot 90 degrees to the right.
+
+`void Motor_pivotRight(void)` <br>
+- Initalizes `Set_forward()` and `Motor_start(int left_duty_cycle, int right_duty_cycle)` to set the PWM duty cycle for both the motors to pivot 90 degrees to the left.
+
 `static void Set_PID(void)` <br>
 - Set the PID of the car to the desired value - between 0 and 1.
 - The PID values is the percentage of the duty cycle.
