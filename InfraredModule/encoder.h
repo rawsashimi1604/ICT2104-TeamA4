@@ -44,20 +44,20 @@ typedef struct EncoderStruct
 
 // INTERRUPTS
 void TA2_0_IRQHandler(void);
-void PORT3_IRQHandler(void);
+void PORT5_IRQHandler(void);
 
 // PRIVATE FUNCTIONS
 static void initTimer(void);
 static void initPins(void);
 static void initInterrupts(void);
 static void detectPulse(volatile Encoder *e);
-void updateRPM(volatile Encoder *e);
+void        updateRPM(volatile Encoder *e);
 
 // PUBLIC FUNCTIONS
-void Encoder_init(void);
-void Encoder_main(void);
-void Infrared_startNotchesCount(void);
-int  Infrared_stopNotchesCount(void);
+void  Encoder_init(void);
+void  Encoder_main(void);
+void  Infrared_startNotchesCount(void);
+int   Infrared_stopNotchesCount(void);
 float Infrared_getCarSpeed(void);
 
 #endif /* ENCODER_H_ */

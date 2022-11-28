@@ -17,11 +17,11 @@
 
 #include "../MotorModule/motor.h"
 
-#define PORT GPIO_PORT_P5
-#define LEFT_ENCODER GPIO_PIN5
+#define PORT          GPIO_PORT_P5
+#define LEFT_ENCODER  GPIO_PIN5
 #define RIGHT_ENCODER GPIO_PIN4
 
-extern Car car;
+extern Car              car;
 extern volatile int16_t g_counter;
 extern volatile int16_t g_left_counter;
 extern volatile int16_t g_right_counter;
@@ -72,15 +72,15 @@ initPins(void)
 }
 
 /*!
- * @brief Initialise interrupt for P3.5, P3.7 and TIMER_A2_BASE
+ * @brief Initialise interrupt for P5.5, P5.4 and TIMER_A2_BASE
  */
 void
 initInterrupts(void)
 {
-    // Clear pin's interrupt flag for P3.5 & P3.7
+    // Clear pin's interrupt flag for P5.5, P5.4
     GPIO_clearInterruptFlag(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 
-    // Enable interrupt bit of P3.5 & P3.7
+    // Enable interrupt bit of P5.5, P5.4
     GPIO_enableInterrupt(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 
     // Set interrupt enable (IE) bit of corresponding interrupt source
@@ -103,17 +103,18 @@ Encoder_main(void) // Call once in main
 }
 
 /*!
- * @brief Handle Port 3 interrupts.
- * If P3.5 interrupts,
+ * @brief Handle Port 5 interrupts.
+ * If P5.5 interrupts,
  * a) counts notches for left encoder
  * b) calculates time taken for one pulse
  *
- * If P3.7 interrupts,
+ * If P5.4 interrupts,
  * a) counts notches for right encoder
  * b) calculates time taken for one pulse
  *
  */
-void PORT5_IRQHandler(void)
+void
+PORT5_IRQHandler(void)
 {
     uint32_t status;
 
@@ -140,19 +141,19 @@ void PORT5_IRQHandler(void)
     detectPulse(p_left_encoder);
     detectPulse(p_right_encoder);
 
-   if (status & LEFT_ENCODER)
-   {
-       g_left_counter++;
-       car.right_wheel_count++;
-   }
-   if (status & RIGHT_ENCODER)
-   {
-       g_right_counter++;
-       car.left_wheel_count++;
-   }
+    if (status & LEFT_ENCODER)
+    {
+        g_left_counter++;
+        car.right_wheel_count++;
+    }
+    if (status & RIGHT_ENCODER)
+    {
+        g_right_counter++;
+        car.left_wheel_count++;
+    }
 
-   // Take average of the left and right wheel count
-   g_counter = (car.left_wheel_count + car.right_wheel_count) / 2;
+    // Take average of the left and right wheel count
+    g_counter = (car.left_wheel_count + car.right_wheel_count) / 2;
 
     GPIO_clearInterruptFlag(PORT, LEFT_ENCODER | RIGHT_ENCODER);
 }
@@ -161,20 +162,20 @@ void PORT5_IRQHandler(void)
  * @brief timer that interrupts every 1 milliseconds
  * a) updates RPM for left and right encoder every second
  */
-//void
-//TA2_0_IRQHandler(void)
+// void
+// TA2_0_IRQHandler(void)
 //{
-//    g_time_ms += 1;
+//     g_time_ms += 1;
 //
-//    if (g_time_ms % 1000 == 0)
-//    {
-//        updateRPM(p_left_encoder);
-//        updateRPM(p_right_encoder);
-//    }
+//     if (g_time_ms % 1000 == 0)
+//     {
+//         updateRPM(p_left_encoder);
+//         updateRPM(p_right_encoder);
+//     }
 //
-//    Timer_A_clearCaptureCompareInterrupt(TIMER_A2_BASE,
-//                                         TIMER_A_CAPTURECOMPARE_REGISTER_0);
-//}
+//     Timer_A_clearCaptureCompareInterrupt(TIMER_A2_BASE,
+//                                          TIMER_A_CAPTURECOMPARE_REGISTER_0);
+// }
 
 /*!
  * @brief Start counting notches
