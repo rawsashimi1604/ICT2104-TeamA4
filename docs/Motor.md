@@ -54,10 +54,10 @@ We have designed and developed the motor controller using PWM to control the two
 - Initializes `Set_leftFrontRightBack()` and `Motor_start(int left_duty_cycle, int right_duty_cycle)` to set the PWM duty cycle for both the motors to turn right.
 
 `void Motor_turn45Left(void)` <br>
-- Initalizes `Set_forward()` and `Motor_start(int left_duty_cycle, int right_duty_cycle)` to set the PWM duty cycle for both the motors to turn 45 degrees to the right.
+- Initalizes `Set_forward()` and `Motor_start(int left_duty_cycle, int right_duty_cycle)` to set the PWM duty cycle for both the motors to pivot 45 degrees to the right.
 
 `void Motor_turn45Right(void)` <br>
-- Initalizes `Set_forward()` and `Motor_start(int left_duty_cycle, int right_duty_cycle)` to set the PWM duty cycle for both the motors to turn 45 degrees to the left.
+- Initalizes `Set_forward()` and `Motor_start(int left_duty_cycle, int right_duty_cycle)` to set the PWM duty cycle for both the motors to pivot 45 degrees to the left.
 
 `void Motor_pivotLeft(void)` <br>
 - Initalizes `Set_forward()` and `Motor_start(int left_duty_cycle, int right_duty_cycle)` to set the PWM duty cycle for both the motors to pivot 90 degrees to the right.
