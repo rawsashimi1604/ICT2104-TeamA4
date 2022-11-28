@@ -27,8 +27,6 @@ We have designed and developed the motor controller using PWM to control the two
 `void Set_stop(void)` <br>
 - Set the left motor output to low (P4.3 and P4.4) and the right motor output to low (P4.1 and P4.2) to stop.
 
-<br>
-
 ### MotorPWMConfiguration
 
 `void Motor_init(void)`
@@ -64,3 +62,9 @@ We have designed and developed the motor controller using PWM to control the two
 `static void Set_PID(void)` <br>
 - Set the PID of the car to the desired value - between 0 and 1.
 - The PID values is the percentage of the duty cycle.
+
+### Demo
+
+https://user-images.githubusercontent.com/90103591/204334903-c8cb76ac-8d76-40d3-a8e9-8092bf50f98e.mp4
+
+
