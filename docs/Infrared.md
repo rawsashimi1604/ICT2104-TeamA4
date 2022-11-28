@@ -3,13 +3,15 @@
 [Back to Home](../README.md)
 
 ## Infrared Documentation
-
 ### Overview
 For the infrared team, we are using the TCRT500 Infrared Sensor as well as the two wheel encoder given at the start of the module.
 
 The two main objective of our module is to
 1) Be able to scan a CODE39 barcode and return a valid char.
 2) Be able to accurately measure the speed of the car and the distance travelled.
+
+### Video Demonstration
+[![Watch the video demonstration](https://img.youtube.com/vi/nFy2T19JbHw/hqdefault.jpg)](https://youtu.be/nFy2T19JbHw)
 
 ### Barcode
 
