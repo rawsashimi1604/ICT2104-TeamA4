@@ -70,7 +70,4 @@ We have designed and developed the motor controller using PWM to control the two
 - The PID values is the percentage of the duty cycle.
 
 ### Demo
-
-https://user-images.githubusercontent.com/90103591/204334903-c8cb76ac-8d76-40d3-a8e9-8092bf50f98e.mp4
-
-
+https://user-images.githubusercontent.com/90103591/204335812-b665ed6e-7d8a-4791-aab8-9aeb983cd710.mp4
