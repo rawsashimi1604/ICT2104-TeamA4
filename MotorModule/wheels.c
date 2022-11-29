@@ -7,6 +7,10 @@
 #define LEFTWHEEL_B GPIO_PIN7
 #define RIGHTWHEEL_A GPIO_PIN1
 #define RIGHTWHEEL_B GPIO_PIN2
+//#define LEFTWHEEL_A GPIO_PIN4
+//#define LEFTWHEEL_B GPIO_PIN3
+//#define RIGHTWHEEL_A GPIO_PIN2
+//#define RIGHTWHEEL_B GPIO_PIN1
 /**
  * Set default direction of motor driver
  */

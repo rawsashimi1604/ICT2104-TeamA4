@@ -1,10 +1,3 @@
-/*
- * motor.h
- *
- *  Created on: 20 Sep 2022
- *      Author: lyc
- */
-
 /* DriverLib Includes */
 #include "driverlib.h"
 
@@ -29,13 +22,8 @@ typedef struct _Car
 
 #define LEFT 'L'
 #define RIGHT 'R'
-#define LEFT45 'Q'
-#define RIGHT45 'P'
 #define FORWARD 'F'
 #define BACKWARD 'B'
-#define STRAIGHT 'S'
-#define S_RIGHT 'O'
-#define S_LEFT 'I'
 
 void Motor_init(void);
 void Motor_stop(void); //called in encoder interrupt to know when to stop
@@ -51,4 +39,5 @@ void Motor_pivotLeft(void);
 void Motor_turn45Left(void);
 void Motor_turn45Right(void);
 
+void Motor_customRightTurn(int);
 #endif /* MOTOR_H_ */
